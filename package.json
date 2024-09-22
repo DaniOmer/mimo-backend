@@ -1,0 +1,27 @@
+{
+  "name": "mimo-backend",
+  "version": "1.0.0",
+  "description": "Node.js API for Mimo ecommerce backend API",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DaniOmer/mimo-backend.git"
+  },
+  "author": "Omer DOTCHAMOU, Johnny CHEN",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DaniOmer/mimo-backend/issues"
+  },
+  "homepage": "https://github.com/DaniOmer/mimo-backend#readme",
+  "dependencies": {
+    "express": "^4.21.0",
+    "node": "^22.9.0"
+  }
+}
