@@ -38,7 +38,7 @@ npm run start
 The **Mimo** project is organized by components. Each component represents a core entity or feature of the application, such as products, orders, users, and payments.
 
 ```bash
-mimo-ecommerce/
+mimo-backend/
 ├── apps/                    # Application-specific components
 │   ├── users/               # Users module
 │   │   ├── api/
@@ -75,6 +75,7 @@ mimo-ecommerce/
 │   ├── authenticator/       # Authentication and JWT management
 │       └── authMiddleware.js
 ├── tests/                   # Unit and integration tests
+├── server.js                # The application entrypoint
 ├── .env                     # Environment variables
 ├── package.json             # Main project dependencies
 └── README.md                # Project documentation
@@ -109,7 +110,3 @@ Contributions are welcome! If you find any bugs or have suggestions for improvem
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
----
-
-This README provides a solid foundation for your **Mimo** e-commerce backend. You can modify it as needed for your specific project, especially the `api_routes.md` file, which should contain the detailed routes and usage examples for your API.
