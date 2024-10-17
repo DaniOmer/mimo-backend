@@ -6,7 +6,8 @@ Mimo is a backend application for an e-commerce platform, built using **Node.js*
 
 Before starting, ensure you have the following installed:
 
-- [Node.js](https://nodejs.org/) - Version 14+ recommended
+- [Node.js](https://nodejs.org/) - Version 20+ recommended
+- [Typescript.js](https://www.typescriptlang.org/) - Version 5+ recommended
 - [MongoDB](https://www.mongodb.com/) - NoSQL database
 - [npm](https://www.npmjs.com/) - Node.js package manager
 
@@ -27,11 +28,22 @@ npm install
 
 3. Create a `.env` file in the root directory to configure environment variables. See examples in `.env.example` file.
 
-4. Start the application:
+4. Build the development environment database
+
+```bash
+docker compose -f compose.dev.yaml build
+```
+
+6. Start the development environment database
+
+````bash
+docker compose -f compose.dev.yaml up -d
+
+7. Start the application:
 
 ```bash
 npm run start
-```
+````
 
 ## Project Structure
 
@@ -39,46 +51,57 @@ The **Mimo** project is organized by components. Each component represents a cor
 
 ```bash
 mimo-backend/
-├── apps/                    # Application-specific components
-│   ├── users/               # Users module
-│   │   ├── api/
-│   │   │   └── userController.js
-│   │   ├── domain/
-│   │   │   └── userService.js
-│   │   ├── data-access/
-│   │       ├── userModel.js
-│   │       └── userRepository.js
-│   ├── products/            # Products module
-│   │   ├── api/
-│   │   │   └── productController.js
-│   │   ├── domain/
-│   │   │   └── productService.js
-│   │   ├── data-access/
-│   │       ├── productModel.js
-│   │       └── productRepository.js
-│   └── payments/            # Payments module
-│       ├── api/
-│       │   └── paymentController.js
-│       ├── domain/
-│       │   └── paymentService.js
-│       ├── data-access/
-│           └── paymentModel.js
-├── config/                  # Application configuration files
-│   ├── db.js                # MongoDB connection configuration
-│   └── config.js            # Other global settings
-├── docs/                    # Application detailed documentation
-│   ├── api_routes.md        # Explained documentation of the API routes
+├── dist/                    # Contains the compiled JavaScript code
+│   ├── apps/                # Compiled application-specific modules
+│   ├── config/              # Compiled configuration files
+│   ├── libraries/           # Compiled reusable libraries
+│   ├── index.js             # Compiled application entry point
+│   └── ...                  # Other compiled files
+├── src/                     # Main source code (TypeScript)
+│   ├── apps/                # Application-specific modules
+│   │   ├── users/           # Users module
+│   │   │   ├── api/         # Routes and controllers
+│   │   │   │   ├── routes.ts
+│   │   │   │   └── userController.ts
+│   │   │   ├── domain/      # Business logic for users
+│   │   │   │   └── userService.ts
+│   │   │   ├── data-access/ # Data access (models, repositories)
+│   │   │       ├── userModel.ts
+│   │   │       └── userRepository.ts
+│   │   ├── products/        # Products module
+│   │   │   ├── api/
+│   │   │   │   └── productController.ts
+│   │   │   ├── domain/
+│   │   │   │   └── productService.ts
+│   │   │   ├── data-access/
+│   │   │       ├── productModel.ts
+│   │   │       └── productRepository.ts
+│   │   ├── payments/        # Payments module
+│   │       ├── api/
+│   │       │   └── paymentController.ts
+│   │       ├── domain/
+│   │       │   └── paymentService.ts
+│   │       ├── data-access/
+│   │           └── paymentModel.ts
+│   ├── config/              # Configuration files
+│   │   ├── db.ts            # MongoDB connection configuration
+│   │   └── config.ts        # Other global settings
+│   ├── libraries/           # Reusable cross-component libraries
+│   │   ├── logger/          # Log management
+│   │   │   └── logger.ts
+│   │   ├── authenticator/   # Authentication and JWT management
+│   │       └── authMiddleware.ts
+│   ├── tests/               # Unit and integration tests
+│   ├── index.ts             # Application entry point
+│   ├── .env                 # Environment variables
+│   └── README.md            # Project documentation
+├── docs/                    # Detailed project documentation
+│   ├── api_routes.md        # API route documentation
 │   └── *.md                 # Other detailed documentation
-├── libraries/               # Reusable cross-component features
-│   ├── logger/              # Log management
-│   │   └── logger.js
-│   ├── authenticator/       # Authentication and JWT management
-│       └── authMiddleware.js
-├── tests/                   # Unit and integration tests
-├── server.js                # The application entrypoint
-├── .env                     # Environment variables
-├── package.json             # Main project dependencies
-└── README.md                # Project documentation
+├── .gitignore               # Git ignore file for untracked files
+├── package.json             # Main project dependencies and scripts
+└── tsconfig.json            # TypeScript configuration
+
 ```
 
 ### Folder Explanations
