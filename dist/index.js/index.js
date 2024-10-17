@@ -7,6 +7,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const db_1 = __importDefault(require("./config/db"));
 const userRoute_1 = __importDefault(require("./apps/users/api/userRoute"));
 const swagger_1 = require("./config/swagger");
 dotenv_1.default.config();
@@ -26,5 +27,6 @@ app.get("/", (req, res) => {
 });
 app.use("/api", userRoute_1.default);
 app.listen(port, () => {
+    (0, db_1.default)();
     console.log(`Example app listening on port http://localhost:${port}. Connect`);
 });

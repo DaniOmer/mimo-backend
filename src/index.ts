@@ -4,6 +4,8 @@ import express, { Express, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 
+import connectDb from "./config/db";
+
 import userRoutes from "./apps/users/api/userRoute";
 import { swaggerOptions } from "./config/swagger";
 
@@ -29,6 +31,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api", userRoutes);
 
 app.listen(port, () => {
+  connectDb();
   console.log(
     `Example app listening on port http://localhost:${port}. Connect`
   );
