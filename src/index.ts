@@ -1,15 +1,16 @@
-import express, { Express } from "express";
+import express, { Express, Router } from "express";
 import swaggerUi from "swagger-ui-express";
 
 import { AppConfig } from "./config/app.config";
 import { swaggerDocs } from "./config/swagger/swagger";
 import { LoggerConfig } from "./config/logger/logger.config";
 import { MongooseConfig } from "./config/mongoose/mongoose.config";
-import userRoutes from "./apps/auth/api/auth.route";
+import authRoute from "./apps/auth/api/auth.route";
 
 async function startApp() {
   const app: Express = express();
   const port = AppConfig.server.port;
+  const router: Router = Router();
   const loggerInit = LoggerConfig.get();
 
   try {
@@ -21,7 +22,7 @@ async function startApp() {
     app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
     // Authentication routes
-    app.use("/api/auth", userRoutes);
+    app.use("/api/auth", authRoute(router));
 
     app.listen(port, () => {
       databaseInit.mongoose;
