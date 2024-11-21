@@ -20,6 +20,8 @@ export class UserService {
       ...userData,
       password: SecurityUtils.sha512(userData.password),
     });
-    return newUser;
+    const userObject = newUser.toObject();
+    delete userObject.password;
+    return userObject;
   }
 }
