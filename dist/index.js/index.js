@@ -42,6 +42,7 @@ const swagger_1 = require("./config/swagger/swagger");
 const logger_config_1 = require("./config/logger/logger.config");
 const mongoose_config_1 = require("./config/mongoose/mongoose.config");
 const auth_route_1 = __importDefault(require("./apps/auth/api/auth.route"));
+const error_middleware_1 = require("./librairies/middlewares/error.middleware");
 function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
@@ -55,6 +56,8 @@ function startApp() {
             app.use("/api/docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerDocs));
             // Authentication routes
             app.use("/api/auth", (0, auth_route_1.default)(router));
+            // Error handling middleware
+            app.use(error_middleware_1.errorHandler);
             app.listen(port, () => {
                 databaseInit.mongoose;
                 loggerInit.logger.info(`Mimo app listening on port http://localhost:${port}.`);

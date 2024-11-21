@@ -6,6 +6,7 @@ import { swaggerDocs } from "./config/swagger/swagger";
 import { LoggerConfig } from "./config/logger/logger.config";
 import { MongooseConfig } from "./config/mongoose/mongoose.config";
 import authRoute from "./apps/auth/api/auth.route";
+import { errorHandler } from "./librairies/middlewares/error.middleware";
 
 async function startApp() {
   const app: Express = express();
@@ -23,6 +24,9 @@ async function startApp() {
 
     // Authentication routes
     app.use("/api/auth", authRoute(router));
+
+    // Error handling middleware
+    app.use(errorHandler as express.ErrorRequestHandler);
 
     app.listen(port, () => {
       databaseInit.mongoose;

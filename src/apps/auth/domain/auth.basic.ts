@@ -2,6 +2,7 @@ import { AuthStrategy } from "./auth.strategy";
 import { IUser } from "../data-access/user.interface";
 import { UserRepository } from "../data-access/user.repository";
 import { SecurityUtils } from "../../../utils/security.utils";
+import BadRequestError from "../../../config/error/bad.request.config";
 
 export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
 export type UserResponse = Omit<IUser, "password">;
@@ -16,7 +17,11 @@ export class BasicAuthStrategy implements AuthStrategy {
   async register(userData: UserCreate): Promise<UserResponse> {
     const existingUser = await this.userRepository.getByEmail(userData.email);
     if (existingUser) {
-      throw new Error("A user with the same email already exists");
+      throw new BadRequestError({
+        message: "Email already exists",
+        context: { field_validation: ["email"] },
+        logging: true,
+      });
     }
 
     const hashedPassword = await SecurityUtils.hashPassword(userData.password);
