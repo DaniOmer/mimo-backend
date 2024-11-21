@@ -15,10 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const app_config_1 = require("./config/app.config");
-const swagger_1 = require("./config/swagger");
+const swagger_1 = require("./config/swagger/swagger");
 const logger_config_1 = require("./config/logger/logger.config");
 const mongoose_config_1 = require("./config/mongoose/mongoose.config");
-const user_route_1 = __importDefault(require("./apps/users/api/user.route"));
+const auth_route_1 = __importDefault(require("./apps/auth/api/auth.route"));
 function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
@@ -30,7 +30,7 @@ function startApp() {
             // API documentation
             app.use("/api/docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerDocs));
             // Authentication routes
-            app.use("/api/auth", user_route_1.default);
+            app.use("/api/auth", auth_route_1.default);
             app.listen(port, () => {
                 databaseInit.mongoose;
                 loggerInit.logger.info(`Mimo app listening on port http://localhost:${port}.`);

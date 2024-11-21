@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { Timestamps } from "../../../librairies/types/timestamps.interface";
 
 export enum Role {
   Admin = "admin",
@@ -6,7 +7,7 @@ export enum Role {
   Manager = "manager",
 }
 
-export interface IUser extends Document {
+export interface IUser extends Timestamps, Document {
   _id: string;
   firstName: string;
   lastName: string;
@@ -15,6 +16,4 @@ export interface IUser extends Document {
   avatar?: string;
   role: Role;
   isTermsOfSale: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 }

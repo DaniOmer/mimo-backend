@@ -2,10 +2,10 @@ import express, { Express } from "express";
 import swaggerUi from "swagger-ui-express";
 
 import { AppConfig } from "./config/app.config";
-import { swaggerDocs } from "./config/swagger";
+import { swaggerDocs } from "./config/swagger/swagger";
 import { LoggerConfig } from "./config/logger/logger.config";
 import { MongooseConfig } from "./config/mongoose/mongoose.config";
-import userRoutes from "./apps/users/api/user.route";
+import userRoutes from "./apps/auth/api/auth.route";
 
 async function startApp() {
   const app: Express = express();

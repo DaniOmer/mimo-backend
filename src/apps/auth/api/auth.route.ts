@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { UserCreateDTO } from "../domain/user.dto";
-import { UserController } from "./user.controller";
+import { UserController } from "./auth.controller";
 import { validateDtoMiddleware } from "../../../librairies/middlewares/validation.middleware";
 
 const router = Router();
@@ -23,7 +23,7 @@ const userController = new UserController();
  *                 $ref: '#/components/schemas/User'
  */
 router.post(
-  "/register",
+  "/register/:strategy",
   validateDtoMiddleware(UserCreateDTO),
   userController.register.bind(userController)
 );
