@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.swaggerOptions = void 0;
+exports.swaggerDocs = exports.swaggerOptions = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 dotenv_1.default.config();
 exports.swaggerOptions = {
     swaggerDefinition: {
@@ -20,7 +21,7 @@ exports.swaggerOptions = {
             },
         },
         paths: {
-            "/api/users": {
+            "/api/auth/register": {
                 get: {
                     summary: "Get all users",
                     responses: {
@@ -30,6 +31,24 @@ exports.swaggerOptions = {
                                 "application/json": {
                                     schema: {
                                         type: "array",
+                                        items: {
+                                            $ref: "#/components/schemas/User",
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                post: {
+                    summary: "Create a new user",
+                    responses: {
+                        "200": {
+                            description: "Create a new user",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
                                         items: {
                                             $ref: "#/components/schemas/User",
                                         },
@@ -86,17 +105,25 @@ exports.swaggerOptions = {
                 User: {
                     type: "object",
                     properties: {
-                        id: {
+                        _id: {
                             type: "string",
                             description: "The auto-generated id of the user",
                         },
-                        name: {
+                        firstName: {
                             type: "string",
-                            description: "The user's name",
+                            description: "The user's first name",
+                        },
+                        lastName: {
+                            type: "string",
+                            description: "The user's last name",
                         },
                         email: {
                             type: "string",
                             description: "The user's email",
+                        },
+                        password: {
+                            type: "string",
+                            description: "The user's password",
                         },
                         avatar: {
                             type: "string",
@@ -161,3 +188,4 @@ exports.swaggerOptions = {
     },
     apis: ["./src/apps/**/api/*.ts"],
 };
+exports.swaggerDocs = (0, swagger_jsdoc_1.default)(exports.swaggerOptions);
