@@ -4,7 +4,7 @@ import { Logger } from "winston";
 import { LoggerConfig } from "../../../config/logger/logger.config";
 import { Strategy } from "../domain/auth.factory";
 
-export class UserController {
+export class AuthController {
   private logger: Logger;
 
   constructor() {

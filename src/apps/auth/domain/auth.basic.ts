@@ -18,12 +18,18 @@ export class BasicAuthStrategy implements AuthStrategy {
     if (existingUser) {
       throw new Error("A user with the same email already exists");
     }
+
+    const hashedPassword = await SecurityUtils.hashPassword(userData.password);
     const newUser = await this.userRepository.create({
       ...userData,
-      password: SecurityUtils.sha512(userData.password),
+      password: hashedPassword,
     });
     const userObject = newUser.toObject();
     delete userObject.password;
     return userObject;
+  }
+
+  async login(data: any): Promise<any> {
+    throw new Error("This strategy is not implemented yet");
   }
 }

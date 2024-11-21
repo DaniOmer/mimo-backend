@@ -1,10 +1,10 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { UserCreateDTO } from "../domain/user.dto";
-import { UserController } from "./auth.controller";
+import { AuthController } from "./auth.controller";
 import { validateDtoMiddleware } from "../../../librairies/middlewares/validation.middleware";
 
 const router = Router();
-const userController = new UserController();
+const authController = new AuthController();
 
 /**
  * @swagger
@@ -25,7 +25,7 @@ const userController = new UserController();
 router.post(
   "/register/:strategy",
   validateDtoMiddleware(UserCreateDTO),
-  userController.register.bind(userController)
+  authController.register.bind(authController)
 );
 
 export default router;
