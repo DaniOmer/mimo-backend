@@ -10,7 +10,7 @@ import {
   IsOptional,
 } from "class-validator";
 
-import { Role } from "../data-access/user.schema";
+import { Role } from "../data-access/user.interface";
 
 export class UserCreateDTO {
   @IsNotEmpty()

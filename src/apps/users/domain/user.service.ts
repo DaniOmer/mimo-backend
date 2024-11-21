@@ -1,6 +1,6 @@
-import { IUser } from "../data-access/user.schema";
-import { UserModel } from "../data-access/user.model";
+import { IUser } from "../data-access/user.interface";
 import { UserRepository } from "../data-access/user.repository";
+import { SecurityUtils } from "../../../utils/security.utils";
 
 export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
 
@@ -16,8 +16,10 @@ export class UserService {
     if (existingUser) {
       throw new Error("A user with the same email already exists");
     }
-    const newUser = new UserModel(userData);
-    await this.userRepository.create(newUser);
+    const newUser = await this.userRepository.create({
+      ...userData,
+      password: SecurityUtils.sha512(userData.password),
+    });
     return newUser;
   }
 }
