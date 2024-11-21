@@ -38,9 +38,11 @@ export class UserCreateDTO {
   @MaxLength(250)
   readonly avatar?: string;
 
+  @IsOptional()
   @IsEnum(Role)
   readonly role!: Role;
 
+  @IsOptional()
   @IsBoolean()
   readonly isTermsOfSale!: boolean;
 }
