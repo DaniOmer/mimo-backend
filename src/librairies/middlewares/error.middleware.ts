@@ -5,7 +5,7 @@ import { CustomError } from "../../config/error/error.config";
 const logger = LoggerConfig.get().logger;
 
 export const errorHandler = (
-  err: Error,
+  err: any,
   req: Request,
   res: Response,
   next: NextFunction
@@ -17,8 +17,9 @@ export const errorHandler = (
         JSON.stringify({ status: statusCode, errors: errors, stack: stack })
       );
     }
-    return res.status(statusCode).send({ errors });
+    res.status(statusCode).send({ errors });
+  } else {
+    logger.error(`Error: ${JSON.stringify(err)}`);
+    res.status(500).send({ errors: [{ message: "Something went wrong" }] });
   }
-  logger.error(`Error: ${JSON.stringify(err)}`);
-  res.status(500).json({ message: "Something went wrong" });
 };
