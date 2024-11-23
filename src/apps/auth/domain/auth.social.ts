@@ -5,7 +5,7 @@ export class SocialAuthStrategy implements AuthStrategy {
     throw new Error("This strategy is not implemented yet");
   }
 
-  async login(data: any): Promise<any> {
+  async authenticate(data: any): Promise<any> {
     throw new Error("This strategy is not implemented yet");
   }
 }

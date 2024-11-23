@@ -3,6 +3,7 @@ import { AuthService } from "../domain/auth.service";
 import { Strategy } from "../domain/auth.factory";
 import BadRequestError from "../../../config/error/bad.request.config";
 import BaseController from "../../../librairies/controllers/base.controller";
+import { ApiResponse } from "../../../librairies/controllers/api.response";
 
 export class AuthController extends BaseController {
   constructor() {
@@ -29,7 +30,7 @@ export class AuthController extends BaseController {
       const authService = new AuthService(strategy as Strategy);
       const newUser = await authService.register(userData);
       this.logger.info(`User registered successfully: ${newUser.email}`);
-      res.status(201).json(newUser);
+      ApiResponse.success(res, "User registered successfully", newUser, 201);
     } catch (error: any) {
       next(error);
     }

@@ -3,10 +3,6 @@ import * as bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { AppConfig } from "../config/app.config";
 import BadRequestError from "../config/error/bad.request.config";
-import { error } from "console";
-import { decode } from "punycode";
-import { resolve } from "path";
-import { rejects } from "assert";
 
 export class SecurityUtils {
   static generateSecret(): string {
@@ -40,6 +36,7 @@ export class SecurityUtils {
   static async generateToken(userId: string): Promise<string> {
     const secret = this.getJWTSecret();
     return jwt.sign({ userId }, secret, {
+      algorithm: "HS256",
       expiresIn: AppConfig.jwt.expiresIn,
     });
   }
