@@ -6,7 +6,7 @@ import { console } from "inspector";
 
 const logger = LoggerConfig.get().logger;
 
-export const errorHandler = (
+export const errorHandlerMiddleware = (
   err: any,
   req: Request,
   res: Response,
