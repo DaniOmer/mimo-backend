@@ -8,11 +8,12 @@ import {
   IsBoolean,
   IsUrl,
   IsOptional,
+  Matches,
 } from "class-validator";
 
 import { Role } from "../data-access/user.interface";
 
-export class UserCreateDTO {
+export class UserRegisterDTO {
   @IsNotEmpty()
   @IsAlpha()
   @MinLength(2)
@@ -30,7 +31,8 @@ export class UserCreateDTO {
   readonly email!: string;
 
   @IsNotEmpty()
-  @MinLength(8, { message: "Password must be at least 8 characters long" })
+  @MinLength(12, { message: "Password must be at least 12 characters long" })
+  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
   readonly password!: string;
 
   @IsOptional()
@@ -45,4 +47,15 @@ export class UserCreateDTO {
   @IsOptional()
   @IsBoolean()
   readonly isTermsOfSale!: boolean;
+}
+
+export class UserLoginDTO {
+  @IsNotEmpty()
+  @IsEmail()
+  readonly email!: string;
+
+  @IsNotEmpty()
+  @MinLength(12, { message: "Password must be at least 12 characters long" })
+  @Matches("/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*W)(?!.* ).{8,16}$/")
+  readonly password!: string;
 }

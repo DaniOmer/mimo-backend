@@ -6,7 +6,9 @@ import { swaggerDocs } from "./config/swagger/swagger";
 import { LoggerConfig } from "./config/logger/logger.config";
 import { MongooseConfig } from "./config/mongoose/mongoose.config";
 import authRoute from "./apps/auth/api/auth.route";
-import { errorHandler } from "./librairies/middlewares/error.middleware";
+import { corsMiddleware } from "./librairies/middlewares/cors.middleware";
+import { rateLimiterMiddleware } from "./librairies/middlewares/rate.limit.middleware";
+import { errorHandlerMiddleware } from "./librairies/middlewares/error.middleware";
 
 async function startApp() {
   const app: Express = express();
@@ -17,7 +19,14 @@ async function startApp() {
   try {
     const databaseInit = await MongooseConfig.get();
 
+    // Json configuration
     app.use(express.json());
+
+    // CORS middleware
+    app.use(corsMiddleware);
+
+    // Rate limiting middleware
+    app.use(rateLimiterMiddleware);
 
     // API documentation
     app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
@@ -26,7 +35,7 @@ async function startApp() {
     app.use("/api/auth", authRoute(router));
 
     // Error handling middleware
-    app.use(errorHandler as express.ErrorRequestHandler);
+    app.use(errorHandlerMiddleware as express.ErrorRequestHandler);
 
     app.listen(port, () => {
       databaseInit.mongoose;

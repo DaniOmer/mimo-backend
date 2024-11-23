@@ -18,5 +18,15 @@ export const AppConfig = {
   },
   server: {
     port: process.env.PORT || 3000,
+    apiUrl: process.env.API_URL,
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET_CURRENT,
+    expiresIn: "7d",
+  },
+  cors: {
+    allowedOrigins: process.env.CORS_ALLOWED_ORIGINS,
+    allowedHeaders: process.env.CORS_ALLOWED_HEADERS,
+    credentials: process.env.CORS_CREDENTIALS,
   },
 };

@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import { LoggerConfig } from "../../config/logger/logger.config";
 import { CustomError } from "../../config/error/error.config";
+import { ApiResponse } from "../controllers/api.response";
+import { console } from "inspector";
 
 const logger = LoggerConfig.get().logger;
 
-export const errorHandler = (
+export const errorHandlerMiddleware = (
   err: any,
   req: Request,
   res: Response,
@@ -17,9 +19,9 @@ export const errorHandler = (
         JSON.stringify({ status: statusCode, errors: errors, stack: stack })
       );
     }
-    res.status(statusCode).send({ errors });
+    ApiResponse.error(res, errors[0].message, statusCode, errors[0].context);
   } else {
     logger.error(`Error: ${JSON.stringify(err)}`);
-    res.status(500).send({ errors: [{ message: "Something went wrong" }] });
+    ApiResponse.error(res, "Something went wrong", 500);
   }
 };
