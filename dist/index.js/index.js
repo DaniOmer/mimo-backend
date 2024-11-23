@@ -42,6 +42,8 @@ const swagger_1 = require("./config/swagger/swagger");
 const logger_config_1 = require("./config/logger/logger.config");
 const mongoose_config_1 = require("./config/mongoose/mongoose.config");
 const auth_route_1 = __importDefault(require("./apps/auth/api/auth.route"));
+const cors_middleware_1 = require("./librairies/middlewares/cors.middleware");
+const rate_limit_middleware_1 = require("./librairies/middlewares/rate.limit.middleware");
 const error_middleware_1 = require("./librairies/middlewares/error.middleware");
 function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -51,13 +53,18 @@ function startApp() {
         const loggerInit = logger_config_1.LoggerConfig.get();
         try {
             const databaseInit = yield mongoose_config_1.MongooseConfig.get();
+            // Json configuration
             app.use(express_1.default.json());
+            // CORS middleware
+            app.use(cors_middleware_1.corsMiddleware);
+            // Rate limiting middleware
+            app.use(rate_limit_middleware_1.rateLimiterMiddleware);
             // API documentation
             app.use("/api/docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerDocs));
             // Authentication routes
             app.use("/api/auth", (0, auth_route_1.default)(router));
             // Error handling middleware
-            app.use(error_middleware_1.errorHandler);
+            app.use(error_middleware_1.errorHandlerMiddleware);
             app.listen(port, () => {
                 databaseInit.mongoose;
                 loggerInit.logger.info(`Mimo app listening on port http://localhost:${port}.`);

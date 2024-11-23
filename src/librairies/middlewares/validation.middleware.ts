@@ -3,7 +3,7 @@ import { plainToInstance } from "class-transformer";
 import { Request, Response, NextFunction } from "express";
 import { ApiResponse } from "../controllers/api.response";
 
-export function validateDtoMiddleware(dtoClass: any) {
+export const validateDtoMiddleware = (dtoClass: any) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const dtoInstance = plainToInstance(dtoClass, req.body);
     const errors = await validate(dtoInstance);
@@ -22,4 +22,4 @@ export function validateDtoMiddleware(dtoClass: any) {
     }
     next();
   };
-}
+};
