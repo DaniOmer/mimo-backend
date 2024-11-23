@@ -1,15 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { Logger } from "winston";
 import { AuthService } from "../domain/auth.service";
-import { LoggerConfig } from "../../../config/logger/logger.config";
 import { Strategy } from "../domain/auth.factory";
 import BadRequestError from "../../../config/error/bad.request.config";
+import BaseController from "../../../librairies/controllers/base.controller";
 
-export class AuthController {
-  private logger: Logger;
-
+export class AuthController extends BaseController {
   constructor() {
-    this.logger = LoggerConfig.get().logger;
+    super();
   }
 
   async register(
