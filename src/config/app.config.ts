@@ -19,4 +19,8 @@ export const AppConfig = {
   server: {
     port: process.env.PORT || 3000,
   },
+  jwt: {
+    secret: process.env.JWT_SECRET_CURRENT,
+    expiresIn: "7d",
+  },
 };

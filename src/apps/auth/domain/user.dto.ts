@@ -46,3 +46,13 @@ export class UserCreateDTO {
   @IsBoolean()
   readonly isTermsOfSale!: boolean;
 }
+
+export class AuthenticateDTO {
+  @IsNotEmpty()
+  @IsEmail()
+  readonly email!: string;
+
+  @IsNotEmpty()
+  @MinLength(8, { message: "Password must be at least 8 characters long" })
+  readonly password!: string;
+}

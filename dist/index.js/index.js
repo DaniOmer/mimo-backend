@@ -51,6 +51,7 @@ function startApp() {
         const loggerInit = logger_config_1.LoggerConfig.get();
         try {
             const databaseInit = yield mongoose_config_1.MongooseConfig.get();
+            console.log(process.env.JWT_SECRET_CURRENT);
             app.use(express_1.default.json());
             // API documentation
             app.use("/api/docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerDocs));
