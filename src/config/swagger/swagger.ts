@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import swaggerJsDoc from "swagger-jsdoc";
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ export const swaggerOptions = {
       },
     },
     paths: {
-      "/api/users": {
+      "/api/auth/register": {
         get: {
           summary: "Get all users",
           responses: {
@@ -26,6 +27,24 @@ export const swaggerOptions = {
                 "application/json": {
                   schema: {
                     type: "array",
+                    items: {
+                      $ref: "#/components/schemas/User",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          summary: "Create a new user",
+          responses: {
+            "200": {
+              description: "Create a new user",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
                     items: {
                       $ref: "#/components/schemas/User",
                     },
@@ -82,17 +101,25 @@ export const swaggerOptions = {
         User: {
           type: "object",
           properties: {
-            id: {
+            _id: {
               type: "string",
               description: "The auto-generated id of the user",
             },
-            name: {
+            firstName: {
               type: "string",
-              description: "The user's name",
+              description: "The user's first name",
+            },
+            lastName: {
+              type: "string",
+              description: "The user's last name",
             },
             email: {
               type: "string",
               description: "The user's email",
+            },
+            password: {
+              type: "string",
+              description: "The user's password",
             },
             avatar: {
               type: "string",
@@ -158,3 +185,5 @@ export const swaggerOptions = {
   },
   apis: ["./src/apps/**/api/*.ts"],
 };
+
+export const swaggerDocs = swaggerJsDoc(swaggerOptions);
