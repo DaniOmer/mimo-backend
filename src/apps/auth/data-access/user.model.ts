@@ -11,7 +11,7 @@ const userSchema = new Schema<IUser>(
     role: { type: String, enum: Object.values(Role), default: Role.User },
     isTermsOfSale: { type: Boolean, default: false },
   },
-  { timestamps: true, collection: "users" }
+  { timestamps: true, collection: "users", versionKey: false }
 );
 
 export const UserModel = model<IUser>("User", userSchema);

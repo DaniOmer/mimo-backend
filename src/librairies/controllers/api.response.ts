@@ -14,6 +14,21 @@ export class ApiResponse {
     });
   }
 
+  static successWithToken(
+    res: Response,
+    message: string,
+    data: any,
+    token: string,
+    status = 200
+  ): void {
+    res.status(status).json({
+      success: true,
+      message,
+      token,
+      data,
+    });
+  }
+
   static error(
     res: Response,
     message: string,

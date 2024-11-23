@@ -1,6 +1,6 @@
-import { UserResponse } from "./auth.service";
+import { UserCreateResponse, UserLoginResponse } from "./auth.service";
 
 export interface AuthStrategy {
-  register(data: any): Promise<UserResponse>;
-  authenticate(data: any): Promise<UserResponse>;
+  register(data: any): Promise<UserCreateResponse>;
+  authenticate(data: any): Promise<UserLoginResponse>;
 }

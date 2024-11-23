@@ -1,12 +1,13 @@
 import { AuthStrategy } from "./auth.strategy";
-import { IUser } from "../data-access/user.interface";
 import { UserRepository } from "../data-access/user.repository";
 import { SecurityUtils } from "../../../utils/security.utils";
 import BadRequestError from "../../../config/error/bad.request.config";
-
-export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
-export type UserAuthenticate = Pick<IUser, "email" | "password">;
-export type UserResponse = Omit<IUser, "password">;
+import {
+  UserCreate,
+  UserCreateResponse,
+  UserLogin,
+  UserLoginResponse,
+} from "./auth.service";
 
 export class BasicAuthStrategy implements AuthStrategy {
   readonly userRepository: UserRepository;
@@ -15,7 +16,7 @@ export class BasicAuthStrategy implements AuthStrategy {
     this.userRepository = new UserRepository();
   }
 
-  async register(userData: UserCreate): Promise<UserResponse> {
+  async register(userData: UserCreate): Promise<UserCreateResponse> {
     const existingUser = await this.userRepository.getByEmail(userData.email);
     if (existingUser) {
       throw new BadRequestError({
@@ -35,7 +36,7 @@ export class BasicAuthStrategy implements AuthStrategy {
     return userObject;
   }
 
-  async authenticate(userData: UserAuthenticate): Promise<UserResponse> {
+  async authenticate(userData: UserLogin): Promise<UserLoginResponse> {
     const user = await this.userRepository.getByEmail(userData.email);
     if (!user) {
       throw new BadRequestError({
@@ -53,18 +54,18 @@ export class BasicAuthStrategy implements AuthStrategy {
 
     if (!isPasswordValid) {
       throw new BadRequestError({
-        message: "Invalid password",
-        context: { authentication: "Invalid password" },
+        message: "Invalid credentials",
+        context: { authentication: "Invalid credentials" },
         logging: true,
       });
     }
     const token = await SecurityUtils.generateToken(user._id);
+    const { _id, password, updatedAt, ...userToDisplay } = user.toObject();
     const userObject = {
-      ...user.toObject(),
+      ...userToDisplay,
       token,
     };
 
-    delete userObject.password;
     return userObject;
   }
 }
