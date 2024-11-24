@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { ProductController } from "./product.controller";
-import { validateDtoMiddleware } from "../../../librairies/middlewares/validation.middleware";
-import { ProductCreateDTO } from "../domain/product.dto";
+import { validateDtoMiddleware, validateIdMiddleware } from "../../../librairies/middlewares/";
+import { ProductCreateDTO, 
+  ProductService
+ } from "../domain/";
 
 const productController = new ProductController();
 
@@ -96,7 +98,9 @@ export default (router: Router): Router => {
    *       404:
    *         description: Product not found
    */
-  router.get("/:id", productController.getProductById.bind(productController));
+  router.get("/:id",
+    validateIdMiddleware("Product"),
+     productController.getProductById.bind(productController));
 
   /**
    * @swagger
@@ -136,7 +140,12 @@ export default (router: Router): Router => {
    *       404:
    *         description: Product not found
    */
-  router.put("/:id", productController.updateProduct.bind(productController));
+  router.put(
+    "/:id",
+    validateIdMiddleware("Product"),
+    validateDtoMiddleware(ProductCreateDTO),
+    productController.updateProduct.bind(productController)
+  );
 
   /**
    * @swagger
@@ -157,7 +166,11 @@ export default (router: Router): Router => {
    *       404:
    *         description: Product not found
    */
-  router.delete("/:id", productController.deleteProduct.bind(productController));
+  router.delete(
+    "/:id",
+    validateIdMiddleware("Product"),
+    productController.deleteProduct.bind(productController)
+  );
 
   return router;
 };
