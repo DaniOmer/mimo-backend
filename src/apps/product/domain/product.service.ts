@@ -4,7 +4,7 @@ import { IProduct } from "../data-access/product.interface";
 
 export class ProductService extends BaseService<IProduct> {
   constructor() {
-    super(new ProductRepository());
+    super(new ProductRepository(), "Product");
   }
 
 }
