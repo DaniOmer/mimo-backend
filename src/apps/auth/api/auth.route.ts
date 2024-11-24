@@ -49,5 +49,6 @@ export default (router: Router) => {
     validateDtoMiddleware(UserLoginDTO),
     authController.login.bind(authController)
   );
+
   return router;
 };
