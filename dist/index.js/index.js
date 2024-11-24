@@ -42,6 +42,7 @@ const swagger_1 = require("./config/swagger/swagger");
 const logger_config_1 = require("./config/logger/logger.config");
 const mongoose_config_1 = require("./config/mongoose/mongoose.config");
 const auth_route_1 = __importDefault(require("./apps/auth/api/auth.route"));
+const user_route_1 = __importDefault(require("./apps/auth/api/user.route"));
 const cors_middleware_1 = require("./librairies/middlewares/cors.middleware");
 const rate_limit_middleware_1 = require("./librairies/middlewares/rate.limit.middleware");
 const error_middleware_1 = require("./librairies/middlewares/error.middleware");
@@ -63,6 +64,8 @@ function startApp() {
             app.use("/api/docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerDocs));
             // Authentication routes
             app.use("/api/auth", (0, auth_route_1.default)(router));
+            // User routes
+            app.use("/api/users", (0, user_route_1.default)(router));
             // Error handling middleware
             app.use(error_middleware_1.errorHandlerMiddleware);
             app.listen(port, () => {
