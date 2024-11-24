@@ -12,19 +12,27 @@ export class ProductService {
     return this.productRepository.create(data);
   }
 
-  async listProducts(): Promise<IProduct[]> {
-    return this.productRepository.findAll();
+  async getAllProducts(): Promise<IProduct[]> {
+    return this.productRepository.getAll(); 
   }
 
   async getProductById(productId: string): Promise<IProduct | null> {
-    return this.productRepository.findById(productId);
+    const product = await this.productRepository.getById(productId); 
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    return product;
   }
 
   async updateProduct(productId: string, updates: Partial<IProduct>): Promise<IProduct | null> {
-    return this.productRepository.update(productId, updates);
+    const product = await this.productRepository.updateById(productId, updates); 
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    return product;
   }
 
   async deleteProduct(productId: string): Promise<void> {
-    await this.productRepository.delete(productId);
+    await this.productRepository.deleteById(productId); 
   }
 }

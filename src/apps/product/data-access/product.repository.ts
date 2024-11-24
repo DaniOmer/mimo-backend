@@ -1,25 +1,10 @@
-import {  IProduct } from "./product.interface";
+import { IProduct } from "./product.interface";
 import { ProductModel } from "./product.model";
+import { MongooseRepository } from "../../../librairies/repositories/mongoose/mongoose.repository";
 
-
-export class ProductRepository {
-  async create(data: Partial<IProduct>): Promise<IProduct> {
-    return ProductModel.create(data);
+export class ProductRepository extends MongooseRepository<IProduct> {
+  constructor() {
+    super(ProductModel); 
   }
 
-  async findAll(): Promise<IProduct[]> {
-    return ProductModel.find().exec();
-  }
-
-  async findById(productId: string): Promise<IProduct | null> {
-    return ProductModel.findById(productId).exec();
-  }
-
-  async update(productId: string, updates: Partial<IProduct>): Promise<IProduct | null> {
-    return ProductModel.findByIdAndUpdate(productId, updates, { new: true }).exec();
-  }
-
-  async delete(productId: string): Promise<void> {
-    await ProductModel.findByIdAndDelete(productId).exec();
-  }
 }

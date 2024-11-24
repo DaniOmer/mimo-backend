@@ -66,7 +66,7 @@ router.post(
  *               items:
  *                 $ref: '#/components/schemas/Product'
  */
-router.get("/", productController.listProducts.bind(productController));
+router.get("/", productController.getAllProducts.bind(productController));
 
 /**
  * @swagger

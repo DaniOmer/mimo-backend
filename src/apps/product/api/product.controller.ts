@@ -18,22 +18,17 @@ export class ProductController {
     }
   }
 
-  async listProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getAllProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const products = await this.productService.listProducts();
+      const products = await this.productService.getAllProducts();
       ApiResponse.success(res, "Products retrieved successfully", products, 200);
     } catch (error) {
-      next(error);
-    }
+      next(error);}
   }
 
   async getProductById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const product = await this.productService.getProductById(req.params.id);
-      if (!product) {
-        ApiResponse.error(res, "Product not found", 404);
-        return;
-      }
       ApiResponse.success(res, "Product retrieved successfully", product, 200);
     } catch (error) {
       next(error);
@@ -43,10 +38,6 @@ export class ProductController {
   async updateProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const updatedProduct = await this.productService.updateProduct(req.params.id, req.body);
-      if (!updatedProduct) {
-        ApiResponse.error(res, "Product not found", 404);
-        return;
-      }
       ApiResponse.success(res, "Product updated successfully", updatedProduct, 200);
     } catch (error) {
       next(error);
@@ -55,11 +46,6 @@ export class ProductController {
 
   async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const product = await this.productService.getProductById(req.params.id);
-      if (!product) {
-        ApiResponse.error(res, "Product not found", 404);
-        return;
-      }
       await this.productService.deleteProduct(req.params.id);
       ApiResponse.success(res, "Product deleted successfully", null, 204);
     } catch (error) {
