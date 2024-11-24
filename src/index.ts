@@ -1,6 +1,5 @@
 import express, { Express, Router } from "express";
 import swaggerUi from "swagger-ui-express";
-
 import { AppConfig } from "./config/app.config";
 import { swaggerDocs } from "./config/swagger/swagger";
 import { LoggerConfig } from "./config/logger/logger.config";
@@ -9,6 +8,8 @@ import authRoute from "./apps/auth/api/auth.route";
 import { corsMiddleware } from "./librairies/middlewares/cors.middleware";
 import { rateLimiterMiddleware } from "./librairies/middlewares/rate.limit.middleware";
 import { errorHandlerMiddleware } from "./librairies/middlewares/error.middleware";
+import productRoutes from "./apps/product/api/product.route";
+
 
 async function startApp() {
   const app: Express = express();
@@ -33,6 +34,9 @@ async function startApp() {
 
     // Authentication routes
     app.use("/api/auth", authRoute(router));
+
+
+    app.use("/api/products", productRoutes);
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);
