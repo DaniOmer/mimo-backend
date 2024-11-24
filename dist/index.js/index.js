@@ -64,7 +64,7 @@ function startApp() {
             app.use("/api/docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerDocs));
             // Authentication routes
             app.use("/api/auth", (0, auth_route_1.default)(router));
-            app.use("/api/products", product_route_1.default);
+            app.use("/api/products", (0, product_route_1.default)(router));
             // Error handling middleware
             app.use(error_middleware_1.errorHandlerMiddleware);
             app.listen(port, () => {

@@ -36,7 +36,7 @@ async function startApp() {
     app.use("/api/auth", authRoute(router));
 
 
-    app.use("/api/products", productRoutes);
+    app.use("/api/products", productRoutes(router));
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);
