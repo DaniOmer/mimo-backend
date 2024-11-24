@@ -63,4 +63,15 @@ export class AuthController extends BaseController {
       next(error);
     }
   }
+
+  async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const authService = new AuthService("basic"); 
+      const users = await authService.getAllUsers(); 
+      this.logger.info(`Fetched ${users.length} users`); 
+      ApiResponse.success(res, "Users fetched successfully", users); 
+    } catch (error: any) {
+      next(error); 
+    }
+  }
 }
