@@ -50,26 +50,5 @@ export default (router: Router) => {
     authController.login.bind(authController)
   );
 
-  /**
-   * @swagger
-   * /api/users:
-   *   get:
-   *     summary: Get all users
-   *     tags: [Users]
-   *     responses:
-   *       200:
-   *         description: List all users
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: array
-   *               items:
-   *                 $ref: '#/components/schemas/User'
-   */
-  router.get(
-    "/users",
-    authController.getAllUsers.bind(authController)
-  );
-  
   return router;
 };
