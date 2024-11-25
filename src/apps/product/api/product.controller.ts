@@ -11,7 +11,7 @@ export class ProductController {
 
   async createProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const newProduct = await this.productService.create(req.body);
+      const newProduct = await this.productService.createProduct(req.body);
       ApiResponse.success(res, "Product created successfully", newProduct, 201);
     } catch (error) {
       next(error);
@@ -20,7 +20,7 @@ export class ProductController {
 
   async getAllProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const products = await this.productService.getAll();
+      const products = await this.productService.getAllProducts();
       ApiResponse.success(res, "Products retrieved successfully", products, 200);
     } catch (error) {
       next(error);
@@ -29,7 +29,7 @@ export class ProductController {
 
   async getProductById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const product = await this.productService.getById(req.params.id);
+      const product = await this.productService.getProductById(req.params.id);
       ApiResponse.success(res, "Product retrieved successfully", product, 200);
     } catch (error) {
       next(error);
@@ -40,7 +40,7 @@ export class ProductController {
     try {
       const productId = req.params.id;
       const updates = req.body;
-      const updatedProduct = await this.productService.updateById(productId, updates);
+      const updatedProduct = await this.productService.updateProductById(productId, updates);
       ApiResponse.success(res, "Product updated successfully", updatedProduct, 200);
     } catch (error) {
       next(error);
@@ -50,7 +50,7 @@ export class ProductController {
   async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const productId = req.params.id;
-      await this.productService.deleteById(productId);
+      await this.productService.deleteProductById(productId);
       ApiResponse.success(res, "Product deleted successfully", null, 204);
     } catch (error) {
       next(error);
