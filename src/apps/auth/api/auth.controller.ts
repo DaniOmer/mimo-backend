@@ -22,7 +22,6 @@ export class AuthController extends BaseController {
 
     try {
       if (!strategy || !this.validStrategies.includes(strategy as Strategy)) {
-        console.log("Invalid strategy: " + strategy);
         throw new BadRequestError({
           message: "Invalid authentication strategy",
           context: { strategy: `AuthStrategy` },
