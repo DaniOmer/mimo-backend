@@ -34,4 +34,21 @@ export class UserController extends BaseController {
     }
 }
 
+async updateUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const updatedUser = await this.userService.updateUserById(id, updateData);
+
+    if (!updatedUser) {
+      return ApiResponse.error(res, "User not found", 404, { userId: id });
+    }
+
+    ApiResponse.success(res, "User updated successfully", updatedUser);
+  } catch (error) {
+    next(error);
+  }
+}
+
 }

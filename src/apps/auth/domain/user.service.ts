@@ -27,5 +27,16 @@ export class UserService {
     return userWithoutPassword as UserResponse;
   }
 
-  
+  async updateUserById(
+    id: string,
+    updateData: Partial<IUser>
+  ): Promise<UserResponse | null> {
+    const updatedUser = await this.userRepository.updateById(id, updateData);
+    if (!updatedUser) {
+      return null; 
+    }
+    const { password, ...userWithoutPassword } = updatedUser.toObject();
+    return userWithoutPassword as UserResponse;
+  }
+
 }
