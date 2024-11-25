@@ -38,5 +38,9 @@ export class UserService {
     const { password, ...userWithoutPassword } = updatedUser.toObject();
     return userWithoutPassword as UserResponse;
   }
-
+  
+  async deleteUserById(id: string): Promise<boolean> {
+    const deletedUser = await this.userRepository.deleteById(id);
+    return !!deletedUser; 
+  }
 }

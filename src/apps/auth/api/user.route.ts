@@ -89,5 +89,28 @@ export default (router: Router) => {
    */
   router.put("/:id", userController.updateUserById.bind(userController));
 
+  /**
+   * @swagger
+   * /api/users/{id}:
+   *   delete:
+   *     summary: Delete a user by ID
+   *     tags: [Users]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: User ID
+   *     responses:
+   *       204:
+   *         description: User deleted successfully
+   *       404:
+   *         description: User not found
+   */
+  router.delete(
+    "/:id",
+    userController.deleteUserById.bind(userController)
+  );
   return router;
 };

@@ -51,4 +51,19 @@ async updateUserById(req: Request, res: Response, next: NextFunction): Promise<v
   }
 }
 
+async deleteUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { id } = req.params; 
+    const isDeleted = await this.userService.deleteUserById(id);
+
+    if (!isDeleted) {
+      return ApiResponse.error(res, "User not found", 404);
+    }
+
+    this.logger.info(`User with ID ${id} deleted successfully`);
+    ApiResponse.success(res, "User deleted successfully", null, 204);
+  } catch (error) {
+    next(error); 
+  }
+}
 }
