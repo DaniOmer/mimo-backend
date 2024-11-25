@@ -7,6 +7,11 @@ export enum Role {
   Manager = "manager",
 }
 
+export enum AuthType {
+  Basic = "basic",
+  Social = "social",
+}
+
 export interface IUser extends Timestamps, Document {
   _id: string;
   firstName: string;
@@ -16,4 +21,5 @@ export interface IUser extends Timestamps, Document {
   avatar?: string;
   role: Role;
   isTermsOfSale: boolean;
+  authType: AuthType;
 }
