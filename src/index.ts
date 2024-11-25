@@ -11,7 +11,6 @@ import { rateLimiterMiddleware } from "./librairies/middlewares/rate.limit.middl
 import { errorHandlerMiddleware } from "./librairies/middlewares/error.middleware";
 import productRoutes from "./apps/product/api/product.route";
 
-
 async function startApp() {
   const app: Express = express();
   const port = AppConfig.server.port;
@@ -37,7 +36,7 @@ async function startApp() {
     app.use("/api/auth", authRoute(router));
 
     // Product routes
-    app.use("/api/products", productRoutes(router));
+    app.use("/api/products", productRoutes);
 
     // User routes
     app.use("/api/users", userRoute(router));
