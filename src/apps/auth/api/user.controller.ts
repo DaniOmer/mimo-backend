@@ -20,4 +20,18 @@ export class UserController extends BaseController {
       next(error); 
     }
   }
+
+  async getUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const { id } = req.params;
+        const user = await this.userService.getUserById(id);
+        if (!user) {
+          return ApiResponse.error(res, "User not found", 404, { userId: id });
+        }
+        ApiResponse.success(res, "User fetched successfully", user);
+    } catch (error) {
+        next(error); 
+    }
+}
+
 }

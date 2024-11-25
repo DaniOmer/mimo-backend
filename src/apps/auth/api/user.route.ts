@@ -25,5 +25,30 @@ export default (router: Router) => {
     userController.getAllUsers.bind(userController)
   );
 
+  /**
+   * @swagger
+   * /api/users/{id}:
+   *   get:
+   *     summary: Get user by id
+   *     tags: [Users]
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: User id
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Get user by id
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/User'
+   *       404:
+   *         description: User not found
+   */
+  router.get("/:id", userController.getUserById.bind(userController));
+
   return router;
 };
