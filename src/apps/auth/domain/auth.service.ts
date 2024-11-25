@@ -1,8 +1,11 @@
 import { IUser } from "../data-access/user.interface";
 import { AuthStrategyFactory, Strategy } from "./auth.factory";
 import { AuthStrategy } from "./auth.strategy";
-import { UserRepository } from "../data-access/user.repository";
+import UserRepository from "../data-access/user.repository";
+import { IToken, TokenType } from "../data-access/token.interface";
+import TokenService from "./token.service";
 import BadRequestError from "../../../config/error/bad.request.config";
+import { AppConfig } from "../../../config/app.config";
 
 export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
 export type UserLogin = Pick<IUser, "email" | "password" | "updatedAt">;
@@ -15,10 +18,12 @@ export type UserLoginResponse = UserCreateResponse & {
 export class AuthService {
   private authStrategy: AuthStrategy;
   private userRepository: UserRepository;
+  private tokenService: TokenService;
 
   constructor(strategy: Strategy) {
     this.authStrategy = AuthStrategyFactory.create(strategy);
     this.userRepository = new UserRepository();
+    this.tokenService = new TokenService();
   }
 
   async register(userData: UserCreate) {
@@ -29,7 +34,7 @@ export class AuthService {
     return this.authStrategy.authenticate(userData);
   }
 
-  async sendResetPasswordEmail(email: string): Promise<boolean> {
+  async sendPasswordResetEmail(email: string): Promise<IToken> {
     const user = await this.userRepository.getByEmail(email);
     if (!user) {
       throw new BadRequestError({
@@ -42,15 +47,21 @@ export class AuthService {
     if (user.authType !== "basic") {
       throw new BadRequestError({
         message: "Bad Request",
-        context: { authentication: "Reset password feature" },
+        context: { authentication: "Reset password not available" },
         logging: true,
       });
     }
+
+    const forgotPasswordToken = await this.tokenService.createToken(
+      user,
+      TokenType.PasswordReset
+    );
+    const resetPasswordLink = `${AppConfig.client.url}/auth/reset-password?token=${forgotPasswordToken.hash}`;
 
     // Implement sending reset password email logic here
     // Example: const emailSent = await sendEmail(user.email, "Reset Password", resetPasswordLink);
 
     // return emailSent
-    return true;
+    return forgotPasswordToken;
   }
 }

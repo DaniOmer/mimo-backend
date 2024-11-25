@@ -42,10 +42,11 @@ const swagger_1 = require("./config/swagger/swagger");
 const logger_config_1 = require("./config/logger/logger.config");
 const mongoose_config_1 = require("./config/mongoose/mongoose.config");
 const auth_route_1 = __importDefault(require("./apps/auth/api/auth.route"));
+const user_route_1 = __importDefault(require("./apps/auth/api/user.route"));
+const product_route_1 = __importDefault(require("./apps/product/api/product.route"));
 const cors_middleware_1 = require("./librairies/middlewares/cors.middleware");
 const rate_limit_middleware_1 = require("./librairies/middlewares/rate.limit.middleware");
 const error_middleware_1 = require("./librairies/middlewares/error.middleware");
-const product_route_1 = __importDefault(require("./apps/product/api/product.route"));
 function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
@@ -63,8 +64,11 @@ function startApp() {
             // Rate limiting middleware
             app.use(rate_limit_middleware_1.rateLimiterMiddleware);
             // Authentication routes
-            app.use("/api/auth", (0, auth_route_1.default)(router));
-            app.use("/api/products", (0, product_route_1.default)(router));
+            app.use("/api/auth", auth_route_1.default);
+            // Product routes
+            app.use("/api/products", product_route_1.default);
+            // User routes
+            app.use("/api/users", user_route_1.default);
             // Error handling middleware
             app.use(error_middleware_1.errorHandlerMiddleware);
             app.listen(port, () => {

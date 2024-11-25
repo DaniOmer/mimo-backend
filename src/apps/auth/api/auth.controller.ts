@@ -75,9 +75,9 @@ export class AuthController extends BaseController {
 
     try {
       const authService = new AuthService("basic");
-      const success = await authService.sendResetPasswordEmail(email);
+      const success = await authService.sendPasswordResetEmail(email);
       this.logger.info(`Reset password email sent to: ${email}`);
-      ApiResponse.success(res, "Reset password email sent successfully");
+      ApiResponse.success(res, "Reset password email sent successfully", null);
     } catch (error: any) {
       next(error);
     }

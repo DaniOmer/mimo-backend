@@ -1,6 +1,6 @@
 import BadRequestError from "../../config/error/bad.request.config";
 
-export class BaseService<T> {
+export class BaseService {
   private entityName: string;
 
   constructor(entityName: string) {

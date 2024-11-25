@@ -2,7 +2,7 @@ import { IUser } from "./user.interface";
 import { UserModel } from "./user.model";
 import { MongooseRepository } from "../../../librairies/repositories/mongoose/mongoose.repository";
 
-export class UserRepository extends MongooseRepository<IUser> {
+export default class UserRepository extends MongooseRepository<IUser> {
   constructor() {
     super(UserModel);
   }
@@ -14,5 +14,4 @@ export class UserRepository extends MongooseRepository<IUser> {
     }
     return user;
   }
-
 }

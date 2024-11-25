@@ -1,5 +1,5 @@
 import { AuthStrategy } from "./auth.strategy";
-import { UserRepository } from "../data-access/user.repository";
+import UserRepository from "../data-access/user.repository";
 import { SecurityUtils } from "../../../utils/security.utils";
 import BadRequestError from "../../../config/error/bad.request.config";
 import {
