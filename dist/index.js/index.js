@@ -56,12 +56,12 @@ function startApp() {
             const databaseInit = yield mongoose_config_1.MongooseConfig.get();
             // Json configuration
             app.use(express_1.default.json());
+            // API documentation
+            app.use("/api/docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerDocs));
             // CORS middleware
             app.use(cors_middleware_1.corsMiddleware);
             // Rate limiting middleware
             app.use(rate_limit_middleware_1.rateLimiterMiddleware);
-            // API documentation
-            app.use("/api/docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerDocs));
             // Authentication routes
             app.use("/api/auth", (0, auth_route_1.default)(router));
             app.use("/api/products", (0, product_route_1.default)(router));

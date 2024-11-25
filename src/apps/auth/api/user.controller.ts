@@ -8,16 +8,20 @@ export class UserController extends BaseController {
 
   constructor() {
     super();
-    this.userService = new UserService(); 
+    this.userService = new UserService();
   }
 
-  async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getAllUsers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const users = await this.userService.getAllUsers(); 
-      this.logger.info(`Fetched ${users.length} users`); 
-      ApiResponse.success(res, "Users fetched successfully", users); 
+      const users = await this.userService.getAllUsers();
+      this.logger.info(`Fetched ${users.length} users`);
+      ApiResponse.success(res, "Users fetched successfully", users);
     } catch (error: any) {
-      next(error); 
+      next(error);
     }
   }
 }

@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import swaggerJsDoc from "swagger-jsdoc";
 
+import { authSwaggerDocs } from "../../apps/auth/api/auth.swagger.docs";
+
 dotenv.config();
 
 export const swaggerOptions = {
@@ -17,88 +19,46 @@ export const swaggerOptions = {
       },
     },
     paths: {
-      "/api/auth/register": {
-        get: {
-          summary: "Get all users",
-          responses: {
-            "200": {
-              description: "A list of users",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "array",
-                    items: {
-                      $ref: "#/components/schemas/User",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        post: {
-          summary: "Create a new user",
-          responses: {
-            "200": {
-              description: "Create a new user",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "object",
-                    items: {
-                      $ref: "#/components/schemas/User",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      "/api/products": {
-        get: {
-          summary: "Get all products",
-          responses: {
-            "200": {
-              description: "A list of products",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "array",
-                    items: {
-                      $ref: "#/components/schemas/Product",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      "/api/payments": {
-        get: {
-          summary: "Get all payments",
-          responses: {
-            "200": {
-              description: "A list of payments",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "array",
-                    items: {
-                      $ref: "#/components/schemas/Payment",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      ...authSwaggerDocs,
     },
     components: {
       schemas: {
-        User: {
+        UserCreate: {
+          type: "object",
+          properties: {
+            firstName: {
+              type: "string",
+              description: "The user's first name",
+            },
+            lastName: {
+              type: "string",
+              description: "The user's last name",
+            },
+            email: {
+              type: "string",
+              description: "The user's email",
+            },
+            password: {
+              type: "string",
+              description: "The user's password",
+            },
+            avatar: {
+              type: "string",
+              description: "URL of the user's avatar",
+            },
+            role: {
+              type: "string",
+              enum: ["User", "Admin"],
+              description: "The user's role",
+            },
+            isTermsOfSale: {
+              type: "boolean",
+              description: "Whether the user has agreed to the terms of sale",
+            },
+          },
+          required: ["firstName", "lastName", "email", "password"],
+        },
+        UserResponse: {
           type: "object",
           properties: {
             _id: {
@@ -125,55 +85,17 @@ export const swaggerOptions = {
               type: "string",
               description: "URL of the user's avatar",
             },
-          },
-          required: ["name", "email"],
-        },
-        Product: {
-          type: "object",
-          properties: {
-            id: {
+            role: {
               type: "string",
-              description: "The auto-generated id of the product",
+              enum: ["User", "Admin"],
+              description: "The user's role",
             },
-            title: {
-              type: "string",
-              description: "The title of the product",
-            },
-            price: {
-              type: "number",
-              format: "float",
-              description: "The price of the product",
-            },
-            description: {
-              type: "string",
-              description: "A detailed description of the product",
+            isTermsOfSale: {
+              type: "boolean",
+              description: "Whether the user has agreed to the terms of sale",
             },
           },
-          required: ["title", "price"],
-        },
-        Payment: {
-          type: "object",
-          properties: {
-            id: {
-              type: "string",
-              description: "The auto-generated id of the payment",
-            },
-            amount: {
-              type: "number",
-              format: "float",
-              description: "The amount paid",
-            },
-            userId: {
-              type: "string",
-              description: "The id of the user who made the payment",
-            },
-            status: {
-              type: "string",
-              description:
-                "The status of the payment (e.g., completed, pending)",
-            },
-          },
-          required: ["amount", "userId", "status"],
+          required: ["firstName", "lastName", "email", "password"],
         },
       },
     },

@@ -41,8 +41,8 @@ export class BasicAuthStrategy implements AuthStrategy {
     if (!user) {
       throw new BadRequestError({
         code: 404,
-        message: "User not found",
-        context: { authentication: "User not found" },
+        message: "Invalid credentials",
+        context: { authentication: "Invalid credentials" },
         logging: true,
       });
     }
@@ -59,7 +59,7 @@ export class BasicAuthStrategy implements AuthStrategy {
         logging: true,
       });
     }
-    const token = await SecurityUtils.generateToken(user._id);
+    const token = await SecurityUtils.generateJWTToken(user._id);
     const { _id, password, updatedAt, ...userToDisplay } = user.toObject();
     const userObject = {
       ...userToDisplay,
