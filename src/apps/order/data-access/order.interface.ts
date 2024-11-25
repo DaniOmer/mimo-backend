@@ -3,6 +3,7 @@ import { Timestamps } from "../../../librairies/types/timestamps.interface";
 
 export enum OrderStatus {
   Pending = "pending",
+  Paid = "paid",
   Shipped = "shipped",
   Delivered = "delivered",
   Canceled = "canceled",

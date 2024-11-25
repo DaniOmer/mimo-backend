@@ -26,6 +26,7 @@ const orderSchema = new Schema<IOrder>(
   {
     timestamps: true,
     collection: "orders",
+    versionKey: false
   }
 );
 

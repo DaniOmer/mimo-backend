@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { OrderService } from "../domain/order.service";
 import { ApiResponse } from "../../../librairies/controllers/api.response";
+import BaseController from "../../../librairies/controllers/base.controller";
 
-export class OrderController {
+export class OrderController extends BaseController {
   private orderService: OrderService;
 
   constructor() {
+    super();
     this.orderService = new OrderService();
   }
 
