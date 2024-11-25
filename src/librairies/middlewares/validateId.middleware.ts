@@ -15,14 +15,8 @@ export const validateIdMiddleware =
 
       if (!isValidObjectId(id)) {
         throw new BadRequestError({
-          message: `Invalid ${entityName} ID format`,
+          message: `${entityName} Not found for ID: ${id}`,
           code: 400,
-          context: {
-            id,
-            entity: entityName,
-            operation: "validateId",
-            timestamp: new Date().toISOString(),
-          },
         });
       }
 
