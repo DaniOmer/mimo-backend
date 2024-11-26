@@ -71,31 +71,30 @@ export class AuthService {
   }
 
   async confirmPasswordReset(data: ResetPasswordData): Promise<IUser> {
-    const tokenUser = await this.tokenService.validateToken(
+    const userToken = await this.tokenService.validateToken(
       data.token,
       TokenType.PasswordReset
     );
 
-    const user = await this.userRepository.getById(tokenUser.toString());
-    if (!user) {
+    const existingUser = await this.userRepository.getById(
+      userToken.toString()
+    );
+
+    if (!existingUser) {
       throw new BadRequestError({
         logging: true,
-        context: { token: "User not found" },
+        context: { reset_password_confirm: "User not found" },
       });
     }
 
     const newPassword = await SecurityUtils.hashPassword(data.password);
-    const updatedUser = await this.userRepository.updateById(
-      tokenUser.toString(),
-      {
-        password: newPassword,
-      }
-    );
+    existingUser.password = newPassword;
+    const updatedUser = await existingUser.save();
 
     if (!updatedUser) {
       throw new BadRequestError({
         logging: true,
-        context: { token: "Failed to update password" },
+        context: { reset_password_confirm: "Failed to update password" },
       });
     }
     return updatedUser;

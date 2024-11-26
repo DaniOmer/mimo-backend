@@ -7,7 +7,7 @@ export default class TokenRepository extends MongooseRepository<IToken> {
     super(TokenModel);
   }
 
-  async getByhash(token: string): Promise<IToken | null> {
+  async getByHash(token: string): Promise<IToken | null> {
     return this.model.findOne({ hash: token }).exec();
   }
 }
