@@ -39,7 +39,7 @@ async function startApp() {
     app.use("/api/products", productRoutes);
 
     // User routes
-    app.use("/api/users", userRoute(router));
+    app.use("/api/users", userRoute);
 
 
     // Error handling middleware
