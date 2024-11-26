@@ -68,7 +68,7 @@ function startApp() {
             // Product routes
             app.use("/api/products", product_route_1.default);
             // User routes
-            app.use("/api/users", (0, user_route_1.default)(router));
+            app.use("/api/users", user_route_1.default);
             // Error handling middleware
             app.use(error_middleware_1.errorHandlerMiddleware);
             app.listen(port, () => {
