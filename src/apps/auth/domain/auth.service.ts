@@ -6,10 +6,15 @@ import { IToken, TokenType } from "../data-access/token.interface";
 import TokenService from "./token.service";
 import BadRequestError from "../../../config/error/bad.request.config";
 import { AppConfig } from "../../../config/app.config";
+import { SecurityUtils } from "../../../utils/security.utils";
 
 export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
 export type UserLogin = Pick<IUser, "email" | "password" | "updatedAt">;
 export type UserCreateResponse = Omit<IUser, "id" | "password" | "updatedAt">;
+export type ResetPasswordData = {
+  password: string;
+  token: string;
+};
 
 export type UserLoginResponse = UserCreateResponse & {
   token: string;
@@ -34,7 +39,7 @@ export class AuthService {
     return this.authStrategy.authenticate(userData);
   }
 
-  async sendPasswordResetEmail(email: string): Promise<IToken> {
+  async requestPassswordReset(email: string): Promise<IToken> {
     const user = await this.userRepository.getByEmail(email);
     if (!user) {
       throw new BadRequestError({
@@ -63,5 +68,36 @@ export class AuthService {
 
     // return emailSent
     return forgotPasswordToken;
+  }
+
+  async confirmPasswordReset(data: ResetPasswordData): Promise<IUser> {
+    const tokenUser = await this.tokenService.validateToken(
+      data.token,
+      TokenType.PasswordReset
+    );
+
+    const user = await this.userRepository.getById(tokenUser.toString());
+    if (!user) {
+      throw new BadRequestError({
+        logging: true,
+        context: { token: "User not found" },
+      });
+    }
+
+    const newPassword = await SecurityUtils.hashPassword(data.password);
+    const updatedUser = await this.userRepository.updateById(
+      tokenUser.toString(),
+      {
+        password: newPassword,
+      }
+    );
+
+    if (!updatedUser) {
+      throw new BadRequestError({
+        logging: true,
+        context: { token: "Failed to update password" },
+      });
+    }
+    return updatedUser;
   }
 }

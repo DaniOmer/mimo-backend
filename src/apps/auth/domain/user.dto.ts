@@ -9,6 +9,7 @@ import {
   IsUrl,
   IsOptional,
   Matches,
+  IsString,
 } from "class-validator";
 
 import { Role, AuthType } from "../data-access/user.interface";
@@ -64,8 +65,19 @@ export class UserLoginDTO {
   readonly password!: string;
 }
 
-export class ForgotPasswordDTO {
+export class RequestPasswordResetDTO {
   @IsNotEmpty()
   @IsEmail()
   readonly email!: string;
+}
+
+export class ConfirmPasswordResetDTO {
+  @IsNotEmpty()
+  @MinLength(12, { message: "Password must be at least 12 characters long" })
+  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}$/)
+  readonly password!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly token!: string;
 }

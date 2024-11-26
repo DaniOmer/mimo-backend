@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
   UserRegisterDTO,
   UserLoginDTO,
-  ForgotPasswordDTO,
+  RequestPasswordResetDTO,
+  ConfirmPasswordResetDTO,
 } from "../domain/user.dto";
 import { AuthController } from "./auth.controller";
 import { validateDtoMiddleware } from "../../../librairies/middlewares/validation.middleware";
@@ -24,8 +25,14 @@ router.post(
 
 router.post(
   "/password/reset-request",
-  validateDtoMiddleware(ForgotPasswordDTO),
-  authController.forgotPassword.bind(authController)
+  validateDtoMiddleware(RequestPasswordResetDTO),
+  authController.requestPassswordReset.bind(authController)
+);
+
+router.post(
+  "/password/reset-confirm",
+  validateDtoMiddleware(ConfirmPasswordResetDTO),
+  authController.confirmPasswordReset.bind(authController)
 );
 
 export default router;
