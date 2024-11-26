@@ -93,6 +93,7 @@ router.get("/:id", validateIdMiddleware("User"), userController.getUserById.bind
 router.put(
   "/:id",
   validateIdMiddleware("User"), 
+  validateDtoMiddleware(UserRegisterDTO),
   userController.updateUser.bind(userController) 
 );
 export default router;
