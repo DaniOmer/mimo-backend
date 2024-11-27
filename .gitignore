@@ -26,4 +26,5 @@ logs
 .env
 
 # Build files
-dist
+dist/
+dist/index.js
