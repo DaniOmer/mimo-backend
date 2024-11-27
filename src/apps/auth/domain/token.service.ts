@@ -38,4 +38,31 @@ export default class TokenService extends BaseService {
     });
     return token;
   }
+
+  async validateToken(
+    hash: string,
+    tokenType: TokenType
+  ): Promise<IUser | string> {
+    const existingToken = await this.tokenRepository.getByHash(hash);
+    if (!existingToken || existingToken.type !== tokenType) {
+      throw new BadRequestError({
+        logging: true,
+        context: { reset_password_token: "Invalid token" },
+      });
+    }
+
+    if (
+      existingToken.expiresAt.getTime() < Date.now() ||
+      existingToken.isDisabled
+    ) {
+      throw new BadRequestError({
+        logging: true,
+        context: { reset_password_token: "Token expired" },
+      });
+    }
+
+    existingToken.isDisabled = true;
+    const updateToken = await existingToken.save();
+    return updateToken.user;
+  }
 }

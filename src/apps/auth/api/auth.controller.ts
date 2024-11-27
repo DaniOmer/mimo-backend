@@ -65,7 +65,7 @@ export class AuthController extends BaseController {
     }
   }
 
-  async forgotPassword(
+  async requestPassswordReset(
     req: Request,
     res: Response,
     next: NextFunction
@@ -74,11 +74,34 @@ export class AuthController extends BaseController {
 
     try {
       const authService = new AuthService("basic");
-      const success = await authService.sendPasswordResetEmail(email);
+      const success = await authService.requestPasswordReset(email);
       this.logger.info(`Reset password email sent to: ${email}`);
       ApiResponse.success(res, "Reset password email sent successfully", null);
     } catch (error: any) {
       next(error);
     }
   }
+
+  async confirmPasswordReset(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const authService = new AuthService("basic");
+      const updatedUser = await authService.confirmPasswordReset(req.body);
+      this.logger.info(
+        `Password updated successfully for user: ${updatedUser.email}`
+      );
+      ApiResponse.success(res, "Password updated successfully", null);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  async updatePassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {}
 }

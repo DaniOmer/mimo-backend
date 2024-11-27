@@ -14,4 +14,5 @@ export interface IToken extends Timestamps, Document {
   hash: string;
   type: TokenType;
   expiresAt: Date;
+  isDisabled: boolean;
 }
