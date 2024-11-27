@@ -47,6 +47,14 @@ export class UserService extends BaseService<IUser> {
   
   async deleteUserById(id: string): Promise<IUser> {
     const deletedUser = await this.repository.deleteById(id);
-    return this.validateDataExists(deletedUser, id);
+    
+    if (!deletedUser) {
+      throw new BadRequestError({
+        message: `User not found for ID: ${id}`,
+        code: 404,
+      });
+    }
+
+    return deletedUser;
   }
 }
