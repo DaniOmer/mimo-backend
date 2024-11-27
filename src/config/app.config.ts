@@ -35,4 +35,11 @@ export const AppConfig = {
   client: {
     url: process.env.CLIENT_URL,
   },
+  notification: {
+    email: {
+      brevoApiKey: process.env.BREVO_API_KEY,
+      fromEmail: process.env.BREVO_FROM_EMAIL,
+      fromName: process.env.BREVO_FROM_NAME,
+    },
+  },
 };

@@ -7,6 +7,7 @@ import TokenService from "./token.service";
 import BadRequestError from "../../../config/error/bad.request.config";
 import { AppConfig } from "../../../config/app.config";
 import { SecurityUtils } from "../../../utils/security.utils";
+import { BaseService } from "../../../librairies/services";
 
 export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
 export type UserLogin = Pick<IUser, "email" | "password" | "updatedAt">;
@@ -20,19 +21,34 @@ export type UserLoginResponse = UserCreateResponse & {
   token: string;
 };
 
-export class AuthService {
+export class AuthService extends BaseService {
   private authStrategy: AuthStrategy;
   private userRepository: UserRepository;
   private tokenService: TokenService;
 
   constructor(strategy: Strategy) {
+    super("Auth");
     this.authStrategy = AuthStrategyFactory.create(strategy);
     this.userRepository = new UserRepository();
     this.tokenService = new TokenService();
   }
 
   async register(userData: UserCreate) {
-    return this.authStrategy.register(userData);
+    const createdUser = await this.authStrategy.register(userData);
+    if (this.authStrategy.requestEmailValidation) {
+      const emailConfirmationLink =
+        await this.authStrategy.requestEmailValidation(createdUser);
+
+      await this.emailNotifier.send({
+        recipient: createdUser.email,
+        subject: "Welcome to Mimo!",
+        templateName: "confirmation-email.html",
+        params: {
+          confirmation_link: emailConfirmationLink,
+        },
+      });
+    }
+    return createdUser;
   }
 
   async login(userData: UserLogin): Promise<UserLoginResponse> {

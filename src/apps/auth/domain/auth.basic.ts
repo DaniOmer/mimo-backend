@@ -2,18 +2,24 @@ import { AuthStrategy } from "./auth.strategy";
 import UserRepository from "../data-access/user.repository";
 import { SecurityUtils } from "../../../utils/security.utils";
 import BadRequestError from "../../../config/error/bad.request.config";
+import { IUser } from "../data-access/user.interface";
+import TokenService from "./token.service";
 import {
   UserCreate,
   UserCreateResponse,
   UserLogin,
   UserLoginResponse,
 } from "./auth.service";
+import { TokenType } from "../data-access/token.interface";
+import { AppConfig } from "../../../config/app.config";
 
 export class BasicAuthStrategy implements AuthStrategy {
   readonly userRepository: UserRepository;
+  readonly tokenService: TokenService;
 
   constructor() {
     this.userRepository = new UserRepository();
+    this.tokenService = new TokenService();
   }
 
   async register(userData: UserCreate): Promise<UserCreateResponse> {
@@ -31,6 +37,7 @@ export class BasicAuthStrategy implements AuthStrategy {
       ...userData,
       password: hashedPassword,
     });
+
     const userObject = newUser.toObject();
     delete userObject.password;
     return userObject;
@@ -67,5 +74,15 @@ export class BasicAuthStrategy implements AuthStrategy {
     };
 
     return userObject;
+  }
+
+  async requestEmailValidation(user: IUser): Promise<string> {
+    const token = await this.tokenService.createToken(
+      user,
+      TokenType.Confirmation
+    );
+
+    const emailValidationLink = `${AppConfig.client.url}/auth/email-validation?token=${token.hash}`;
+    return emailValidationLink;
   }
 }
