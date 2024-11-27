@@ -60,8 +60,8 @@ export class UserController extends BaseController {
   ): Promise<void> {
     try {
       const { id } = req.params;
-      const deletedUser = await this.userService.deleteUserById(id);
-      ApiResponse.success(res, "User deleted successfully", deletedUser, 200);
+      await this.userService.deleteUserById(id);
+      ApiResponse.success(res, "User deleted successfully", null, 200);
     } catch (error) {
       next(error);
     }
