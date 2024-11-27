@@ -27,3 +27,4 @@ logs
 
 # Build files
 dist/
+dist/index.js
