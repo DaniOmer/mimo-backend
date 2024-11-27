@@ -45,11 +45,18 @@ export class BasicAuthStrategy implements AuthStrategy {
 
   async authenticate(userData: UserLogin): Promise<UserLoginResponse> {
     const user = await this.userRepository.getByEmail(userData.email);
-    if (!user) {
+    if (!user || user.isDisabled) {
       throw new BadRequestError({
         code: 404,
         message: "Invalid credentials",
         context: { authentication: "Invalid credentials" },
+        logging: true,
+      });
+    }
+
+    if (!user.isVerified) {
+      throw new BadRequestError({
+        message: "Email not verified",
         logging: true,
       });
     }
