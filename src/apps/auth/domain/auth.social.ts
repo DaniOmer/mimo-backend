@@ -1,4 +1,5 @@
 import { AuthStrategy } from "./auth.strategy";
+import BadRequestError from "../../../config/error/bad.request.config";
 
 export class SocialAuthStrategy implements AuthStrategy {
   async register(data: any): Promise<any> {

@@ -24,7 +24,8 @@ export class AuthController extends BaseController {
       if (!strategy || !this.validStrategies.includes(strategy as Strategy)) {
         throw new BadRequestError({
           message: "Invalid authentication strategy",
-          context: { strategy: "AuthStrategy" },
+          context: { strategy: `AuthStrategy` },
+          logging: true,
         });
       }
 
@@ -64,5 +65,20 @@ export class AuthController extends BaseController {
     }
   }
 
- 
+  async forgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const { email } = req.body;
+
+    try {
+      const authService = new AuthService("basic");
+      const success = await authService.sendPasswordResetEmail(email);
+      this.logger.info(`Reset password email sent to: ${email}`);
+      ApiResponse.success(res, "Reset password email sent successfully", null);
+    } catch (error: any) {
+      next(error);
+    }
+  }
 }

@@ -1,9 +1,9 @@
-import { UserRepository } from "../data-access/user.repository";
+import UserRepository from "../data-access/user.repository";
 import { IUser } from "../data-access/user.interface";
-import { BaseService } from "../../../librairies/services/base.service";
+import { BaseService } from "../../../librairies/services";
 import BadRequestError from "../../../config/error/bad.request.config";
 
-export class UserService extends BaseService<IUser> {
+export class UserService extends BaseService {
   private repository: UserRepository;
 
   constructor() {
@@ -13,7 +13,7 @@ export class UserService extends BaseService<IUser> {
 
   async getAllUsers(): Promise<Omit<IUser, "password">[]> {
     const users = await this.repository.getAll();
-    return users.map(user => {
+    return users.map((user) => {
       const { password, ...userWithoutPassword } = user.toObject();
       return userWithoutPassword;
     });
@@ -23,7 +23,7 @@ export class UserService extends BaseService<IUser> {
     const user = await this.repository.getById(id);
     if (!user) {
       throw new BadRequestError({
-        message: `User not found for ID: ${id}`,
+        message: "User not found",
         code: 404,
       });
     }
@@ -31,26 +31,29 @@ export class UserService extends BaseService<IUser> {
     return userWithoutPassword;
   }
 
-  async updateUserById(id: string,updateData: Partial<IUser>): Promise<Omit<IUser, "password">> {
+  async updateUserById(
+    id: string,
+    updateData: Partial<IUser>
+  ): Promise<Omit<IUser, "password">> {
     const updatedUser = await this.repository.updateById(id, updateData);
-  
+
     if (!updatedUser) {
       throw new BadRequestError({
-        message: `User not found for ID: ${id}`,
+        message: "User not found",
         code: 404,
       });
     }
-  
+
     const { password, ...userWithoutPassword } = updatedUser.toObject();
     return userWithoutPassword;
   }
-  
+
   async deleteUserById(id: string): Promise<IUser> {
     const deletedUser = await this.repository.deleteById(id);
-    
+
     if (!deletedUser) {
       throw new BadRequestError({
-        message: `User not found for ID: ${id}`,
+        message: "User not found",
         code: 404,
       });
     }

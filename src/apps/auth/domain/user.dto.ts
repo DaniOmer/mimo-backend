@@ -11,7 +11,7 @@ import {
   Matches,
 } from "class-validator";
 
-import { Role } from "../data-access/user.interface";
+import { Role, AuthType } from "../data-access/user.interface";
 
 export class UserRegisterDTO {
   @IsNotEmpty()
@@ -32,7 +32,7 @@ export class UserRegisterDTO {
 
   @IsNotEmpty()
   @MinLength(12, { message: "Password must be at least 12 characters long" })
-  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
+  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}$/)
   readonly password!: string;
 
   @IsOptional()
@@ -47,6 +47,10 @@ export class UserRegisterDTO {
   @IsOptional()
   @IsBoolean()
   readonly isTermsOfSale!: boolean;
+
+  @IsNotEmpty()
+  @IsEnum(AuthType)
+  readonly authType!: string;
 }
 
 export class UserLoginDTO {
@@ -56,6 +60,12 @@ export class UserLoginDTO {
 
   @IsNotEmpty()
   @MinLength(12, { message: "Password must be at least 12 characters long" })
-  @Matches("/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*W)(?!.* ).{8,16}$/")
+  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}$/)
   readonly password!: string;
+}
+
+export class ForgotPasswordDTO {
+  @IsNotEmpty()
+  @IsEmail()
+  readonly email!: string;
 }
