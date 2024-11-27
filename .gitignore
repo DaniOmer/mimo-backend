@@ -26,4 +26,4 @@ logs
 .env
 
 # Build files
-/dist
+dist/

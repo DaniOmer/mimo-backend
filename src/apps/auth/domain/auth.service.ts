@@ -2,7 +2,7 @@ import { IUser } from "../data-access/user.interface";
 import { AuthStrategyFactory, Strategy } from "./auth.factory";
 import { AuthStrategy } from "./auth.strategy";
 import UserRepository from "../data-access/user.repository";
-import { IToken, TokenType } from "../data-access/token.interface";
+import { TokenType } from "../data-access/token.interface";
 import TokenService from "./token.service";
 import BadRequestError from "../../../config/error/bad.request.config";
 import { AppConfig } from "../../../config/app.config";
@@ -12,6 +12,7 @@ import { BaseService } from "../../../librairies/services";
 export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
 export type UserLogin = Pick<IUser, "email" | "password" | "updatedAt">;
 export type UserCreateResponse = Omit<IUser, "id" | "password" | "updatedAt">;
+
 export type ResetPasswordData = {
   password: string;
   token: string;
@@ -34,13 +35,13 @@ export class AuthService extends BaseService {
   }
 
   async register(userData: UserCreate) {
-    const createdUser = await this.authStrategy.register(userData);
+    const createUserResponse = await this.authStrategy.register(userData);
     if (this.authStrategy.requestEmailValidation) {
       const emailConfirmationLink =
-        await this.authStrategy.requestEmailValidation(createdUser);
+        await this.authStrategy.requestEmailValidation(createUserResponse);
 
       await this.emailNotifier.send({
-        recipient: createdUser.email,
+        recipient: createUserResponse.email,
         subject: "Welcome to Mimo!",
         templateName: "confirmation-email.html",
         params: {
@@ -48,14 +49,48 @@ export class AuthService extends BaseService {
         },
       });
     }
-    return createdUser;
+    return createUserResponse;
   }
 
   async login(userData: UserLogin): Promise<UserLoginResponse> {
-    return this.authStrategy.authenticate(userData);
+    const loginUserResponse = await this.authStrategy.authenticate(userData);
+    return loginUserResponse;
   }
 
-  async requestPassswordReset(email: string): Promise<IToken> {
+  async confirmEmailRequest(hash: string): Promise<IUser> {
+    const tokenUser = await this.tokenService.validateTokenAndReturnUser(
+      hash,
+      TokenType.Confirmation
+    );
+
+    const user =
+      typeof tokenUser === "string"
+        ? await this.userRepository.getById(tokenUser)
+        : tokenUser;
+
+    if (!user) {
+      throw new BadRequestError({
+        message: "Invalid token",
+        context: { auth_email_confirmation: "Invalid token" },
+        logging: true,
+      });
+    }
+
+    const updatedUser = await this.userRepository.updateById(user._id, {
+      isVerified: true,
+    });
+
+    if (!updatedUser) {
+      throw new BadRequestError({
+        message: "Failed to confirm user email",
+        context: { auth_email_confirmation: "Failed to confirm email" },
+        logging: true,
+      });
+    }
+    return updatedUser;
+  }
+
+  async requestPassswordReset(email: string): Promise<string> {
     const user = await this.userRepository.getByEmail(email);
     if (!user) {
       throw new BadRequestError({
@@ -78,25 +113,21 @@ export class AuthService extends BaseService {
       TokenType.PasswordReset
     );
     const resetPasswordLink = `${AppConfig.client.url}/auth/reset-password?token=${forgotPasswordToken.hash}`;
-
-    // Implement sending reset password email logic here
-    // Example: const emailSent = await sendEmail(user.email, "Reset Password", resetPasswordLink);
-
-    // return emailSent
-    return forgotPasswordToken;
+    return resetPasswordLink;
   }
 
   async confirmPasswordReset(data: ResetPasswordData): Promise<IUser> {
-    const userToken = await this.tokenService.validateToken(
+    const tokenUser = await this.tokenService.validateTokenAndReturnUser(
       data.token,
       TokenType.PasswordReset
     );
 
-    const existingUser = await this.userRepository.getById(
-      userToken.toString()
-    );
+    const user =
+      typeof tokenUser === "string"
+        ? await this.userRepository.getById(tokenUser)
+        : tokenUser;
 
-    if (!existingUser) {
+    if (!user) {
       throw new BadRequestError({
         logging: true,
         context: { reset_password_confirm: "User not found" },
@@ -104,8 +135,9 @@ export class AuthService extends BaseService {
     }
 
     const newPassword = await SecurityUtils.hashPassword(data.password);
-    existingUser.password = newPassword;
-    const updatedUser = await existingUser.save();
+    const updatedUser = await this.userRepository.updateById(user._id, {
+      password: newPassword,
+    });
 
     if (!updatedUser) {
       throw new BadRequestError({

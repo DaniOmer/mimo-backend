@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   UserRegisterDTO,
   UserLoginDTO,
+  ConfirmEmailDTO,
   RequestPasswordResetDTO,
   ConfirmPasswordResetDTO,
 } from "../domain/user.dto";
@@ -21,6 +22,12 @@ router.post(
   "/login/:strategy",
   validateDtoMiddleware(UserLoginDTO),
   authController.login.bind(authController)
+);
+
+router.post(
+  "/email/confirm",
+  validateDtoMiddleware(ConfirmEmailDTO),
+  authController.requestEmailConfirmation.bind(authController)
 );
 
 router.post(

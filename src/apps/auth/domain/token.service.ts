@@ -39,7 +39,7 @@ export default class TokenService extends BaseService {
     return token;
   }
 
-  async validateToken(
+  async validateTokenAndReturnUser(
     hash: string,
     tokenType: TokenType
   ): Promise<IUser | string> {
@@ -61,8 +61,20 @@ export default class TokenService extends BaseService {
       });
     }
 
-    existingToken.isDisabled = true;
-    const updateToken = await existingToken.save();
-    return updateToken.user;
+    const updatedToken = await this.tokenRepository.updateById(
+      existingToken._id,
+      {
+        isDisabled: true,
+      }
+    );
+
+    if (!updatedToken) {
+      throw new BadRequestError({
+        logging: true,
+        context: { validate_token: "Failed to update token" },
+      });
+    }
+
+    return updatedToken.user;
   }
 }
