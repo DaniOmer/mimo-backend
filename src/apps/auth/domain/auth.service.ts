@@ -39,7 +39,7 @@ export class AuthService {
     return this.authStrategy.authenticate(userData);
   }
 
-  async requestPassswordReset(email: string): Promise<IToken> {
+  async requestPasswordReset(email: string): Promise<IToken> {
     const user = await this.userRepository.getByEmail(email);
     if (!user) {
       throw new BadRequestError({
