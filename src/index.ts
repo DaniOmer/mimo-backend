@@ -4,12 +4,13 @@ import { AppConfig } from "./config/app.config";
 import { swaggerDocs } from "./config/swagger/swagger";
 import { LoggerConfig } from "./config/logger/logger.config";
 import { MongooseConfig } from "./config/mongoose/mongoose.config";
-import authRouter from "./apps/auth/api/auth.route";
-import userRouter from "./apps/auth/api/user.route";
-import productRouter from "./apps/product/api/product.route";
 import { corsMiddleware } from "./librairies/middlewares/cors.middleware";
 import { rateLimiterMiddleware } from "./librairies/middlewares/rate.limit.middleware";
 import { errorHandlerMiddleware } from "./librairies/middlewares/error.middleware";
+import authRouter from "./apps/auth/api/auth.route";
+import userRouter from "./apps/auth/api/user.route";
+import productRouter from "./apps/product/api/product.route";
+import permissionRouter from "./apps/auth/api/permission.route";
 
 async function startApp() {
   const app: Express = express();
@@ -40,6 +41,9 @@ async function startApp() {
 
     // User routes
     app.use("/api/users", userRouter);
+
+    // Permission routes
+    app.use("/api/permissions", permissionRouter);
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);
