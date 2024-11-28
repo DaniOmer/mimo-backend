@@ -81,3 +81,9 @@ export class ConfirmPasswordResetDTO {
   @IsString()
   readonly token!: string;
 }
+
+export class ConfirmEmailDTO {
+  @IsNotEmpty()
+  @IsString()
+  readonly token!: string;
+}

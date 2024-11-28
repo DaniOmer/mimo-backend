@@ -21,5 +21,7 @@ export interface IUser extends Timestamps, Document {
   avatar?: string;
   role: Role;
   isTermsOfSale: boolean;
+  isVerified: boolean;
+  isDisabled: boolean;
   authType: AuthType;
 }

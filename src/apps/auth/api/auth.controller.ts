@@ -65,6 +65,21 @@ export class AuthController extends BaseController {
     }
   }
 
+  async requestEmailConfirmation(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { token } = req.body;
+      const authService = new AuthService("basic");
+      await authService.confirmEmailRequest(token);
+      ApiResponse.success(res, "Email successfully verified", null);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async requestPassswordReset(
     req: Request,
     res: Response,
@@ -74,8 +89,10 @@ export class AuthController extends BaseController {
 
     try {
       const authService = new AuthService("basic");
-      const success = await authService.requestPasswordReset(email);
-      this.logger.info(`Reset password email sent to: ${email}`);
+      const resetPasswordLink = await authService.requestPassswordReset(email);
+      this.logger.info(
+        `Reset password email sent to: ${email} - Reset link is ${resetPasswordLink}`
+      );
       ApiResponse.success(res, "Reset password email sent successfully", null);
     } catch (error: any) {
       next(error);
