@@ -14,6 +14,8 @@ import { AppConfig } from "../../../config/app.config";
 import RoleService from "./role.service";
 import { UserRegisterDTO } from "./user.dto";
 import { IRole } from "../data-access/role.interface";
+import { permission } from "process";
+import { IPermission } from "../data-access/permission.interface";
 
 export class BasicAuthStrategy implements AuthStrategy {
   readonly userRepository: UserRepository;
@@ -96,8 +98,27 @@ export class BasicAuthStrategy implements AuthStrategy {
     }
     const token = await SecurityUtils.generateJWTToken(user._id);
     const { _id, password, updatedAt, ...userToDisplay } = user.toObject();
+
+    const rolesWDate = userToDisplay.roles.map((role: IRole) => {
+      return {
+        _id: role._id.toString(),
+        name: role.name,
+      };
+    });
+
+    const permissionsWDate = userToDisplay.permissions.map(
+      (permission: IPermission) => {
+        return {
+          _id: permission._id.toString(),
+          name: permission.name,
+        };
+      }
+    );
+
     const userObject = {
       ...userToDisplay,
+      roles: rolesWDate,
+      permissions: permissionsWDate,
       token,
     };
 
