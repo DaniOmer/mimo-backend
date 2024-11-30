@@ -8,6 +8,7 @@ import BadRequestError from "../../../config/error/bad.request.config";
 import { AppConfig } from "../../../config/app.config";
 import { SecurityUtils } from "../../../utils/security.utils";
 import { BaseService } from "../../../librairies/services";
+import { UserRegisterDTO } from "./user.dto";
 
 export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
 export type UserLogin = Pick<IUser, "email" | "password" | "updatedAt">;
@@ -34,7 +35,7 @@ export class AuthService extends BaseService {
     this.tokenService = new TokenService();
   }
 
-  async register(userData: UserCreate) {
+  async register(userData: UserRegisterDTO) {
     const createUserResponse = await this.authStrategy.register(userData);
     if (this.authStrategy.requestEmailValidation) {
       const emailConfirmationLink =

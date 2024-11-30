@@ -1,4 +1,4 @@
-import { Document, ObjectId } from "mongoose";
+import { Document } from "mongoose";
 import { Timestamps } from "../../../librairies/types/timestamps.interface";
 import { IPermission } from "./permission.interface";
 

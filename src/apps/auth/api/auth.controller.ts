@@ -20,7 +20,7 @@ export class AuthController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     const { strategy } = req.params;
-    const userData = req.body;
+    const userData = this.dataToDtoInstance(req.body, UserRegisterDTO);
 
     try {
       if (!strategy || !this.validStrategies.includes(strategy as Strategy)) {

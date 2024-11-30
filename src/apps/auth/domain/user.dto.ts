@@ -42,8 +42,9 @@ export class UserRegisterDTO {
   @MaxLength(250)
   readonly avatar?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsArray()
+  @IsString({ each: true })
   roles!: string[];
 
   @IsOptional()

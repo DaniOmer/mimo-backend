@@ -5,7 +5,6 @@ import BadRequestError from "../../../config/error/bad.request.config";
 import { IUser } from "../data-access/user.interface";
 import TokenService from "./token.service";
 import {
-  UserCreate,
   UserCreateResponse,
   UserLogin,
   UserLoginResponse,
@@ -14,7 +13,6 @@ import { TokenType } from "../data-access/token.interface";
 import { AppConfig } from "../../../config/app.config";
 import RoleService from "./role.service";
 import { UserRegisterDTO } from "./user.dto";
-import { ObjectId } from "mongodb";
 import { IRole } from "../data-access/role.interface";
 
 export class BasicAuthStrategy implements AuthStrategy {
@@ -39,22 +37,20 @@ export class BasicAuthStrategy implements AuthStrategy {
     }
 
     const existingRoles: IRole[] = [];
-    if (userData.roles && userData.roles.length) {
-      const rolesPromises = userData.roles.map(async (roleName) => {
-        const role = await this.roleService.getRoleByName(roleName);
-        if (!role) {
-          throw new BadRequestError({
-            message: `Role ${roleName} not found`,
-            code: 400,
-            context: { field_validation: ["roles"] },
-            logging: true,
-          });
-        }
-        return role;
-      });
+    const rolesPromises = userData.roles.map(async (roleName) => {
+      const role = await this.roleService.getRoleByName(roleName);
+      if (!role) {
+        throw new BadRequestError({
+          message: `Role ${roleName} not found`,
+          code: 400,
+          context: { field_validation: ["roles"] },
+          logging: true,
+        });
+      }
+      return role;
+    });
 
-      existingRoles.push(...(await Promise.all(rolesPromises)));
-    }
+    existingRoles.push(...(await Promise.all(rolesPromises)));
 
     const hashedPassword = await SecurityUtils.hashPassword(userData.password);
     const newUser = await this.userRepository.create({

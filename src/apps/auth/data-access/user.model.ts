@@ -20,4 +20,20 @@ const userSchema = new Schema<IUser>(
   { timestamps: true, collection: "users", versionKey: false }
 );
 
+userSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    await this.populate("roles");
+
+    const permissions = [];
+    for (const role of this.roles as IRole[]) {
+      if (role.permissions && Array.isArray(role.permissions)) {
+        permissions.push(...role.permissions);
+      }
+    }
+
+    this.permissions = [...new Set(permissions)];
+  }
+  next();
+});
+
 export const UserModel = model<IUser>("User", userSchema);

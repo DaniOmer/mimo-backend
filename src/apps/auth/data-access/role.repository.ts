@@ -1,9 +1,6 @@
-import mongoose from "mongoose";
 import { RoleModel } from "./role.model";
 import { IRole } from "./role.interface";
-import { IPermission } from "./permission.interface";
 import { MongooseRepository } from "../../../librairies/repositories/mongoose/mongoose.repository";
-import BadRequestError from "../../../config/error/bad.request.config";
 
 export default class RoleRepository extends MongooseRepository<IRole> {
   constructor() {
