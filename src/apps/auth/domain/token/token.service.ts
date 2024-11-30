@@ -1,10 +1,10 @@
-import { BaseService } from "../../../librairies/services";
-import { IUser } from "../data-access/user.interface";
-import { IToken, TokenType } from "../data-access/token.interface";
-import { SecurityUtils } from "../../../utils/security.utils";
-import { AppConfig } from "../../../config/app.config";
-import TokenRepository from "../data-access/token.repository";
-import BadRequestError from "../../../config/error/bad.request.config";
+import { BaseService } from "../../../../librairies/services";
+import { IUser } from "../../data-access/user.interface";
+import { IToken, TokenType } from "../../data-access/token/token.interface";
+import { SecurityUtils } from "../../../../utils/security.utils";
+import { AppConfig } from "../../../../config/app.config";
+import TokenRepository from "../../data-access/token/token.repository";
+import BadRequestError from "../../../../config/error/bad.request.config";
 
 export default class TokenService extends BaseService {
   readonly tokenRepository: TokenRepository;

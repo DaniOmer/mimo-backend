@@ -1,7 +1,7 @@
-import UserRepository from "../data-access/user.repository";
-import { IUser } from "../data-access/user.interface";
-import { BaseService } from "../../../librairies/services";
-import BadRequestError from "../../../config/error/bad.request.config";
+import UserRepository from "../../data-access/user.repository";
+import { IUser } from "../../data-access/user.interface";
+import { BaseService } from "../../../../librairies/services";
+import BadRequestError from "../../../../config/error/bad.request.config";
 
 export class UserService extends BaseService {
   private repository: UserRepository;

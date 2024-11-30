@@ -7,3 +7,37 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+# services:
+#   mongodb:
+#     image: mongo
+#     command: --replSet rs0 --auth --bind_ip_all --port 27017 --keyFile /data/keyfile
+#     ports:
+#       - "27017:27017"
+#     environment:
+#       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+#       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
+#     volumes:
+#       - ./mongodb-keyfile:/data/keyfile:ro
+#     healthcheck:
+#       test: mongosh --eval 'db.runCommand("ping").ok' localhost:27017/test --quiet
+#       interval: 10s
+#       timeout: 5s
+#       retries: 10
+
+#   mongo-init:
+#     image: mongo
+#     restart: "no"
+#     depends_on:
+#       mongodb:
+#         condition: service_healthy
+#     command: >
+#       mongosh --host mongodb:27017 -u ${MONGODB_USERNAME} -p ${MONGODB_PASSWORD} --authenticationDatabase admin --eval '
+#       rs.initiate({
+#         _id: "rs0",
+#         members: [
+#           { _id: 0, host: "mongodb:27017" }
+#         ]
+#       })
+#       '

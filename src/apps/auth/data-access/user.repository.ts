@@ -8,7 +8,11 @@ export default class UserRepository extends MongooseRepository<IUser> {
   }
 
   async getByEmail(email: string): Promise<IUser | null> {
-    const user = this.model.findOne({ email }).exec();
+    const user = this.model
+      .findOne({ email })
+      .populate("roles")
+      .populate("permissions")
+      .exec();
     if (!user) {
       throw new Error("User not found");
     }

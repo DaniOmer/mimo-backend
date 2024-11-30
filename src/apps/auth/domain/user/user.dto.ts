@@ -10,9 +10,10 @@ import {
   IsOptional,
   Matches,
   IsString,
+  IsArray,
 } from "class-validator";
 
-import { Role, AuthType } from "../data-access/user.interface";
+import { AuthType } from "../../data-access/user.interface";
 
 export class UserRegisterDTO {
   @IsNotEmpty()
@@ -41,9 +42,10 @@ export class UserRegisterDTO {
   @MaxLength(250)
   readonly avatar?: string;
 
-  @IsOptional()
-  @IsEnum(Role)
-  readonly role!: Role;
+  @IsNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  roles!: string[];
 
   @IsOptional()
   @IsBoolean()
@@ -51,7 +53,7 @@ export class UserRegisterDTO {
 
   @IsNotEmpty()
   @IsEnum(AuthType)
-  readonly authType!: string;
+  readonly authType!: AuthType;
 }
 
 export class UserLoginDTO {
