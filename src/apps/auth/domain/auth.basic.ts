@@ -14,7 +14,6 @@ import { AppConfig } from "../../../config/app.config";
 import RoleService from "./role/role.service";
 import { UserRegisterDTO } from "./user/user.dto";
 import { IRole } from "../data-access/role/role.interface";
-import { permission } from "process";
 import { IPermission } from "../data-access/permission/permission.interface";
 
 export class BasicAuthStrategy implements AuthStrategy {
