@@ -67,6 +67,38 @@ export class BasicAuthStrategy implements AuthStrategy {
   }
 
   async authenticate(userData: UserLogin): Promise<UserLoginResponse> {
+    const user = await this.checkUserExistsAndValidate(userData);
+    const { _id, password, updatedAt, ...userToDisplay } = user?.toObject();
+    const rolesWDate = this.getRolesWithoutDate(userToDisplay.roles);
+    const permissionsWDate = this.getPermissionsWithoutDate(
+      userToDisplay.permissions
+    );
+
+    const token = await SecurityUtils.generateJWTToken({
+      id: user?._id.toString() as string,
+      roles: rolesWDate,
+      permissions: permissionsWDate,
+    });
+
+    return {
+      ...userToDisplay,
+      roles: rolesWDate,
+      permissions: permissionsWDate,
+      token,
+    };
+  }
+
+  async requestEmailValidation(user: IUser): Promise<string> {
+    const token = await this.tokenService.createToken(
+      user,
+      TokenType.Confirmation
+    );
+
+    const emailValidationLink = `${AppConfig.client.url}/auth/email-validation?token=${token.hash}`;
+    return emailValidationLink;
+  }
+
+  async checkUserExistsAndValidate(userData: UserLogin): Promise<IUser | null> {
     const user = await this.userRepository.getByEmail(userData.email);
     if (!user || user.isDisabled) {
       throw new BadRequestError({
@@ -97,45 +129,24 @@ export class BasicAuthStrategy implements AuthStrategy {
       });
     }
 
-    const { _id, password, updatedAt, ...userToDisplay } = user.toObject();
-    const rolesWDate = userToDisplay.roles.map((role: IRole) => {
+    return user;
+  }
+
+  getRolesWithoutDate(roles: IRole[]): object[] {
+    return roles.map((role: IRole) => {
       return {
         _id: role._id.toString(),
         name: role.name,
       };
     });
-    const permissionsWDate = userToDisplay.permissions.map(
-      (permission: IPermission) => {
-        return {
-          _id: permission._id.toString(),
-          name: permission.name,
-        };
-      }
-    );
-
-    const token = await SecurityUtils.generateJWTToken({
-      id: user._id.toString(),
-      roles: rolesWDate,
-      permissions: permissionsWDate,
-    });
-
-    const userObject = {
-      ...userToDisplay,
-      roles: rolesWDate,
-      permissions: permissionsWDate,
-      token,
-    };
-
-    return userObject;
   }
 
-  async requestEmailValidation(user: IUser): Promise<string> {
-    const token = await this.tokenService.createToken(
-      user,
-      TokenType.Confirmation
-    );
-
-    const emailValidationLink = `${AppConfig.client.url}/auth/email-validation?token=${token.hash}`;
-    return emailValidationLink;
+  getPermissionsWithoutDate(permissions: IPermission[]): object[] {
+    return permissions.map((permission: IPermission) => {
+      return {
+        _id: permission._id.toString(),
+        name: permission.name,
+      };
+    });
   }
 }
