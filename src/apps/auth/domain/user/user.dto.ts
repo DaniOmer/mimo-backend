@@ -13,7 +13,7 @@ import {
   IsArray,
 } from "class-validator";
 
-import { AuthType } from "../data-access/user.interface";
+import { AuthType } from "../../data-access/user.interface";
 
 export class UserRegisterDTO {
   @IsNotEmpty()

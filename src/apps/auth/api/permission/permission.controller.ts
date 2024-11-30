@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import BaseController from "../../../librairies/controllers/base.controller";
-import PermissionService from "../domain/permission.service";
-import { ApiResponse } from "../../../librairies/controllers/api.response";
+import BaseController from "../../../../librairies/controllers/base.controller";
+import PermissionService from "../../domain/permission/permission.service";
+import { ApiResponse } from "../../../../librairies/controllers/api.response";
 
 export class PermissionController extends BaseController {
   readonly permissionService: PermissionService;

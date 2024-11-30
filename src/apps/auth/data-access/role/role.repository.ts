@@ -1,6 +1,6 @@
 import { RoleModel } from "./role.model";
 import { IRole } from "./role.interface";
-import { MongooseRepository } from "../../../librairies/repositories/mongoose/mongoose.repository";
+import { MongooseRepository } from "../../../../librairies/repositories/mongoose/mongoose.repository";
 
 export default class RoleRepository extends MongooseRepository<IRole> {
   constructor() {

@@ -1,6 +1,6 @@
-import { BaseService } from "../../../librairies/services";
-import { IPermission } from "../data-access/permission.interface";
-import PermissionRepository from "../data-access/permission.repository";
+import { BaseService } from "../../../../librairies/services";
+import { IPermission } from "../../data-access/permission/permission.interface";
+import PermissionRepository from "../../data-access/permission/permission.repository";
 
 type PermissionCreate = Omit<IPermission, "_id" | "createdAt" | "updatedAt">;
 

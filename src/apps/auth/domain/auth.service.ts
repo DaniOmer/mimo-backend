@@ -2,13 +2,13 @@ import { IUser } from "../data-access/user.interface";
 import { AuthStrategyFactory, Strategy } from "./auth.factory";
 import { AuthStrategy } from "./auth.strategy";
 import UserRepository from "../data-access/user.repository";
-import { TokenType } from "../data-access/token.interface";
-import TokenService from "./token.service";
+import { TokenType } from "../data-access/token/token.interface";
+import TokenService from "./token/token.service";
 import BadRequestError from "../../../config/error/bad.request.config";
 import { AppConfig } from "../../../config/app.config";
 import { SecurityUtils } from "../../../utils/security.utils";
 import { BaseService } from "../../../librairies/services";
-import { UserRegisterDTO } from "./user.dto";
+import { UserRegisterDTO } from "./user/user.dto";
 
 export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
 export type UserLogin = Pick<IUser, "email" | "password" | "updatedAt">;

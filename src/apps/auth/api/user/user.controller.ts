@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { UserService } from "../domain/user.service";
-import { ApiResponse } from "../../../librairies/controllers/api.response";
-import BaseController from "../../../librairies/controllers/base.controller";
+import { UserService } from "../../domain/user/user.service";
+import { ApiResponse } from "../../../../librairies/controllers/api.response";
+import BaseController from "../../../../librairies/controllers/base.controller";
 
 export class UserController extends BaseController {
   private userService: UserService;

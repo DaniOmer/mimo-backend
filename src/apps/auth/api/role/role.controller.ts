@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import BaseController from "../../../librairies/controllers/base.controller";
-import RoleService from "../domain/role.service";
-import { ApiResponse } from "../../../librairies/controllers/api.response";
+import BaseController from "../../../../librairies/controllers/base.controller";
+import RoleService from "../../domain/role/role.service";
+import { ApiResponse } from "../../../../librairies/controllers/api.response";
 
 export default class RoleController extends BaseController {
   private roleService: RoleService;

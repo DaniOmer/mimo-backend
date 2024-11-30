@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
-import { IUser } from "./user.interface";
-import { Timestamps } from "../../../librairies/types/timestamps.interface";
+import { IUser } from "../user.interface";
+import { Timestamps } from "../../../../librairies/types/timestamps.interface";
 
 export enum TokenType {
   Confirmation = "confirmation",

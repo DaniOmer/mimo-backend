@@ -22,10 +22,10 @@ const cors_middleware_1 = require("./librairies/middlewares/cors.middleware");
 const rate_limit_middleware_1 = require("./librairies/middlewares/rate.limit.middleware");
 const error_middleware_1 = require("./librairies/middlewares/error.middleware");
 const auth_route_1 = __importDefault(require("./apps/auth/api/auth.route"));
-const user_route_1 = __importDefault(require("./apps/auth/api/user.route"));
+const user_route_1 = __importDefault(require("./apps/auth/api/user/user.route"));
 const product_route_1 = __importDefault(require("./apps/product/api/product.route"));
-const permission_route_1 = __importDefault(require("./apps/auth/api/permission.route"));
-const role_route_1 = __importDefault(require("./apps/auth/api/role.route"));
+const permission_route_1 = __importDefault(require("./apps/auth/api/permission/permission.route"));
+const role_route_1 = __importDefault(require("./apps/auth/api/role/role.route"));
 function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();

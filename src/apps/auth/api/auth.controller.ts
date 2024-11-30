@@ -4,7 +4,7 @@ import { Strategy } from "../domain/auth.factory";
 import BadRequestError from "../../../config/error/bad.request.config";
 import BaseController from "../../../librairies/controllers/base.controller";
 import { ApiResponse } from "../../../librairies/controllers/api.response";
-import { UserRegisterDTO } from "../domain/user.dto";
+import { UserRegisterDTO } from "../domain/user/user.dto";
 
 export class AuthController extends BaseController {
   readonly validStrategies: Strategy[];

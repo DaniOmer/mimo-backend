@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { PermissionController } from "./permission.controller";
-import { PermissionCreateDTO } from "../domain/permission.dto";
-import { validateDtoMiddleware } from "../../../librairies/middlewares";
+import { PermissionCreateDTO } from "../../domain/permission/permission.dto";
+import { validateDtoMiddleware } from "../../../../librairies/middlewares";
 
 const router = Router();
 const permissionController = new PermissionController();

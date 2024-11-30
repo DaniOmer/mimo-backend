@@ -1,9 +1,8 @@
-import { permission } from "process";
-import { BaseService } from "../../../librairies/services";
-import { IRole } from "../data-access/role.interface";
-import RoleRepository from "../data-access/role.repository";
-import PermissionService from "./permission.service";
-import BadRequestError from "../../../config/error/bad.request.config";
+import { BaseService } from "../../../../librairies/services";
+import { IRole } from "../../data-access/role/role.interface";
+import RoleRepository from "../../data-access/role/role.repository";
+import PermissionService from "../permission/permission.service";
+import BadRequestError from "../../../../config/error/bad.request.config";
 import { ObjectId } from "mongoose";
 
 type RoleCreate = Omit<IRole, "_id" | "createdAt" | "updatedAt">;

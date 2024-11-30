@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { AuthType, IUser } from "./user.interface";
-import { IRole } from "./role.interface";
-import { IPermission } from "./permission.interface";
+import { IRole } from "./role/role.interface";
+import { IPermission } from "./permission/permission.interface";
 
 const userSchema = new Schema<IUser>(
   {

@@ -3,19 +3,19 @@ import UserRepository from "../data-access/user.repository";
 import { SecurityUtils } from "../../../utils/security.utils";
 import BadRequestError from "../../../config/error/bad.request.config";
 import { IUser } from "../data-access/user.interface";
-import TokenService from "./token.service";
+import TokenService from "./token/token.service";
 import {
   UserCreateResponse,
   UserLogin,
   UserLoginResponse,
 } from "./auth.service";
-import { TokenType } from "../data-access/token.interface";
+import { TokenType } from "../data-access/token/token.interface";
 import { AppConfig } from "../../../config/app.config";
-import RoleService from "./role.service";
-import { UserRegisterDTO } from "./user.dto";
-import { IRole } from "../data-access/role.interface";
+import RoleService from "./role/role.service";
+import { UserRegisterDTO } from "./user/user.dto";
+import { IRole } from "../data-access/role/role.interface";
 import { permission } from "process";
-import { IPermission } from "../data-access/permission.interface";
+import { IPermission } from "../data-access/permission/permission.interface";
 
 export class BasicAuthStrategy implements AuthStrategy {
   readonly userRepository: UserRepository;
@@ -96,16 +96,14 @@ export class BasicAuthStrategy implements AuthStrategy {
         logging: true,
       });
     }
-    const token = await SecurityUtils.generateJWTToken(user._id);
-    const { _id, password, updatedAt, ...userToDisplay } = user.toObject();
 
+    const { _id, password, updatedAt, ...userToDisplay } = user.toObject();
     const rolesWDate = userToDisplay.roles.map((role: IRole) => {
       return {
         _id: role._id.toString(),
         name: role.name,
       };
     });
-
     const permissionsWDate = userToDisplay.permissions.map(
       (permission: IPermission) => {
         return {
@@ -114,6 +112,12 @@ export class BasicAuthStrategy implements AuthStrategy {
         };
       }
     );
+
+    const token = await SecurityUtils.generateJWTToken({
+      id: user._id.toString(),
+      roles: rolesWDate,
+      permissions: permissionsWDate,
+    });
 
     const userObject = {
       ...userToDisplay,
