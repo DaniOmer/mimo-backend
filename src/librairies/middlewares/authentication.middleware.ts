@@ -21,6 +21,7 @@ export const authenticateMiddleware = async (
       throw new BadRequestError({
         message: "No authorization header provided",
         code: 401,
+        logging: true,
       });
     }
 
@@ -29,6 +30,7 @@ export const authenticateMiddleware = async (
       throw new BadRequestError({
         message: "Unauthorized: Token missing",
         code: 401,
+        logging: true,
       });
     }
     const decodedToken = await SecurityUtils.verifyJWTToken(token);

@@ -16,6 +16,14 @@ import { UserRegisterDTO } from "./user/user.dto";
 import { IRole } from "../data-access/role/role.interface";
 import { IPermission } from "../data-access/permission/permission.interface";
 
+export type UserRole = {
+  _id: string;
+  name: string;
+};
+export type UserPermission = {
+  _id: string;
+  name: string;
+};
 export class BasicAuthStrategy implements AuthStrategy {
   readonly userRepository: UserRepository;
   readonly tokenService: TokenService;
@@ -131,7 +139,7 @@ export class BasicAuthStrategy implements AuthStrategy {
     return user;
   }
 
-  getRolesWithoutDate(roles: IRole[]): object[] {
+  getRolesWithoutDate(roles: IRole[]): UserRole[] {
     return roles.map((role: IRole) => {
       return {
         _id: role._id.toString(),
@@ -140,7 +148,7 @@ export class BasicAuthStrategy implements AuthStrategy {
     });
   }
 
-  getPermissionsWithoutDate(permissions: IPermission[]): object[] {
+  getPermissionsWithoutDate(permissions: IPermission[]): UserPermission[] {
     return permissions.map((permission: IPermission) => {
       return {
         _id: permission._id.toString(),
