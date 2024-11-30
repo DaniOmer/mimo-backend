@@ -5,11 +5,15 @@ import PermissionRepository from "../data-access/permission.repository";
 type PermissionCreate = Omit<IPermission, "_id" | "createdAt" | "updatedAt">;
 
 export default class PermissionService extends BaseService {
-  readonly permissionRepository: PermissionRepository;
+  private readonly permissionRepository: PermissionRepository;
 
   constructor() {
     super("Permission");
     this.permissionRepository = new PermissionRepository();
+  }
+
+  async getAllPermissions(): Promise<IPermission[]> {
+    return await this.permissionRepository.getAll();
   }
 
   async createPermission(permission: PermissionCreate): Promise<IPermission> {

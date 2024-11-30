@@ -5,10 +5,5 @@ import { IPermission } from "./permission.interface";
 export interface IRole extends Timestamps, Document {
   _id: string;
   name: string;
-}
-
-export interface RoleHasPermission extends Timestamps, Document {
-  _id: string;
-  role: ObjectId | IRole;
-  permission: ObjectId | IPermission;
+  permissions: IPermission[];
 }

@@ -1,4 +1,4 @@
-import { Model, Document } from "mongoose";
+import mongoose, { Model, Document } from "mongoose";
 import { IRepository } from "../repository.interface";
 
 export class MongooseRepository<T extends Document> implements IRepository<T> {
@@ -16,9 +16,9 @@ export class MongooseRepository<T extends Document> implements IRepository<T> {
     return this.model.find().exec();
   }
 
-  async create(item: Partial<T>): Promise<T> {
+  async create(item: Partial<T>, session?: mongoose.ClientSession): Promise<T> {
     const newItem = new this.model(item);
-    return newItem.save();
+    return session ? newItem.save({ session }) : newItem.save();
   }
 
   async updateById(id: string, update: Partial<T>): Promise<T | null> {

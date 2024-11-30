@@ -1,4 +1,4 @@
-import express, { Express, Router } from "express";
+import express, { Express } from "express";
 import swaggerUi from "swagger-ui-express";
 import { AppConfig } from "./config/app.config";
 import { swaggerDocs } from "./config/swagger/swagger";
@@ -11,11 +11,11 @@ import authRouter from "./apps/auth/api/auth.route";
 import userRouter from "./apps/auth/api/user.route";
 import productRouter from "./apps/product/api/product.route";
 import permissionRouter from "./apps/auth/api/permission.route";
+import roleRouter from "./apps/auth/api/role.route";
 
 async function startApp() {
   const app: Express = express();
   const port = AppConfig.server.port;
-  const router: Router = Router();
   const loggerInit = LoggerConfig.get();
 
   try {
@@ -44,6 +44,9 @@ async function startApp() {
 
     // Permission routes
     app.use("/api/permissions", permissionRouter);
+
+    // Role routes
+    app.use("/api/roles", roleRouter);
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);

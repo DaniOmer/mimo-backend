@@ -3,7 +3,7 @@ import { IPermission } from "./permission.interface";
 
 export const schema = new Schema<IPermission>(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
   },
   { timestamps: true, collection: "permissions", versionKey: false }
 );
