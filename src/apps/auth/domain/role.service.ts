@@ -18,6 +18,20 @@ export default class RoleService extends BaseService {
     this.permissionService = new PermissionService();
   }
 
+  async getRoleByName(name: string): Promise<IRole> {
+    const role = await this.roleRepository.getByName(name);
+    if (!role) {
+      throw new BadRequestError({
+        message: "Role not found",
+        code: 404,
+        context: {
+          get_user_role: "Role with the given name does not exist",
+        },
+      });
+    }
+    return role;
+  }
+
   async createRole(
     role: RoleCreate,
     permissionIds?: ObjectId[]

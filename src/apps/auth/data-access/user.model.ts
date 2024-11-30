@@ -1,5 +1,7 @@
 import { Schema, model } from "mongoose";
-import { Role, AuthType, IUser } from "./user.interface";
+import { AuthType, IUser } from "./user.interface";
+import { IRole } from "./role.interface";
+import { IPermission } from "./permission.interface";
 
 const userSchema = new Schema<IUser>(
   {
@@ -8,7 +10,8 @@ const userSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     avatar: { type: String, required: false, default: null },
-    role: { type: String, enum: Object.values(Role), default: Role.User },
+    roles: [{ type: Schema.Types.ObjectId, ref: "Role", required: true }],
+    permissions: [{ type: Schema.Types.ObjectId, ref: "Permission" }],
     isTermsOfSale: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
     isDisabled: { type: Boolean, default: false },

@@ -1,11 +1,7 @@
 import { Document } from "mongoose";
 import { Timestamps } from "../../../librairies/types/timestamps.interface";
-
-export enum Role {
-  Admin = "admin",
-  User = "user",
-  Manager = "manager",
-}
+import { IRole } from "./role.interface";
+import { IPermission } from "./permission.interface";
 
 export enum AuthType {
   Basic = "basic",
@@ -19,7 +15,8 @@ export interface IUser extends Timestamps, Document {
   email: string;
   password: string;
   avatar?: string;
-  role: Role;
+  roles: IRole[];
+  permissions: IPermission[];
   isTermsOfSale: boolean;
   isVerified: boolean;
   isDisabled: boolean;
