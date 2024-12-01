@@ -13,9 +13,6 @@ export default class UserRepository extends MongooseRepository<IUser> {
       .populate("roles")
       .populate("permissions")
       .exec();
-    if (!user) {
-      throw new Error("User not found");
-    }
     return user;
   }
 }

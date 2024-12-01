@@ -6,4 +6,8 @@ export default class PermissionRepository extends MongooseRepository<IPermission
   constructor() {
     super(PermissionModel);
   }
+
+  async getByName(name: string): Promise<IPermission | null> {
+    return this.model.findOne({ name }).exec();
+  }
 }
