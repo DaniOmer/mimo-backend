@@ -7,7 +7,10 @@ import {
   ConfirmPasswordResetDTO,
 } from "../domain/user/user.dto";
 import { AuthController } from "./auth.controller";
-import { validateDtoMiddleware } from "../../../librairies/middlewares/validation.middleware";
+import {
+  validateDtoMiddleware,
+  authenticateMiddleware,
+} from "../../../librairies/middlewares";
 
 const authController = new AuthController();
 const router = Router();
@@ -20,6 +23,7 @@ router.post(
 
 router.post(
   "/login/:strategy",
+  authenticateMiddleware,
   validateDtoMiddleware(UserLoginDTO),
   authController.login.bind(authController)
 );
