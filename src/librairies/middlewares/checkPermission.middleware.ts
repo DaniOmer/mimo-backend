@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import BadRequestError from "../../config/error/bad.request.config";
+import { UserPermission } from "../../apps/auth/domain";
 
-import { UserRole } from "../../apps/auth/domain";
-
-export const checkRoleMiddleware =
-  (roles: string[]) => (req: Request, res: Response, next: NextFunction) => {
+export const checkPermissionMiddleware =
+  (perm: string) => (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = req.user;
       if (!user) {
@@ -15,11 +14,11 @@ export const checkRoleMiddleware =
         });
       }
 
-      const hasRole = user.roles.some((role: UserRole) =>
-        roles.includes(role.name)
-      );
-
-      if (!hasRole) {
+      if (
+        !user.permissions.some(
+          (permission: UserPermission) => permission.name === perm
+        )
+      ) {
         throw new BadRequestError({
           message: "Unauthorized access: Insufficient permissions",
           code: 403,
