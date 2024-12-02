@@ -1,54 +1,49 @@
 import { Router } from "express";
-import { UserRegisterDTO, UserLoginDTO } from "../domain/user.dto";
+import {
+  UserRegisterDTO,
+  UserLoginDTO,
+  ConfirmEmailDTO,
+  RequestPasswordResetDTO,
+  ConfirmPasswordResetDTO,
+} from "../domain/user/user.dto";
 import { AuthController } from "./auth.controller";
-import { validateDtoMiddleware } from "../../../librairies/middlewares/validation.middleware";
+import {
+  validateDtoMiddleware,
+  authenticateMiddleware,
+} from "../../../librairies/middlewares";
 
 const authController = new AuthController();
+const router = Router();
 
-export default (router: Router) => {
-  /**
-   * @swagger
-   * /api/users:
-   *   post:
-   *     summary: Register a user
-   *     tags: [Users]
-   *     responses:
-   *       201:
-   *         description: Register a user
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 $ref: '#/components/schemas/User'
-   */
-  router.post(
-    "/register/:strategy",
-    validateDtoMiddleware(UserRegisterDTO),
-    authController.register.bind(authController)
-  );
+router.post(
+  "/register/:strategy",
+  validateDtoMiddleware(UserRegisterDTO),
+  authController.register.bind(authController)
+);
 
-  /**
-   * @swagger
-   * /api/auth/login/{strategy}:
-   *   post:
-   *     summary: Authenticate a user
-   *     tags: [Users]
-   *     responses:
-   *       200:
-   *       description: Login a user
-   *       content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 $ref: '#/components/schemas/User'
-   */
-  router.post(
-    "/login/:strategy",
-    validateDtoMiddleware(UserLoginDTO),
-    authController.login.bind(authController)
-  );
+router.post(
+  "/login/:strategy",
+  authenticateMiddleware,
+  validateDtoMiddleware(UserLoginDTO),
+  authController.login.bind(authController)
+);
 
-  return router;
-};
+router.post(
+  "/email/confirm",
+  validateDtoMiddleware(ConfirmEmailDTO),
+  authController.requestEmailConfirmation.bind(authController)
+);
+
+router.post(
+  "/password/reset-request",
+  validateDtoMiddleware(RequestPasswordResetDTO),
+  authController.requestPassswordReset.bind(authController)
+);
+
+router.post(
+  "/password/reset-confirm",
+  validateDtoMiddleware(ConfirmPasswordResetDTO),
+  authController.confirmPasswordReset.bind(authController)
+);
+
+export default router;

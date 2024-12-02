@@ -4,6 +4,12 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { AppConfig } from "../config/app.config";
 import BadRequestError from "../config/error/bad.request.config";
 
+type UserDataToJWT = {
+  id: string;
+  roles: object[];
+  permissions: object[];
+};
+
 export class SecurityUtils {
   static generateSecret(): string {
     return crypto.randomBytes(32).toString("base64");
@@ -33,15 +39,23 @@ export class SecurityUtils {
     return bcrypt.compare(inputPassword, storedPasswordHash);
   }
 
-  static async generateToken(userId: string): Promise<string> {
+  static async generateJWTToken(userDataToJWT: UserDataToJWT): Promise<string> {
     const secret = this.getJWTSecret();
-    return jwt.sign({ userId }, secret, {
-      algorithm: "HS256",
-      expiresIn: AppConfig.jwt.expiresIn,
-    });
+    return jwt.sign(
+      {
+        userId: userDataToJWT.id,
+        roles: userDataToJWT.roles,
+        permission: userDataToJWT.permissions,
+      },
+      secret,
+      {
+        algorithm: "HS256",
+        expiresIn: AppConfig.jwt.expiresIn,
+      }
+    );
   }
 
-  static async verifyToken(token: string): Promise<string | JwtPayload> {
+  static async verifyJWTToken(token: string): Promise<string | JwtPayload> {
     const secret = this.getJWTSecret();
     return new Promise((resolve, reject) => {
       jwt.verify(token, secret, (error, decode) => {
@@ -56,5 +70,18 @@ export class SecurityUtils {
         }
       });
     });
+  }
+
+  static async generateRandomToken(): Promise<string> {
+    const token = crypto.randomBytes(32).toString("hex");
+    const hashedToken = this.hashPassword(token);
+    return hashedToken;
+  }
+
+  static validateToken(
+    inputToken: string,
+    storedToken: string
+  ): Promise<boolean> {
+    return this.comparePassword(inputToken, storedToken);
   }
 }

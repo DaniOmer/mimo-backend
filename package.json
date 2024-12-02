@@ -8,9 +8,9 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && copyfiles -u 1 src/templates/**/* dist/index.js",
     "start": "node dist/index.js",
-    "dev": "tsc && node dist/index.js",
+    "dev": "tsc && copyfiles -u 1 src/templates/**/* dist/index.js && node dist/index.js",
     "live": "nodemon dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/DaniOmer/mimo-backend#readme",
   "dependencies": {
+    "@getbrevo/brevo": "^2.2.0",
     "@types/jsonwebtoken": "^9.0.7",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
@@ -37,7 +38,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",
     "mongoose": "^8.7.1",
-    "node": "^22.9.0",
+    "node": "^20.9.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.17.0"
@@ -51,6 +52,7 @@
     "@types/node": "^22.7.6",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
+    "copyfiles": "^2.4.1",
     "nodemon": "^3.1.7",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.6.3"

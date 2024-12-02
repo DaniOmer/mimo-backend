@@ -2,7 +2,7 @@ import { ProductRepository } from "../data-access/product.repository";
 import { IProduct } from "../data-access/product.interface";
 import { BaseService } from "../../../librairies/services/base.service";
 
-export class ProductService extends BaseService<IProduct> {
+export class ProductService extends BaseService {
   private repository: ProductRepository;
 
   constructor() {
@@ -23,7 +23,10 @@ export class ProductService extends BaseService<IProduct> {
     return this.repository.getAll();
   }
 
-  async updateProductById(id: string, updates: Partial<IProduct>): Promise<IProduct> {
+  async updateProductById(
+    id: string,
+    updates: Partial<IProduct>
+  ): Promise<IProduct> {
     const updatedProduct = await this.repository.updateById(id, updates);
     return this.validateDataExists(updatedProduct, id);
   }

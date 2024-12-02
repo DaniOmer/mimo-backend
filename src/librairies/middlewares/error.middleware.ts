@@ -1,8 +1,7 @@
-import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import { Request, Response, NextFunction } from "express";
 import { LoggerConfig } from "../../config/logger/logger.config";
 import { CustomError } from "../../config/error/error.config";
 import { ApiResponse } from "../controllers/api.response";
-import { console } from "inspector";
 
 const logger = LoggerConfig.get().logger;
 
