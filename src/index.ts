@@ -12,6 +12,7 @@ import userRouter from "./apps/auth/api/user/user.route";
 import productRouter from "./apps/product/api/product.route";
 import permissionRouter from "./apps/auth/api/permission/permission.route";
 import roleRouter from "./apps/auth/api/role/role.route";
+import orderRoute from "./apps/order/api/order.route";
 
 async function startApp() {
   const app: Express = express();
@@ -47,6 +48,9 @@ async function startApp() {
 
     // Role routes
     app.use("/api/roles", roleRouter);
+
+    // Order Routes
+    app.use("/api/orders", orderRoute);
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);
