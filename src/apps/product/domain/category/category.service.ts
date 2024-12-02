@@ -3,7 +3,7 @@ import { CategoryRepository } from "../../data-access/category/category.reposito
 import { ICategory } from "../../data-access/category/category.interface";
 import BadRequestError from "../../../../config/error/bad.request.config";
 
-export class CategoryService extends BaseService<ICategory> {
+export class CategoryService extends BaseService {
   private repository: CategoryRepository;
 
   constructor() {
