@@ -34,4 +34,10 @@ export class OrderItemCreateDTO {
   @IsNumber()
   @Type(() => Number)
   readonly priceVat!: number;
+
+  @IsNotEmpty()
+  @IsPositive()
+  @IsNumber()
+  @Type(() => Number)
+  readonly subtotal!: number;
 }

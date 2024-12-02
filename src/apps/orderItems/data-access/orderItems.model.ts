@@ -28,6 +28,10 @@ const orderItemSchema = new Schema<IOrderItem>(
       required: true, 
       min: 0 
     },
+    subtotal: {
+      type: Number,
+      required: true,
+    },
   },
   {
     timestamps: true,

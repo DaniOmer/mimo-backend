@@ -6,4 +6,5 @@ export interface IOrderItem extends Document {
   quantity: number;
   priceEtx: number;
   priceVat: number;
+  subtotal: number;
 }
