@@ -3,6 +3,9 @@ import { CategoryController } from "./category.controller";
 import {
   validateDtoMiddleware,
   validateIdMiddleware,
+  authenticateMiddleware,
+  checkRoleMiddleware,
+
 } from "../../../../librairies/middlewares";
 import { CategoryCreateDTO, CategoryUpdateDTO } from "../../domain/category/category.dto";
 
@@ -53,6 +56,8 @@ const router = Router();
  */
 router.post(
   "/",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateDtoMiddleware(CategoryCreateDTO),
   categoryController.create.bind(categoryController)
 );
@@ -100,6 +105,7 @@ router.get("/", categoryController.getAll.bind(categoryController));
  */
 router.get(
   "/:id",
+  authenticateMiddleware,
   validateIdMiddleware("Category"),
   categoryController.getById.bind(categoryController)
 );
@@ -148,6 +154,8 @@ router.get(
  */
 router.put(
   "/:id",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("Category"),
   validateDtoMiddleware(CategoryUpdateDTO),
   categoryController.updateById.bind(categoryController)
@@ -174,6 +182,8 @@ router.put(
  */
 router.delete(
   "/:id",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("Category"),
   categoryController.deleteById.bind(categoryController)
 );
