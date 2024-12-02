@@ -22,6 +22,16 @@ const orderSchema = new Schema<IOrder>(
       default: OrderStatus.Pending,
       required: true,
     },
+    priceEtx: { 
+      type: Number, 
+      required: true, 
+      min: 0 
+    },
+    priceVat: { 
+      type: Number, 
+      required: true, 
+      min: 0 
+    },
     user_id: { 
       type: Schema.Types.ObjectId, 
       ref: "User", 

@@ -15,5 +15,7 @@ export interface IOrder extends Timestamps, Document {
   orderDate: Date;
   shipDate?: Date;
   status: OrderStatus;
+  priceEtx: number;
+  priceVat: number;
   user_id: Types.ObjectId;
 }

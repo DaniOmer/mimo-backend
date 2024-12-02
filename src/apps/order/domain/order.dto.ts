@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsDate, IsEnum, IsOptional, MaxLength, MinLength, IsMongoId } from "class-validator";
+import { IsNotEmpty, IsString, IsDate, IsEnum, IsOptional, MaxLength, MinLength, IsMongoId, IsNumber, IsPositive, } from "class-validator";
 import { Type } from "class-transformer";
 import { OrderStatus } from "../data-access/order.interface";
 import 'reflect-metadata';
@@ -28,4 +28,16 @@ export class OrderCreateDTO {
   @IsNotEmpty()
   @IsMongoId()
   readonly user_id!: Schema.Types.ObjectId;
+
+  @IsNotEmpty()
+  @IsPositive()
+  @IsNumber()
+  @Type(() => Number)
+  readonly priceEtx!: number;
+
+  @IsNotEmpty()
+  @IsPositive()
+  @IsNumber()
+  @Type(() => Number)
+  readonly priceVat!: number;
 }
