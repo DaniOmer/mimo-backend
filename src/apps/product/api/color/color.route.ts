@@ -3,6 +3,8 @@ import { ColorController } from "./color.controller";
 import {
   validateDtoMiddleware,
   validateIdMiddleware,
+  authenticateMiddleware,
+  checkRoleMiddleware,
 } from "../../../../librairies/middlewares";
 import { ColorCreateDTO, ColorUpdateDTO } from "../../domain/color/color.dto";
 
@@ -45,6 +47,8 @@ const router = Router();
  */
 router.post(
   "/",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateDtoMiddleware(ColorCreateDTO),
   colorController.createColor.bind(colorController)
 );
@@ -92,6 +96,7 @@ router.get("/", colorController.getAllColors.bind(colorController));
  */
 router.get(
   "/:id",
+  authenticateMiddleware,
   validateIdMiddleware("Color"),
   colorController.getColorById.bind(colorController)
 );
@@ -132,6 +137,8 @@ router.get(
  */
 router.put(
   "/:id",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("Color"),
   validateDtoMiddleware(ColorUpdateDTO),
   colorController.updateColorById.bind(colorController)
@@ -158,6 +165,8 @@ router.put(
  */
 router.delete(
   "/:id",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("Color"),
   colorController.deleteColorById.bind(colorController)
 );
