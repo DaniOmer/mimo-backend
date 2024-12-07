@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { AuthService } from "../domain/auth.service";
-import { Strategy } from "../domain/auth.factory";
-import BadRequestError from "../../../config/error/bad.request.config";
-import BaseController from "../../../librairies/controllers/base.controller";
-import { ApiResponse } from "../../../librairies/controllers/api.response";
-import { UserRegisterDTO } from "../domain/user/user.dto";
+import { ApiResponse } from "../../../../librairies/controllers/api.response";
+import { Strategy, AuthService } from "../../domain";
+import BadRequestError from "../../../../config/error/bad.request.config";
+import BaseController from "../../../../librairies/controllers/base.controller";
+import { UserRegisterDTO } from "../../domain/user/user.dto";
 
 export class AuthController extends BaseController {
   readonly validStrategies: Strategy[];
@@ -20,7 +19,7 @@ export class AuthController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     const { strategy } = req.params;
-    const userData = this.dataToDtoInstance(req.body, UserRegisterDTO);
+    const userData = req.body;
 
     try {
       if (!strategy || !this.validStrategies.includes(strategy as Strategy)) {

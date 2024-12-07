@@ -1,8 +1,9 @@
 // Auth management
-export * from "./auth.strategy";
-export * from "./auth.basic";
-export * from "./auth.social";
-export * from "./auth.factory";
+export * from "./auth/auth.strategy";
+export * from "./auth/auth.basic";
+export * from "./auth/auth.social";
+export * from "./auth/auth.factory";
+export * from "./auth/auth.service";
 
 // User management
 export * from "./user/user.dto";

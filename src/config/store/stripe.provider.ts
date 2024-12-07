@@ -12,27 +12,6 @@ export enum PaymentCurrencyType {
   USD = "usd",
 }
 
-export type CardPaymentMethodParamsType = {
-  type: string;
-  card: {
-    number: string;
-    exp_month: number;
-    exp_year: number;
-    cvc: string;
-  };
-  billingDetails: {
-    name: string;
-    email: string;
-    phone: string;
-    address: {
-      line1: string;
-      city: string;
-      postal_code: string;
-      country: string;
-    };
-  };
-};
-
 export type CreatePaymentIntentParams = {
   amount: number;
   currency: PaymentCurrencyType;

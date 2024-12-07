@@ -7,7 +7,7 @@ import { MongooseConfig } from "./config/mongoose/mongoose.config";
 import { corsMiddleware } from "./librairies/middlewares/cors.middleware";
 import { rateLimiterMiddleware } from "./librairies/middlewares/rate.limit.middleware";
 import { errorHandlerMiddleware } from "./librairies/middlewares/error.middleware";
-import authRouter from "./apps/auth/api/auth.route";
+import authRouter from "./apps/auth/api/auth/auth.route";
 import userRouter from "./apps/auth/api/user/user.route";
 import productRouter from "./apps/product/api/product.route";
 import permissionRouter from "./apps/auth/api/permission/permission.route";

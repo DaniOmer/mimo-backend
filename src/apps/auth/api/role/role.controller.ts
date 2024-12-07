@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import BaseController from "../../../../librairies/controllers/base.controller";
 import RoleService from "../../domain/role/role.service";
 import { ApiResponse } from "../../../../librairies/controllers/api.response";
+import { RoleCreateDTO } from "../../domain";
 
 export default class RoleController extends BaseController {
   private roleService: RoleService;
@@ -17,11 +18,7 @@ export default class RoleController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { permissions, ...roleData } = req.body;
-      const createdRole = await this.roleService.createRole(
-        roleData,
-        permissions
-      );
+      const createdRole = await this.roleService.createRole(req.body);
       ApiResponse.success(res, "Role created successfully", createdRole, 201);
     } catch (error) {
       next(error);

@@ -18,12 +18,8 @@ export class PermissionController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const permissionData = this.dataToDtoInstance(
-        req.body,
-        PermissionCreateDTO
-      );
       const newPermission = await this.permissionService.createPermission(
-        permissionData
+        req.body
       );
       ApiResponse.success(
         res,
