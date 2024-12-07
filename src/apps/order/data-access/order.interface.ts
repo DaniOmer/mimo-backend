@@ -1,5 +1,7 @@
 import { Document, Types } from "mongoose";
 import { Timestamps } from "../../../librairies/types/timestamps.interface";
+import { ObjectId } from "mongodb";
+import { IUser } from "../../auth/data-access";
 
 export enum OrderStatus {
   Pending = "pending",
@@ -17,5 +19,5 @@ export interface IOrder extends Timestamps, Document {
   status: OrderStatus;
   priceEtx: number;
   priceVat: number;
-  user_id: Types.ObjectId;
+  user: ObjectId | IUser;
 }

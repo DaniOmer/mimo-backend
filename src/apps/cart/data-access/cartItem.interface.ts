@@ -1,7 +1,8 @@
-import { Types } from "mongoose";
+import { ObjectId } from "mongodb";
+import { IOrderItem } from "../../orderItems/data-access";
 
 export interface ICartItem {
-  orderItem_id: Types.ObjectId;
+  orderItem: ObjectId | IOrderItem;
   quantity: number;
   price: number;
 }

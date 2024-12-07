@@ -1,5 +1,7 @@
+import BadRequestError from "../../../config/error/bad.request.config";
 import { BaseService } from "../../../librairies/services";
 import { IOrder, OrderRepository } from "../data-access";
+import { OrderCreateDTO } from "./order.dto";
 
 export class OrderService extends BaseService {
   private repository: OrderRepository;
@@ -9,13 +11,20 @@ export class OrderService extends BaseService {
     this.repository = new OrderRepository();
   }
 
-  async createOrder(data: Partial<IOrder>): Promise<IOrder> {
+  async createOrder(data: OrderCreateDTO): Promise<IOrder> {
     return this.repository.create(data);
   }
 
   async getOrderById(id: string): Promise<IOrder> {
     const order = await this.repository.getById(id);
-    return this.validateDataExists(order, id);
+    if (!order) {
+      throw new BadRequestError({
+        message: `Order with ID ${id} not found`,
+        context: { orderId: id },
+        logging: true,
+      });
+    }
+    return order;
   }
 
   async getAllOrders(): Promise<IOrder[]> {
@@ -27,11 +36,25 @@ export class OrderService extends BaseService {
     updates: Partial<IOrder>
   ): Promise<IOrder> {
     const updatedOrder = await this.repository.updateById(id, updates);
-    return this.validateDataExists(updatedOrder, id);
+    if (!updatedOrder) {
+      throw new BadRequestError({
+        message: `Order with ID ${id} not found or failed to update`,
+        context: { orderId: id, updates },
+        logging: true,
+      });
+    }
+    return updatedOrder;
   }
 
   async deleteOrderById(id: string): Promise<IOrder> {
     const deletedOrder = await this.repository.deleteById(id);
-    return this.validateDataExists(deletedOrder, id);
+    if (!deletedOrder) {
+      throw new BadRequestError({
+        message: `Order with ID ${id} not found for deletion`,
+        context: { orderId: id },
+        logging: true,
+      });
+    }
+    return deletedOrder;
   }
 }

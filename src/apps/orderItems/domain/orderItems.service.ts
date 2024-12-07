@@ -1,3 +1,4 @@
+import BadRequestError from "../../../config/error/bad.request.config";
 import { IOrderItem } from "../data-access/orderItems.interface";
 import { OrderItemRepository } from "../data-access/orderItems.repository";
 
@@ -19,7 +20,11 @@ export class OrderItemService {
   async deleteOrderItem(id: string): Promise<IOrderItem | null> {
     const orderItem = await this.repository.getById(id);
     if (!orderItem) {
-      throw new Error(`OrderItem with ID ${id} not found`);
+      throw new BadRequestError({
+        message: `OrderItem with ID ${id} not found`,
+        context: { orderItemId: id },
+        logging: true,
+      });
     }
     return this.repository.deleteById(id);
   }
