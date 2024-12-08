@@ -1,7 +1,7 @@
 // User management
-export * from "./user.interface";
-export * from "./user.model";
-export * from "./user.repository";
+export * from "./user/user.interface";
+export * from "./user/user.model";
+export * from "./user/user.repository";
 
 // Role management
 export * from "./role/role.interface";

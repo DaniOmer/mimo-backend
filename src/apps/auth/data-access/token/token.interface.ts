@@ -1,5 +1,5 @@
 import { Document } from "mongoose";
-import { IUser } from "../user.interface";
+import { IUser } from "../user/user.interface";
 import { Timestamps } from "../../../../librairies/types/timestamps.interface";
 
 export enum TokenType {

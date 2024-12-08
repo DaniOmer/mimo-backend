@@ -42,4 +42,10 @@ export const AppConfig = {
       fromName: process.env.BREVO_FROM_NAME,
     },
   },
+  store: {
+    stripe: {
+      publicKey: process.env.STRIPE_PUBLIC_KEY,
+      secretKey: process.env.STRIPE_SECRET_KEY,
+    },
+  },
 };

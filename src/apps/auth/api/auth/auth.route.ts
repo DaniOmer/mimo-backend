@@ -5,12 +5,12 @@ import {
   ConfirmEmailDTO,
   RequestPasswordResetDTO,
   ConfirmPasswordResetDTO,
-} from "../domain/user/user.dto";
+} from "../../domain/user/user.dto";
 import { AuthController } from "./auth.controller";
 import {
   validateDtoMiddleware,
   authenticateMiddleware,
-} from "../../../librairies/middlewares";
+} from "../../../../librairies/middlewares";
 
 const authController = new AuthController();
 const router = Router();

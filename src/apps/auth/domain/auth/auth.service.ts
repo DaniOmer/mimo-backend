@@ -1,24 +1,18 @@
-import { IUser } from "../data-access/user.interface";
-import { AuthStrategyFactory, Strategy } from "./auth.factory";
+import { AppConfig } from "../../../../config/app.config";
+import { SecurityUtils } from "../../../../utils/security.utils";
 import { AuthStrategy } from "./auth.strategy";
-import UserRepository from "../data-access/user.repository";
-import { TokenType } from "../data-access/token/token.interface";
-import TokenService from "./token/token.service";
-import BadRequestError from "../../../config/error/bad.request.config";
-import { AppConfig } from "../../../config/app.config";
-import { SecurityUtils } from "../../../utils/security.utils";
-import { BaseService } from "../../../librairies/services";
-import { UserRegisterDTO } from "./user/user.dto";
+import { AuthStrategyFactory, Strategy } from "./auth.factory";
+import { IUser, TokenType, UserRepository } from "../../data-access";
+import TokenService from "../token/token.service";
+import BadRequestError from "../../../../config/error/bad.request.config";
+import { BaseService } from "../../../../librairies/services";
+import {
+  UserRegisterDTO,
+  UserLoginDTO,
+  ConfirmPasswordResetDTO,
+} from "../user/user.dto";
 
-export type UserCreate = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
-export type UserLogin = Pick<IUser, "email" | "password" | "updatedAt">;
 export type UserCreateResponse = Omit<IUser, "id" | "password" | "updatedAt">;
-
-export type ResetPasswordData = {
-  password: string;
-  token: string;
-};
-
 export type UserLoginResponse = UserCreateResponse & {
   token: string;
 };
@@ -53,7 +47,7 @@ export class AuthService extends BaseService {
     return createUserResponse;
   }
 
-  async login(userData: UserLogin): Promise<UserLoginResponse> {
+  async login(userData: UserLoginDTO): Promise<UserLoginResponse> {
     const loginUserResponse = await this.authStrategy.authenticate(userData);
     return loginUserResponse;
   }
@@ -117,7 +111,7 @@ export class AuthService extends BaseService {
     return resetPasswordLink;
   }
 
-  async confirmPasswordReset(data: ResetPasswordData): Promise<IUser> {
+  async confirmPasswordReset(data: ConfirmPasswordResetDTO): Promise<IUser> {
     const tokenUser = await this.tokenService.validateTokenAndReturnUser(
       data.token,
       TokenType.PasswordReset

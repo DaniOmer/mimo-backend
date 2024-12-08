@@ -1,7 +1,7 @@
 import { Document } from "mongoose";
-import { Timestamps } from "../../../librairies/types/timestamps.interface";
-import { IRole } from "./role/role.interface";
-import { IPermission } from "./permission/permission.interface";
+import { Timestamps } from "../../../../librairies/types/timestamps.interface";
+import { IRole } from "../role/role.interface";
+import { IPermission } from "../permission/permission.interface";
 
 export enum AuthType {
   Basic = "basic",

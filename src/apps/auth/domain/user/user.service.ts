@@ -1,7 +1,7 @@
-import UserRepository from "../../data-access/user.repository";
-import { IUser } from "../../data-access/user.interface";
+import { IUser, UserRepository } from "../../data-access";
 import { BaseService } from "../../../../librairies/services";
 import BadRequestError from "../../../../config/error/bad.request.config";
+import { UserUpdateDTO } from "./user.dto";
 
 export class UserService extends BaseService {
   private repository: UserRepository;
@@ -33,7 +33,7 @@ export class UserService extends BaseService {
 
   async updateUserById(
     id: string,
-    updateData: Partial<IUser>
+    updateData: UserUpdateDTO
   ): Promise<Omit<IUser, "password">> {
     const updatedUser = await this.repository.updateById(id, updateData);
 
