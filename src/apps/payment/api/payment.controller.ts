@@ -8,6 +8,24 @@ export class PaymentController extends BaseController {
     super();
   }
 
+  async getAllPaymentMethods(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const paymentService = new PaymentService(PaymentStrategyType.CARD);
+      const paymentMethods = await paymentService.getAllPaymentMethod();
+      ApiResponse.success(
+        res,
+        "Payment methods retrieved successfully",
+        paymentMethods
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async addCardPaymentMethod(
     req: Request,
     res: Response,
