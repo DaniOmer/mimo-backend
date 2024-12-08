@@ -5,12 +5,29 @@ import {
   CreatePaymentIntentParams,
   ConfirmPaymentIntentParams,
 } from "../../../config/store";
+import { PaymentMethodRepository } from "../data-access/method/method.repository";
+import { ICardDetails } from "../data-access/method/method.interface";
+import BadRequestError from "../../../config/error/bad.request.config";
 
-export default class StripePayment implements PaymentStrategy {
-  private provider: StripeProvider;
+export class CardPayment implements PaymentStrategy {
+  readonly provider: StripeProvider;
+  readonly paymentMethodRepository: PaymentMethodRepository;
 
   constructor() {
     this.provider = new StripeProvider();
+    this.paymentMethodRepository = new PaymentMethodRepository();
+  }
+
+  async addPaymentMethod(data: ICardDetails): Promise<ICardDetails> {
+    const cardMethod =
+      await this.paymentMethodRepository.createCardPaymentMethod(data);
+    if (!cardMethod) {
+      throw new BadRequestError({
+        message: "Failed to create payment method",
+        logging: true,
+      });
+    }
+    return cardMethod;
   }
 
   async preparePayment(

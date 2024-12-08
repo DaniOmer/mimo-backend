@@ -2,8 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ApiResponse } from "../../../../librairies/controllers/api.response";
 import { Strategy, AuthService } from "../../domain";
 import BadRequestError from "../../../../config/error/bad.request.config";
-import BaseController from "../../../../librairies/controllers/base.controller";
-import { UserRegisterDTO } from "../../domain/user/user.dto";
+import { BaseController } from "../../../../librairies/controllers";
 
 export class AuthController extends BaseController {
   readonly validStrategies: Strategy[];

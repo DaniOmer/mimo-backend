@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import BaseController from "../../../../librairies/controllers/base.controller";
+import { BaseController } from "../../../../librairies/controllers";
 import PermissionService from "../../domain/permission/permission.service";
 import { ApiResponse } from "../../../../librairies/controllers/api.response";
-import { PermissionCreateDTO } from "../../domain";
 
 export class PermissionController extends BaseController {
   readonly permissionService: PermissionService;
