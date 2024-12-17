@@ -1,22 +1,9 @@
-version: "3.1"
 services:
   mongo:
     image: mongo
     restart: always
     ports:
       - 27017:27017
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: mimo
-    #   MONGO_INITDB_ROOT_PASSWORD: mimo
-    #   MONGO_INITDB_DATBASE: mimo
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
     environment:
-      # ME_CONFIG_MONGODB_ADMINUSERNAME: mimo
-      # ME_CONFIG_MONGODB_ADMINPASSWORD: mimo
-      ME_CONFIG_MONGODB_URL: mongodb://mimo:mimo@mongo:27017/
-      ME_CONFIG_BASICAUTH: false
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
