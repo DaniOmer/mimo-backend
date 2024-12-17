@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { UserService } from "../domain/user.service";
 import { ApiResponse } from "../../../librairies/controllers/api.response";
 import BaseController from "../../../librairies/controllers/base.controller";
+import BadRequestError from "../../../config/error/bad.request.config";
+import { AuthType, IUser } from "../data-access/user.interface";
 
 export class UserController extends BaseController {
   private userService: UserService;
@@ -11,11 +13,7 @@ export class UserController extends BaseController {
     this.userService = new UserService();
   }
 
-  async getAllUsers(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const users = await this.userService.getAllUsers();
       ApiResponse.success(res, "Users retrieved successfully", users, 200);
@@ -24,11 +22,7 @@ export class UserController extends BaseController {
     }
   }
 
-  async getUserById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  async getUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const user = await this.userService.getUserById(id);
@@ -38,11 +32,7 @@ export class UserController extends BaseController {
     }
   }
 
-  async updateUser(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  async updateUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -53,11 +43,7 @@ export class UserController extends BaseController {
     }
   }
 
-  async deleteUserById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  async deleteUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       await this.userService.deleteUserById(id);
@@ -66,4 +52,28 @@ export class UserController extends BaseController {
       next(error);
     }
   }
+
+  async createInvitation(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+       const { firstName, lastName, email, adminId, role } = req.body;
+       await this.userService.createInvitation(firstName, lastName, email, adminId, role);
+       ApiResponse.success(res, "Invitation created successfully and email sent", null, 201);
+    } catch (error) {
+       next(error);
+
+    }
+ }
+ 
+  async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const { password, isTermsOfSale,tokenHash } = req.body;
+        const newUser = await this.userService.createUser(tokenHash as string, { password, isTermsOfSale });
+        ApiResponse.success(res, "User registered successfully", newUser, 201);
+    } catch (error) {
+        next(error);
+  }
+}
+
+
+  
 }

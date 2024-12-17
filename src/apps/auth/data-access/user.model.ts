@@ -13,6 +13,7 @@ const userSchema = new Schema<IUser>(
     isVerified: { type: Boolean, default: false },
     isDisabled: { type: Boolean, default: false },
     authType: { type: String, enum: Object.values(AuthType), required: true },
+    //Ajouter createdby dans user model
   },
   { timestamps: true, collection: "users", versionKey: false }
 );

@@ -39,10 +39,10 @@ export default class TokenService extends BaseService {
     return token;
   }
 
-  async validateTokenAndReturnUser(
+  async validateAndReturnToken(
     hash: string,
     tokenType: TokenType
-  ): Promise<IUser | string> {
+  ): Promise<IToken> {
     const existingToken = await this.tokenRepository.getByHash(hash);
     if (!existingToken || existingToken.type !== tokenType) {
       throw new BadRequestError({
@@ -75,6 +75,6 @@ export default class TokenService extends BaseService {
       });
     }
 
-    return updatedToken.user;
+    return updatedToken;
   }
 }
