@@ -43,4 +43,27 @@ export class PaymentController extends BaseController {
       next(error);
     }
   }
+
+  async prepareCardPayment(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const data = {
+        ...req.body,
+        customer: req.user.stripe,
+        receiptEmail: req.user.email,
+      };
+      const paymentService = new PaymentService(PaymentStrategyType.CARD);
+      const paymentIntent = await paymentService.preparePayment(data);
+      ApiResponse.success(
+        res,
+        "Payment intent prepared successfully",
+        paymentIntent
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }

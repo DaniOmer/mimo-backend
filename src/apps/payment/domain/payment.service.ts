@@ -21,4 +21,8 @@ export class PaymentService extends BaseService {
   async addPaymentMethod(method: any) {
     return this.strategy.addPaymentMethod(method);
   }
+
+  async preparePayment(data: any) {
+    return this.strategy.preparePayment(data);
+  }
 }
