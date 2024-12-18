@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import BaseController from "../../../../librairies/controllers/base.controller";
+import { BaseController } from "../../../../librairies/controllers";
 import PermissionService from "../../domain/permission/permission.service";
 import { ApiResponse } from "../../../../librairies/controllers/api.response";
-import { PermissionCreateDTO } from "../../domain";
 
 export class PermissionController extends BaseController {
   readonly permissionService: PermissionService;
@@ -18,12 +17,8 @@ export class PermissionController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const permissionData = this.dataToDtoInstance(
-        req.body,
-        PermissionCreateDTO
-      );
       const newPermission = await this.permissionService.createPermission(
-        permissionData
+        req.body
       );
       ApiResponse.success(
         res,

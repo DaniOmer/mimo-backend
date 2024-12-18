@@ -3,9 +3,7 @@ import { IRole } from "../../data-access/role/role.interface";
 import RoleRepository from "../../data-access/role/role.repository";
 import PermissionService from "../permission/permission.service";
 import BadRequestError from "../../../../config/error/bad.request.config";
-import { ObjectId } from "mongoose";
-
-type RoleCreate = Omit<IRole, "_id" | "createdAt" | "updatedAt">;
+import { RoleCreateDTO } from "./role.dto";
 
 export default class RoleService extends BaseService {
   readonly roleRepository: RoleRepository;
@@ -31,11 +29,9 @@ export default class RoleService extends BaseService {
     return role;
   }
 
-  async createRole(
-    role: RoleCreate,
-    permissionIds?: ObjectId[]
-  ): Promise<IRole> {
-    const isRoleExists = await this.roleRepository.getByName(role.name);
+  async createRole(data: RoleCreateDTO): Promise<IRole> {
+    const { permissions, ...roleData } = data;
+    const isRoleExists = await this.roleRepository.getByName(data.name);
     if (isRoleExists) {
       throw new BadRequestError({
         message: "Role already exists",
@@ -46,15 +42,15 @@ export default class RoleService extends BaseService {
       });
     }
 
-    if (permissionIds && permissionIds.length) {
+    if (permissions && permissions.length) {
       const allPermissions = await this.permissionService.getAllPermissions();
-      const existingPermissions = permissionIds
+      const existingPermissions = permissions
         .map((id) =>
           allPermissions.find((p) => p._id.toString() === id.toString())
         )
         .filter((p) => p !== undefined);
 
-      if (existingPermissions.length !== permissionIds.length) {
+      if (existingPermissions.length !== permissions.length) {
         throw new BadRequestError({
           message: "Invalid permissions",
           code: 400,
@@ -65,7 +61,7 @@ export default class RoleService extends BaseService {
         });
       }
       const roleWithPermissions = {
-        name: role.name,
+        name: roleData.name,
         permissions: existingPermissions.map((p) => p.toObject()._id),
       };
       const createdRole = await this.roleRepository.create(roleWithPermissions);
@@ -84,6 +80,6 @@ export default class RoleService extends BaseService {
       }
       return createdRoleWithPermissions;
     }
-    return await this.roleRepository.create(role);
+    return await this.roleRepository.create(roleData);
   }
 }
