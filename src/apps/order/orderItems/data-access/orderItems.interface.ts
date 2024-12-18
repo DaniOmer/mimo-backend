@@ -8,7 +8,8 @@ export interface Address {
   country: string;
 }
 export interface IOrderItem extends Document {
-  productVariant_id: Types.ObjectId;
+  product_id: Types.ObjectId | null;
+  productVariant_id: Types.ObjectId | null;
   order_id: Types.ObjectId;
   quantity: number;
   priceEtx: number;

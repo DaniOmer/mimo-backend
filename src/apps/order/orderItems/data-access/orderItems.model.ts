@@ -3,10 +3,17 @@ import { IOrderItem } from "./orderItems.interface";
 
 const orderItemSchema = new Schema<IOrderItem>(
   {
+    product_id: { 
+      type: Schema.Types.ObjectId, 
+      ref: "Product", 
+      required: false,
+      default: null,
+    },
     productVariant_id: { 
       type: Schema.Types.ObjectId, 
       ref: "ProductVariant", 
-      required: true
+      required: false,
+      default: null,
     },
     order_id: { 
       type: Schema.Types.ObjectId, 
