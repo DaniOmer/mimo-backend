@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { CartService } from "../domain/cart.service";
-import { ApiResponse } from "../../../librairies/controllers/api.response";
-import BaseController from "../../../librairies/controllers/base.controller";
+import { ApiResponse } from "../../../../librairies/controllers/api.response";
+import BaseController from "../../../../librairies/controllers/base.controller";
 
 export class CartController extends BaseController {
   private cartService: CartService;

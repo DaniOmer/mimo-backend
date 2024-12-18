@@ -1,7 +1,7 @@
 import { Document, Types } from "mongoose";
-import { Timestamps } from "../../../librairies/types/timestamps.interface";
+import { Timestamps } from "../../../../librairies/types/timestamps.interface";
 import { ObjectId } from "mongodb";
-import { IUser } from "../../auth/data-access";
+import { IUser } from "../../../auth/data-access";
 
 export enum OrderStatus {
   Pending = "pending",
@@ -9,6 +9,14 @@ export enum OrderStatus {
   Shipped = "shipped",
   Delivered = "delivered",
   Canceled = "canceled",
+}
+
+interface IAddress {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
 }
 
 export interface IOrder extends Timestamps, Document {
@@ -20,4 +28,6 @@ export interface IOrder extends Timestamps, Document {
   priceEtx: number;
   priceVat: number;
   user: ObjectId | IUser;
+  shippingAddress: IAddress;
+  billingAddress: IAddress;
 }

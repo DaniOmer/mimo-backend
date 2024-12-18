@@ -26,7 +26,7 @@ const cartItemSchema = new Schema(
 
 const cartSchema = new Schema<ICart>(
   {
-    user_id: { 
+    user: { 
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true, 

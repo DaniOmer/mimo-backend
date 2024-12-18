@@ -1,7 +1,7 @@
-import { BaseService } from "../../../librairies/services";
+import { BaseService } from "../../../../librairies/services";
 import { CartModel } from "../data-access/cart.model";
 import { ICart } from "../data-access/cart.interface";
-import BadRequestError from "../../../config/error/bad.request.config";
+import BadRequestError from "../../../../config/error/bad.request.config";
 
 export class CartService extends BaseService {
   constructor() {

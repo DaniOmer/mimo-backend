@@ -1,4 +1,4 @@
-import BadRequestError from "../../../config/error/bad.request.config";
+import BadRequestError from "../../../../config/error/bad.request.config";
 import { IOrderItem } from "../data-access/orderItems.interface";
 import { OrderItemRepository } from "../data-access/orderItems.repository";
 

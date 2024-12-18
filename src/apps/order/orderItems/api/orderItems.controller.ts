@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { OrderItemService } from "../domain/orderItems.service";
-import { ApiResponse } from "../../../librairies/controllers/api.response";
+import { ApiResponse } from "../../../../librairies/controllers/api.response";
 
 export class OrderItemController {
   private orderItemService: OrderItemService;

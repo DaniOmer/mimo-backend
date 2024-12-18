@@ -58,7 +58,7 @@ const orderSchema = new Schema<IOrder>(
       required: true, 
       min: 0 
     },
-    user_id: { 
+    user: { 
       type: Schema.Types.ObjectId, 
       ref: "User", 
       required: true 

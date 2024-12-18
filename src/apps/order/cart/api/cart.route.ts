@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { CartController } from "./cart.controller";
-import { validateDtoMiddleware } from "../../../librairies/middlewares/";
+import { validateDtoMiddleware } from "../../../../librairies/middlewares";
 import { CartCreateDTO } from "../domain/cart.dto";
 
 const router = Router();

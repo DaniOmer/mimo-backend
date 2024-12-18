@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { OrderController } from "./order.controller";
-import { validateDtoMiddleware, validateIdMiddleware } from "../../../librairies/middlewares/";
+import { validateDtoMiddleware, validateIdMiddleware } from "../../../../librairies/middlewares/";
 import { OrderCreateDTO } from "../domain/order.dto";
 
 const router = Router();
