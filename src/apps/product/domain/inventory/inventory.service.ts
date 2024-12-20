@@ -22,6 +22,21 @@ export class InventoryService extends BaseService {
   }
 
   async addInventory(data: Omit<IIventory, "_id">): Promise<IIventory> {
+    const existingInventory =
+      await this.repository.getInventoryByProductAndVariantId(
+        data.productId.toString(),
+        data.productVariantId
+      );
+    if (existingInventory) {
+      throw new BadRequestError({
+        message: "Inventory already exists for this product and variant",
+        context: {
+          add_inventory: "Inventory already exists",
+        },
+        code: 400,
+      });
+    }
+
     const product = await this.productService.getProductById(
       data.productId.toString()
     );
@@ -61,7 +76,6 @@ export class InventoryService extends BaseService {
         });
       }
     }
-
     const inventory = await this.repository.create(data);
     return inventory;
   }
