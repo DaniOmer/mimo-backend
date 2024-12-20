@@ -83,4 +83,69 @@ export class InventoryService extends BaseService {
     }
     return updatedInventory;
   }
+
+  async reserveStock(
+    inventoryId: string,
+    quantity: number,
+    userId: string
+  ): Promise<void> {
+    const inventory = await this.repository.getById(inventoryId);
+    if (!inventory) {
+      throw new BadRequestError({
+        message: "Inventory not found",
+        code: 404,
+      });
+    }
+
+    const availableQuantity = inventory.quantity - inventory.reservedQuantity;
+    if (availableQuantity < quantity) {
+      throw new BadRequestError({
+        message: "Not enough stock available",
+        code: 400,
+      });
+    }
+
+    const reservationDuration = this.getReservationDuration();
+    const reservedUntil = new Date(Date.now() + reservationDuration);
+    const newReservedStock = await this.reservedStockService.addReservedProduct(
+      {
+        inventoryId,
+        quantity,
+        reservedById: userId,
+        reservedUntil,
+      }
+    );
+    if (!newReservedStock) {
+      throw new BadRequestError({
+        message: "Failed to reserve stock",
+        context: { inventory_workflow: "Failed to addReservedProduct" },
+        code: 500,
+      });
+    }
+
+    const newInventoryReservedQuantity = inventory.reservedQuantity + quantity;
+    const updatedInventory = await this.repository.updateById(inventoryId, {
+      reservedQuantity: newInventoryReservedQuantity,
+    });
+
+    if (!updatedInventory) {
+      throw new BadRequestError({
+        message: "Failed to update inventory after reservation",
+        context: { inventory_workflow: "Failed to update inventory" },
+        code: 500,
+      });
+    }
+  }
+
+  private getReservationDuration(): number {
+    const expirationTime = parseInt(AppConfig.cart.product.expirationTime, 10);
+    if (isNaN(expirationTime) || expirationTime <= 0) {
+      throw new BadRequestError({
+        message: "Invalid product expiration time",
+        code: 400,
+      });
+    }
+
+    return expirationTime * 1000;
+  }
 }
