@@ -25,7 +25,7 @@ export class InventoryService extends BaseService {
     this.productVariantService = new ProductVariantService();
   }
 
-  async addInventory(data: Omit<IIventory, "_id">): Promise<IIventory> {
+  async addInventory(data: AddProductInventoryDTO): Promise<IIventory> {
     const product = await this.productService.getProductById(
       data.productId.toString()
     );
@@ -135,6 +135,48 @@ export class InventoryService extends BaseService {
         code: 500,
       });
     }
+  }
+
+  async releaseStock(inventoryId: string, userId: string): Promise<void> {
+    const inventory = await this.repository.getById(inventoryId);
+    if (!inventory) {
+      throw new BadRequestError({
+        message: "Inventory not found",
+        code: 404,
+      });
+    }
+
+    const reservedStock =
+      await this.reservedStockService.getReservedProductByInventoryAndUserId(
+        inventory._id,
+        userId
+      );
+
+    if (!reservedStock) {
+      throw new BadRequestError({
+        message: "No reserved stock found for this user",
+        code: 404,
+      });
+    }
+
+    const updatedInventoryQuantity =
+      inventory.quantity + reservedStock.quantity;
+    const updatedInventoryReservedQuantity =
+      inventory.reservedQuantity - reservedStock.quantity;
+    const updatedInventory = await this.repository.updateById(inventoryId, {
+      quantity: updatedInventoryQuantity,
+      reservedQuantity: updatedInventoryReservedQuantity,
+    });
+
+    if (!updatedInventory) {
+      throw new BadRequestError({
+        message: "Failed to update inventory after releasing stock",
+        context: { inventory_workflow: "Failed to update inventory" },
+        code: 500,
+      });
+    }
+
+    await this.reservedStockService.deleteReservedProduct(reservedStock._id);
   }
 
   private getReservationDuration(): number {
