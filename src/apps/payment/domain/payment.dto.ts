@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import {
   IsAlpha,
   IsMongoId,
@@ -7,7 +6,6 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsOptional,
-  IsEnum,
 } from "class-validator";
 
 export class PaymentMethodDTO {

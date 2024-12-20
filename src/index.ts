@@ -42,7 +42,7 @@ async function startApp() {
     app.use("/api/products", productRouter);
 
     // Inventory routes
-    app.use("/api/inventory", inventoryRouter);
+    app.use("/api/products/inventory", inventoryRouter);
 
     // User routes
     app.use("/api/users", userRouter);

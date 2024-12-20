@@ -6,10 +6,6 @@ import { ReservedProductService } from "../reservedProduct/reservedProduct.servi
 import { ProductService } from "../product.service";
 import { ProductVariantService } from "../productVariant/productVariant.service";
 import BadRequestError from "../../../../config/error/bad.request.config";
-import {
-  AddProductInventoryDTO,
-  UpdateProductInventoryDTO,
-} from "./inventory.dto";
 
 export class InventoryService extends BaseService {
   readonly repository: InventoryRepository;
@@ -25,7 +21,7 @@ export class InventoryService extends BaseService {
     this.productVariantService = new ProductVariantService();
   }
 
-  async addInventory(data: AddProductInventoryDTO): Promise<IIventory> {
+  async addInventory(data: Omit<IIventory, "_id">): Promise<IIventory> {
     const product = await this.productService.getProductById(
       data.productId.toString()
     );
@@ -72,7 +68,7 @@ export class InventoryService extends BaseService {
 
   async updateInventory(
     id: string,
-    data: UpdateProductInventoryDTO
+    data: Pick<IIventory, "quantity">
   ): Promise<IIventory> {
     const updatedInventory = await this.repository.updateById(id, data);
     if (!updatedInventory) {

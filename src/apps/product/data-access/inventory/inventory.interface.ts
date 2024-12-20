@@ -1,9 +1,9 @@
-import { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 import { Timestamps } from "../../../../librairies/types/timestamps.interface";
 
 export interface IIventory extends Document, Timestamps {
   _id: string;
-  productId: string;
+  productId: ObjectId;
   productVariantId?: string;
   quantity: number;
   reservedQuantity: number;

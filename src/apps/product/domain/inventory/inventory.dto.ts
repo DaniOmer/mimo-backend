@@ -20,7 +20,7 @@ export class AddProductInventoryDTO {
   readonly quantity!: number;
 
   @IsNotEmpty()
-  @IsAlpha()
+  @IsMongoId()
   readonly warehouseId!: string;
 }
 

@@ -5,7 +5,6 @@ export interface IProductVariant extends Document, Timestamps {
   _id: string;
   priceEtx: number;
   priceVat: number;
-  quantity: number;
   stripeId?: string;
   productId: Types.ObjectId;
   sizeId: Types.ObjectId;

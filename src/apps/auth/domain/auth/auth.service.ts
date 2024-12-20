@@ -65,7 +65,7 @@ export class AuthService extends BaseService {
 
     if (!user) {
       throw new BadRequestError({
-        message: "Invalid token",
+        message: "Invalid email confirmation token",
         context: { auth_email_confirmation: "Invalid token" },
         logging: true,
       });

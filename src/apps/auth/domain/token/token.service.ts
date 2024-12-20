@@ -46,7 +46,7 @@ export default class TokenService extends BaseService {
     if (!existingToken || existingToken.type !== tokenType) {
       throw new BadRequestError({
         logging: true,
-        context: { reset_password_token: "Invalid token" },
+        context: { reset_password_token: "Invalid JWT token" },
       });
     }
 
