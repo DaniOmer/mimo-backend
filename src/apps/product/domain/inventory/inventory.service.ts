@@ -6,6 +6,10 @@ import { ReservedProductService } from "../reservedProduct/reservedProduct.servi
 import { ProductService } from "../product.service";
 import { ProductVariantService } from "../productVariant/productVariant.service";
 import BadRequestError from "../../../../config/error/bad.request.config";
+import {
+  AddProductInventoryDTO,
+  UpdateProductInventoryDTO,
+} from "./inventory.dto";
 
 export class InventoryService extends BaseService {
   readonly repository: InventoryRepository;
@@ -66,8 +70,11 @@ export class InventoryService extends BaseService {
     return inventory;
   }
 
-  async updateInventory(data: IIventory): Promise<IIventory> {
-    const updatedInventory = await this.repository.updateById(data._id, data);
+  async updateInventory(
+    id: string,
+    data: UpdateProductInventoryDTO
+  ): Promise<IIventory> {
+    const updatedInventory = await this.repository.updateById(id, data);
     if (!updatedInventory) {
       throw new BadRequestError({
         message: "Inventory not found",

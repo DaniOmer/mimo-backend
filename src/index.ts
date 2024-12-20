@@ -13,6 +13,7 @@ import productRouter from "./apps/product/api/product.route";
 import permissionRouter from "./apps/auth/api/permission/permission.route";
 import roleRouter from "./apps/auth/api/role/role.route";
 import paymentRouter from "./apps/payment/api/payment.route";
+import inventoryRouter from "./apps/product/api/inventory/inventory.route";
 
 async function startApp() {
   const app: Express = express();
@@ -39,6 +40,9 @@ async function startApp() {
 
     // Product routes
     app.use("/api/products", productRouter);
+
+    // Inventory routes
+    app.use("/api/inventory", inventoryRouter);
 
     // User routes
     app.use("/api/users", userRouter);

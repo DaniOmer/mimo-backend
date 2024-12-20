@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { InventoryController } from "./inventory.controller";
-import { AddProductInventoryDTO } from "../../domain/inventory/inventory.dto";
+import {
+  AddProductInventoryDTO,
+  UpdateProductInventoryDTO,
+} from "../../domain/inventory/inventory.dto";
 import {
   validateDtoMiddleware,
   authenticateMiddleware,
@@ -19,10 +22,10 @@ router.post(
 );
 
 router.put(
-  "/",
+  "/:id",
   authenticateMiddleware,
   checkRoleMiddleware(["admin"]),
-  validateDtoMiddleware(AddProductInventoryDTO),
+  validateDtoMiddleware(UpdateProductInventoryDTO),
   controller.updateProductInventory.bind(controller)
 );
 

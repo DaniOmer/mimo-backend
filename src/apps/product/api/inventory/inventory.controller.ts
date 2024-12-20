@@ -18,9 +18,8 @@ export class InventoryController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const productInventory = await this.inventoryService.addInventory(
-        req.body
-      );
+      const data = req.body;
+      const productInventory = await this.inventoryService.addInventory(data);
       ApiResponse.success(
         res,
         "Product inventory added successfully",
@@ -38,8 +37,11 @@ export class InventoryController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     try {
+      const inventoryId = req.params.id;
+      const data = req.body;
       const updatedInventory = await this.inventoryService.updateInventory(
-        req.body
+        inventoryId,
+        data
       );
       ApiResponse.success(
         res,

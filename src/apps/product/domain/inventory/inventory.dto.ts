@@ -23,3 +23,9 @@ export class AddProductInventoryDTO {
   @IsAlpha()
   readonly warehouseId!: string;
 }
+
+export class UpdateProductInventoryDTO {
+  @IsNotEmpty()
+  @IsNumber()
+  readonly quantity!: number;
+}
