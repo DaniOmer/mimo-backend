@@ -12,6 +12,7 @@ import userRouter from "./apps/auth/api/user/user.route";
 import productRouter from "./apps/product/api/product.route";
 import permissionRouter from "./apps/auth/api/permission/permission.route";
 import roleRouter from "./apps/auth/api/role/role.route";
+import categoryRouter from "./apps/product/api/category/category.route";
 import categoryRoute from "./apps/product/api/category/category.route";
 import sizeRouter from "./apps/product/api/size/size.route";
 import colorRouter from "./apps/product/api/color/color.route";
@@ -46,7 +47,7 @@ async function startApp() {
 
   
     // category routes
-    app.use("/api/categories", categoryRoute);
+    app.use("/api/categories", categoryRouter);
 
     // Size routes
     app.use("/api/sizes", sizeRouter);

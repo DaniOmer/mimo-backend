@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, Max, MaxLength, MinLength } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, IsMongoId, MaxLength, MinLength } from "class-validator";
 
 export class CategoryCreateDTO {
   @IsNotEmpty()
@@ -12,6 +12,7 @@ export class CategoryCreateDTO {
   readonly description?: string;
 
   @IsOptional()
+  @IsMongoId()
   @IsString()
   readonly parentId?: string;
 }
@@ -29,5 +30,6 @@ export class CategoryUpdateDTO {
 
   @IsOptional()
   @IsString()
+  @IsMongoId()
   readonly parentId?: string;
 }

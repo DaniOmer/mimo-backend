@@ -39,6 +39,7 @@ export class CategoryService extends BaseService {
       if (!parentCategory) {
         throw new BadRequestError({
           message: `Parent category not found for ID: ${updates.parentId}`,
+          context: { createdCategory : 'Invalid parent category ID'},
           code: 404,
         });
       }
