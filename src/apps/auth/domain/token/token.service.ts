@@ -1,8 +1,7 @@
-import { BaseService } from "../../../../librairies/services";
-import { IUser } from "../../data-access/user.interface";
-import { IToken, TokenType } from "../../data-access/token/token.interface";
-import { SecurityUtils } from "../../../../utils/security.utils";
 import { AppConfig } from "../../../../config/app.config";
+import { IUser, IToken, TokenType } from "../../data-access";
+import { BaseService } from "../../../../librairies/services";
+import { SecurityUtils } from "../../../../utils/security.utils";
 import TokenRepository from "../../data-access/token/token.repository";
 import BadRequestError from "../../../../config/error/bad.request.config";
 

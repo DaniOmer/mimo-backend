@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import swaggerJsDoc from "swagger-jsdoc";
 
-import { authSwaggerDocs } from "../../apps/auth/api/auth.swagger.docs";
+import { authSwaggerDocs } from "../../apps/auth/api";
 
 dotenv.config();
 

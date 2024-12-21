@@ -1,20 +1,19 @@
+import { AppConfig } from "../../../../config/app.config";
 import { AuthStrategy } from "./auth.strategy";
-import UserRepository from "../data-access/user.repository";
-import { SecurityUtils } from "../../../utils/security.utils";
-import BadRequestError from "../../../config/error/bad.request.config";
-import { IUser } from "../data-access/user.interface";
-import TokenService from "./token/token.service";
+import { SecurityUtils } from "../../../../utils/security.utils";
+import BadRequestError from "../../../../config/error/bad.request.config";
 import {
-  UserCreateResponse,
-  UserLogin,
-  UserLoginResponse,
-} from "./auth.service";
-import { TokenType } from "../data-access/token/token.interface";
-import { AppConfig } from "../../../config/app.config";
-import RoleService from "./role/role.service";
-import { UserRegisterDTO } from "./user/user.dto";
-import { IRole } from "../data-access/role/role.interface";
-import { IPermission } from "../data-access/permission/permission.interface";
+  IUser,
+  IRole,
+  IPermission,
+  UserRepository,
+  TokenType,
+} from "../../data-access";
+import TokenService from "../token/token.service";
+import { UserCreateResponse, UserLoginResponse } from "./auth.service";
+
+import RoleService from "../role/role.service";
+import { UserRegisterDTO, UserLoginDTO } from "../user/user.dto";
 
 export type UserRole = {
   _id: string;
@@ -73,7 +72,7 @@ export class BasicAuthStrategy implements AuthStrategy {
     return userObject;
   }
 
-  async authenticate(userData: UserLogin): Promise<UserLoginResponse> {
+  async authenticate(userData: UserLoginDTO): Promise<UserLoginResponse> {
     const user = await this.checkUserExistsAndValidate(userData);
     const { _id, password, updatedAt, ...userToDisplay } = user?.toObject();
     const rolesWDate = this.getRolesWithoutDate(userToDisplay.roles);
@@ -105,7 +104,9 @@ export class BasicAuthStrategy implements AuthStrategy {
     return emailValidationLink;
   }
 
-  async checkUserExistsAndValidate(userData: UserLogin): Promise<IUser | null> {
+  async checkUserExistsAndValidate(
+    userData: UserLoginDTO
+  ): Promise<IUser | null> {
     const user = await this.userRepository.getByEmail(userData.email);
     if (!user || user.isDisabled) {
       throw new BadRequestError({

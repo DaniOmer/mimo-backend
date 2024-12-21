@@ -2,7 +2,7 @@ import { Logger } from "winston";
 import { plainToInstance } from "class-transformer";
 import { LoggerConfig } from "../../config/logger/logger.config";
 
-export default class BaseController {
+export class BaseController {
   readonly logger: Logger;
 
   constructor() {
