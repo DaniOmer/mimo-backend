@@ -12,11 +12,6 @@ export class CartController extends BaseController {
     this.cartService = new CartService();
   }
 
-  private async isUserAuthorizedForCart(userId: string, cartId: string): Promise<boolean> {
-    const cart = await this.cartService.getCartByUserId(userId);
-    return cart && cart.user.toString() === userId;
-  }
-
   async getCart(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const cart = await this.cartService.getCartByUserId(req.user.id);

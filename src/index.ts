@@ -12,7 +12,7 @@ import userRouter from "./apps/auth/api/user/user.route";
 import productRouter from "./apps/product/api/product.route";
 import permissionRouter from "./apps/auth/api/permission/permission.route";
 import roleRouter from "./apps/auth/api/role/role.route";
-import orderRoute from "./apps/order/api/order.route";
+import orderRoute from "./apps/order/order/api/order.route";
 
 async function startApp() {
   const app: Express = express();

@@ -27,6 +27,45 @@ const addressSchema = new Schema(
   { _id: false }
 );
 
+const orderItemSchema = new Schema(
+  {
+    product_id: { 
+      type: Schema.Types.ObjectId, 
+      ref: "Product", 
+      required: true 
+    },
+    productVariant_id: { 
+      type: Schema.Types.ObjectId, 
+      ref: "ProductVariant", 
+      required: true 
+    },
+    quantity: { 
+      type: Number, 
+      required: true, 
+      min: 1 
+    },
+    priceEtx: { 
+      type: Number, 
+      required: true, 
+      min: 0 
+    },
+    priceVat: { 
+      type: Number, 
+      required: true, 
+      min: 0 
+    },
+    shippingAddress: { 
+      type: addressSchema, 
+      required: true 
+    },
+    billingAddress: { 
+      type: addressSchema, 
+      required: true 
+    },
+  },
+  { _id: false }
+);
+
 const orderSchema = new Schema<IOrder>(
   {
     orderNumber: {
@@ -71,6 +110,7 @@ const orderSchema = new Schema<IOrder>(
       type: addressSchema,
       required: true,
     },
+    orderItems: [orderItemSchema]
   },
   {
     timestamps: true,

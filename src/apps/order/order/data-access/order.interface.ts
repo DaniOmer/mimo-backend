@@ -2,6 +2,7 @@ import { Document, Types } from "mongoose";
 import { Timestamps } from "../../../../librairies/types/timestamps.interface";
 import { ObjectId } from "mongodb";
 import { IUser } from "../../../auth/data-access";
+import { IOrderItem } from "../../orderItems/data-access";
 
 export enum OrderStatus {
   Pending = "pending",
@@ -30,4 +31,5 @@ export interface IOrder extends Timestamps, Document {
   user: ObjectId | IUser;
   shippingAddress: IAddress;
   billingAddress: IAddress;
+  orderItems: IOrderItem[];
 }

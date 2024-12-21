@@ -28,10 +28,6 @@ export class OrderService extends BaseService {
     return order;
   }
 
-  async getAllOrders(): Promise<IOrder[]> {
-    return this.repository.getAll();
-  }
-
   async updateOrderById(
     id: string,
     updates: Omit<IOrder, "_id" | "orderDate" | "user">
