@@ -75,4 +75,23 @@ export class InventoryController extends BaseController {
       next(error);
     }
   }
+
+  async getInventoriesWithProductAndVariant(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const inventories =
+        await this.inventoryService.getInventoriesWithProductAndVariant();
+      ApiResponse.success(
+        res,
+        "Inventories with product and variant retrieved successfully",
+        inventories,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -38,4 +38,9 @@ router.post(
   controller.getProductByLowerThershold.bind(controller)
 );
 
+router.get(
+  "/all",
+  controller.getInventoriesWithProductAndVariant.bind(controller)
+);
+
 export default router;

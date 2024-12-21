@@ -207,4 +207,10 @@ export class InventoryService extends BaseService {
     const inventories = await this.repository.getLowQuantityProducts(threshold);
     return inventories;
   }
+
+  async getInventoriesWithProductAndVariant(): Promise<IIventory[]> {
+    const inventories =
+      await this.repository.getInventoriesWithProductAndVariant();
+    return inventories;
+  }
 }

@@ -21,4 +21,12 @@ export class InventoryRepository extends MongooseRepository<IIventory> {
       .populate("productVariant")
       .exec();
   }
+
+  async getInventoriesWithProductAndVariant(): Promise<IIventory[]> {
+    return this.model
+      .find()
+      .populate("product")
+      .populate("productVariant")
+      .exec();
+  }
 }
