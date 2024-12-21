@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { OrderItemController } from "./orderItems.controller";
-import { validateDtoMiddleware, validateIdMiddleware } from "../../../../librairies/middlewares/";
+import { validateDtoMiddleware, validateIdMiddleware, authenticateMiddleware, } from "../../../../librairies/middlewares/";
 import { OrderItemCreateDTO } from "../domain/orderItems.dto";
 
 const router = Router();
@@ -31,6 +31,7 @@ const orderItemController = new OrderItemController();
  */
 router.post(
   "/",
+  authenticateMiddleware,
   validateDtoMiddleware(OrderItemCreateDTO),
   orderItemController.createOrderItem.bind(orderItemController)
 );
@@ -54,6 +55,7 @@ router.post(
  */
 router.get(
   "/order/:orderId",
+  authenticateMiddleware,
   validateIdMiddleware("Order"),
   orderItemController.getOrderItemsByOrderId.bind(orderItemController)
 );
@@ -77,6 +79,7 @@ router.get(
  */
 router.delete(
   "/:id",
+  authenticateMiddleware,
   validateIdMiddleware("OrderItem"),
   orderItemController.deleteOrderItem.bind(orderItemController)
 );

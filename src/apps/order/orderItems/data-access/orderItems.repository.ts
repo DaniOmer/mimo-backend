@@ -1,8 +1,9 @@
 import { OrderItemModel } from "./orderItems.model";
 import { IOrderItem } from "./orderItems.interface";
+import { OrderItemCreateDTO } from "../domain";
 
 export class OrderItemRepository {
-  async create(data: Partial<IOrderItem>): Promise<IOrderItem> {
+  async create(data : OrderItemCreateDTO): Promise<IOrderItem> {
     const orderItem = new OrderItemModel(data);
     return orderItem.save();
   }

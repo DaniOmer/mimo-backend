@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { OrderController } from "./order.controller";
-import { validateDtoMiddleware, validateIdMiddleware } from "../../../../librairies/middlewares/";
+import { validateDtoMiddleware, validateIdMiddleware, authenticateMiddleware } from "../../../../librairies/middlewares/";
 import { OrderCreateDTO } from "../domain/order.dto";
 
 const router = Router();
@@ -63,6 +63,7 @@ const orderController = new OrderController();
  */
 router.post(
   "/",
+  authenticateMiddleware,
   validateDtoMiddleware(OrderCreateDTO),
   orderController.createOrder.bind(orderController)
 );
@@ -83,7 +84,10 @@ router.post(
  *               items:
  *                 $ref: '#/components/schemas/Order'
  */
-router.get("/", orderController.getAllOrders.bind(orderController));
+router.get("/",
+  authenticateMiddleware,
+  orderController.getAllOrders.bind(orderController)
+);
 
 /**
  * @swagger
@@ -164,6 +168,7 @@ router.get("/:id",
  */
 router.put(
   "/:id",
+  authenticateMiddleware,
   validateIdMiddleware("Order"),
   validateDtoMiddleware(OrderCreateDTO),
   orderController.updateOrder.bind(orderController)
@@ -190,6 +195,7 @@ router.put(
  */
 router.delete(
   "/:id",
+  authenticateMiddleware,
   validateIdMiddleware("Order"),
   orderController.deleteOrder.bind(orderController)
 );

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { CartController } from "./cart.controller";
-import { validateDtoMiddleware } from "../../../../librairies/middlewares";
+import { validateDtoMiddleware, authenticateMiddleware } from "../../../../librairies/middlewares";
 import { CartCreateDTO } from "../domain/cart.dto";
 
 const router = Router();
@@ -23,7 +23,10 @@ const cartController = new CartController();
  *       200:
  *         description: Cart retrieved successfully
  */
-router.get("/", cartController.getCart.bind(cartController));
+router.get("/",
+  authenticateMiddleware,
+  cartController.getCart.bind(cartController)
+);
 
 /**
  * @swagger
@@ -41,7 +44,11 @@ router.get("/", cartController.getCart.bind(cartController));
  *       200:
  *         description: Cart updated successfully
  */
-router.put("/", validateDtoMiddleware(CartCreateDTO), cartController.updateCart.bind(cartController));
+router.put("/",
+  authenticateMiddleware,
+  validateDtoMiddleware(CartCreateDTO), 
+  cartController.updateCart.bind(cartController)
+);
 
 /**
  * @swagger
@@ -53,6 +60,9 @@ router.put("/", validateDtoMiddleware(CartCreateDTO), cartController.updateCart.
  *       204:
  *         description: Cart deleted successfully
  */
-router.delete("/", cartController.deleteCart.bind(cartController));
+router.delete("/",
+  authenticateMiddleware,
+  cartController.deleteCart.bind(cartController)
+);
 
 export default router;
