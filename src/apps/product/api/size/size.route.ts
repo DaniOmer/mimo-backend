@@ -3,6 +3,8 @@ import { SizeController } from "./size.controller";
 import {
   validateDtoMiddleware,
   validateIdMiddleware,
+  authenticateMiddleware,
+  checkRoleMiddleware,
 } from "../../../../librairies/middlewares";
 import { SizeCreateDTO, SizeUpdateDTO } from "../../domain/size/size.dto";
 
@@ -45,6 +47,8 @@ const router = Router();
  */
 router.post(
   "/",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateDtoMiddleware(SizeCreateDTO),
   sizeController.createSize.bind(sizeController)
 );
@@ -92,6 +96,7 @@ router.get("/", sizeController.getAllSizes.bind(sizeController));
  */
 router.get(
   "/:id",
+  authenticateMiddleware,
   validateIdMiddleware("Size"),
   sizeController.getSizeById.bind(sizeController)
 );
@@ -132,6 +137,8 @@ router.get(
  */
 router.put(
   "/:id",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("Size"),
   validateDtoMiddleware(SizeUpdateDTO),
   sizeController.updateSizeById.bind(sizeController)
@@ -158,6 +165,8 @@ router.put(
  */
 router.delete(
   "/:id",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("Size"),
   sizeController.deleteSizeById.bind(sizeController)
 );
