@@ -4,6 +4,12 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { AppConfig } from "../config/app.config";
 import BadRequestError from "../config/error/bad.request.config";
 
+type UserDataToJWT = {
+  id: string;
+  roles: object[];
+  permissions: object[];
+};
+
 export class SecurityUtils {
   static generateSecret(): string {
     return crypto.randomBytes(32).toString("base64");
@@ -33,12 +39,20 @@ export class SecurityUtils {
     return bcrypt.compare(inputPassword, storedPasswordHash);
   }
 
-  static async generateJWTToken(userId: string): Promise<string> {
+  static async generateJWTToken(userDataToJWT: UserDataToJWT): Promise<string> {
     const secret = this.getJWTSecret();
-    return jwt.sign({ userId }, secret, {
-      algorithm: "HS256",
-      expiresIn: AppConfig.jwt.expiresIn,
-    });
+    return jwt.sign(
+      {
+        userId: userDataToJWT.id,
+        roles: userDataToJWT.roles,
+        permission: userDataToJWT.permissions,
+      },
+      secret,
+      {
+        algorithm: "HS256",
+        expiresIn: AppConfig.jwt.expiresIn,
+      }
+    );
   }
 
   static async verifyJWTToken(token: string): Promise<string | JwtPayload> {

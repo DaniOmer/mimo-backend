@@ -38,7 +38,7 @@ export class BrevoMailer {
     apiInstance.sendTransacEmail(sendSmtpEmail).then(
       (data) => {
         this.logger.info(
-          `API called successfully. status: ${data.response.statusCode} and body: ${data.response}`
+          `API called successfully. status: ${data.response.statusCode} and body: ${data}`
         );
       },
       (error) => {
