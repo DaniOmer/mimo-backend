@@ -9,11 +9,11 @@ import {
 export class AddProductInventoryDTO {
   @IsNotEmpty()
   @IsMongoId()
-  readonly productId!: string;
+  readonly product!: string;
 
   @IsOptional()
   @IsMongoId()
-  readonly productVariantId!: string;
+  readonly productVariant!: string;
 
   @IsNotEmpty()
   @IsNumber()
@@ -21,7 +21,7 @@ export class AddProductInventoryDTO {
 
   @IsNotEmpty()
   @IsMongoId()
-  readonly warehouseId!: string;
+  readonly warehouse!: string;
 }
 
 export class UpdateProductInventoryDTO {

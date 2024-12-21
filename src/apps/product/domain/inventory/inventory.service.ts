@@ -24,8 +24,8 @@ export class InventoryService extends BaseService {
   async addInventory(data: Omit<IIventory, "_id">): Promise<IIventory> {
     const existingInventory =
       await this.repository.getInventoryByProductAndVariantId(
-        data.productId.toString(),
-        data.productVariantId
+        data.product.toString(),
+        data.productVariant && data.productVariant.toString()
       );
     if (existingInventory) {
       throw new BadRequestError({
@@ -38,7 +38,7 @@ export class InventoryService extends BaseService {
     }
 
     const product = await this.productService.getProductById(
-      data.productId.toString()
+      data.product.toString()
     );
 
     if (!product) {
@@ -49,10 +49,10 @@ export class InventoryService extends BaseService {
       });
     }
 
-    if (data.productVariantId) {
+    if (data.productVariant) {
       const productVariant =
         await this.productVariantService.getProductVariantById(
-          data.productVariantId.toString()
+          data.productVariant.toString()
         );
 
       if (!productVariant) {
@@ -65,7 +65,7 @@ export class InventoryService extends BaseService {
         });
       }
 
-      if (productVariant.productId.toString() !== data.productId.toString()) {
+      if (productVariant.productId.toString() !== data.product.toString()) {
         throw new BadRequestError({
           message: "Product variant does not belong to the specified product",
           context: {

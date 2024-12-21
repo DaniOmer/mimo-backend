@@ -8,9 +8,9 @@ export class InventoryRepository extends MongooseRepository<IIventory> {
   }
 
   async getInventoryByProductAndVariantId(
-    productId: string,
-    productVariantId: string | undefined
+    product: string,
+    productVariant: string | undefined
   ): Promise<IIventory[]> {
-    return this.model.find({ productId, productVariantId }).exec();
+    return this.model.find({ product, productVariant }).exec();
   }
 }
