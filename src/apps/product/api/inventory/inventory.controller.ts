@@ -53,4 +53,26 @@ export class InventoryController extends BaseController {
       next(error);
     }
   }
+
+  async getProductByLowerThershold(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const threshold = parseInt(req.body.threshold);
+      const lowQuantityProducts =
+        await this.inventoryService.getLowQuantityProductsByThershold(
+          threshold
+        );
+      ApiResponse.success(
+        res,
+        "Low quantity products retrieved successfully",
+        lowQuantityProducts,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }

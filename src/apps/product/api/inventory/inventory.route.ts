@@ -3,6 +3,7 @@ import { InventoryController } from "./inventory.controller";
 import {
   AddProductInventoryDTO,
   UpdateProductInventoryDTO,
+  GetLowQuantityProductsDTO,
 } from "../../domain/inventory/inventory.dto";
 import {
   validateDtoMiddleware,
@@ -27,6 +28,14 @@ router.put(
   checkRoleMiddleware(["admin"]),
   validateDtoMiddleware(UpdateProductInventoryDTO),
   controller.updateProductInventory.bind(controller)
+);
+
+router.post(
+  "/low-quantity",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  validateDtoMiddleware(GetLowQuantityProductsDTO),
+  controller.getProductByLowerThershold.bind(controller)
 );
 
 export default router;

@@ -27,7 +27,7 @@ export class InventoryService extends BaseService {
         data.product.toString(),
         data.productVariant && data.productVariant.toString()
       );
-    if (existingInventory) {
+    if (existingInventory.length) {
       throw new BadRequestError({
         message: "Inventory already exists for this product and variant",
         context: {
@@ -199,5 +199,12 @@ export class InventoryService extends BaseService {
     }
 
     return expirationTime * 1000;
+  }
+
+  async getLowQuantityProductsByThershold(
+    threshold: number
+  ): Promise<IIventory[]> {
+    const inventories = await this.repository.getLowQuantityProducts(threshold);
+    return inventories;
   }
 }
