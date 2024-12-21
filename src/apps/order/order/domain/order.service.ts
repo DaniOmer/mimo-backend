@@ -34,7 +34,7 @@ export class OrderService extends BaseService {
 
   async updateOrderById(
     id: string,
-    updates: Partial<IOrder>
+    updates: Omit<IOrder, "_id" | "orderDate" | "user">
   ): Promise<IOrder> {
     const updatedOrder = await this.repository.updateById(id, updates);
     if (!updatedOrder) {
