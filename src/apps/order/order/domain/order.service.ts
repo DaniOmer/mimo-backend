@@ -1,7 +1,8 @@
 import BadRequestError from "../../../../config/error/bad.request.config";
 import { BaseService } from "../../../../librairies/services";
-import { IOrder, OrderRepository } from "../data-access";
+import { IOrder, OrderModel, OrderRepository } from "../data-access";
 import { OrderCreateDTO } from "./order.dto";
+import { Types } from "mongoose";
 
 export class OrderService extends BaseService {
   private repository: OrderRepository;
@@ -56,5 +57,17 @@ export class OrderService extends BaseService {
       });
     }
     return deletedOrder;
+  }
+
+  async getOrdersByUserId(userId: string): Promise<IOrder[]> {
+    try {
+      const userObjectId = new Types.ObjectId(userId);
+
+      const orders = await OrderModel.find({ userId: userObjectId }).exec();
+
+      return orders;
+    } catch (error) {
+      throw new Error('Error fetching orders for user');
+    }
   }
 }
