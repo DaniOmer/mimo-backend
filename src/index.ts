@@ -12,7 +12,11 @@ import userRouter from "./apps/auth/api/user/user.route";
 import productRouter from "./apps/product/api/product.route";
 import permissionRouter from "./apps/auth/api/permission/permission.route";
 import roleRouter from "./apps/auth/api/role/role.route";
+import categoryRoute from "./apps/product/api/category/category.route";
+import sizeRouter from "./apps/product/api/size/size.route";
+import colorRouter from "./apps/product/api/color/color.route";
 import paymentRouter from "./apps/payment/api/payment.route";
+
 
 async function startApp() {
   const app: Express = express();
@@ -39,6 +43,16 @@ async function startApp() {
 
     // Product routes
     app.use("/api/products", productRouter);
+
+  
+    // category routes
+    app.use("/api/categories", categoryRoute);
+
+    // Size routes
+    app.use("/api/sizes", sizeRouter);
+
+    // Color routes
+    app.use("/api/colors", colorRouter);
 
     // User routes
     app.use("/api/users", userRouter);
