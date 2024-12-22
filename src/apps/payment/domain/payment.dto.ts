@@ -8,6 +8,8 @@ import {
   IsOptional,
 } from "class-validator";
 
+import { PaymentCurrencyType } from "../../../config/store";
+
 export class PaymentMethodDTO {
   @IsMongoId()
   readonly customer!: string;
@@ -41,6 +43,20 @@ export class CardMethodDTO extends PaymentMethodDTO {
   @IsNotEmpty()
   @IsNumber()
   readonly expYear!: number;
+}
+
+export class CardPaymentIntentDTO {
+  @IsNotEmpty()
+  @IsNumber()
+  amount!: number;
+
+  @IsNotEmpty()
+  @IsEnum(PaymentCurrencyType)
+  currency!: PaymentCurrencyType;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  readonly paymentMethod!: string;
 }
 
 export class PayPalMethodDTO extends PaymentMethodDTO {
