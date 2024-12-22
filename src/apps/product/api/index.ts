@@ -1,2 +1,10 @@
 export * from "./product.controller";
 export * from "./product.route";
+export * from "./size/size.controller";
+export * from "./size/size.route";
+// export * from "./productVariant/productVariant.controller";
+export * from "./productVariant/productVariant.route";
+export * from "./category/category.controller";
+export * from "./category/category.route";
+export * from "./productImage/productImage.controller";
+export * from "./productImage/productImage.route";

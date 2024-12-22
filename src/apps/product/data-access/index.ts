@@ -16,3 +16,13 @@ export * from "./productHasCategory/productHasCategory.model";
 export * from "./productHasProductFeature/productHasProductFeature.repository";
 export * from "./productHasProductFeature/productHasProductFeature.interface";
 export * from "./productHasProductFeature/productHasProductFeature.model";
+export * from "./category/category.repository";
+export * from "./category/category.interface";
+export * from "./category/category.model";
+export * from "./productImage/productImage.repository";
+export * from "./productImage/productImage.interface";
+export * from "./productImage/productImage.model";
+export * from "./productFeature/productFeature.repository";
+export * from "./productFeature/productFeature.interface";
+export * from "./productFeature/productFeature.model";
+

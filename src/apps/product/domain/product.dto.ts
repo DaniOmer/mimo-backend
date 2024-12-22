@@ -1,15 +1,54 @@
-import { IsNotEmpty, MaxLength, MinLength, IsString } from "class-validator";
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  IsNumber,
+  MinLength,
+} from "class-validator";
 
 export class ProductCreateDTO {
   @IsNotEmpty()
-  @IsString() 
+  @IsString()
   @MinLength(3)
-  @MaxLength(255)
+  @MaxLength(100)
   readonly name!: string;
 
-  @IsNotEmpty()
-  @IsString() 
-  @MinLength(10)
+  @IsOptional()
+  @IsString()
   @MaxLength(1000)
   readonly description?: string;
+
+  @IsOptional()
+  @IsNumber()
+  readonly basePrice?: number;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  readonly isActive!: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  readonly images?: string[];
+
+  @IsNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  readonly categoryIds!: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  readonly featureIds?: string[];
+
+  @IsNotEmpty()
+  @IsString()
+  readonly createdBy!: string;
+
+  @IsOptional()
+  @IsString()
+  readonly updatedBy?: string;
 }
