@@ -6,7 +6,6 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsOptional,
-  IsEnum,
 } from "class-validator";
 
 import { PaymentCurrencyType } from "../../../config/store";

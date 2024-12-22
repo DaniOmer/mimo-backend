@@ -27,6 +27,7 @@ const product_route_1 = __importDefault(require("./apps/product/api/product.rout
 const permission_route_1 = __importDefault(require("./apps/auth/api/permission/permission.route"));
 const role_route_1 = __importDefault(require("./apps/auth/api/role/role.route"));
 const payment_route_1 = __importDefault(require("./apps/payment/api/payment.route"));
+const inventory_route_1 = __importDefault(require("./apps/product/api/inventory/inventory.route"));
 function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
@@ -46,6 +47,8 @@ function startApp() {
             app.use("/api/auth", auth_route_1.default);
             // Product routes
             app.use("/api/products", product_route_1.default);
+            // Inventory routes
+            app.use("/api/products/inventory", inventory_route_1.default);
             // User routes
             app.use("/api/users", user_route_1.default);
             // Permission routes

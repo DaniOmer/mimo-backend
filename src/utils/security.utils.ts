@@ -62,7 +62,7 @@ export class SecurityUtils {
         if (error) {
           throw new BadRequestError({
             code: 401,
-            message: "Invalid token",
+            message: "Invalid JWT token",
             logging: true,
           });
         } else {

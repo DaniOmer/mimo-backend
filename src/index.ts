@@ -17,6 +17,7 @@ import categoryRoute from "./apps/product/api/category/category.route";
 import sizeRouter from "./apps/product/api/size/size.route";
 import colorRouter from "./apps/product/api/color/color.route";
 import paymentRouter from "./apps/payment/api/payment.route";
+import inventoryRouter from "./apps/product/api/inventory/inventory.route";
 
 
 async function startApp() {
@@ -45,6 +46,10 @@ async function startApp() {
     // Product routes
     app.use("/api/products", productRouter);
 
+
+    // Inventory routes
+    app.use("/api/products/inventory", inventoryRouter);
+
   
     // category routes
     app.use("/api/categories", categoryRouter);
@@ -54,6 +59,7 @@ async function startApp() {
 
     // Color routes
     app.use("/api/colors", colorRouter);
+
 
     // User routes
     app.use("/api/users", userRouter);

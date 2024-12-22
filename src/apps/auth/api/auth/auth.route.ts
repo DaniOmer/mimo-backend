@@ -23,7 +23,6 @@ router.post(
 
 router.post(
   "/login/:strategy",
-  authenticateMiddleware,
   validateDtoMiddleware(UserLoginDTO),
   authController.login.bind(authController)
 );
