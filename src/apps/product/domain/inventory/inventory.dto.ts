@@ -4,6 +4,9 @@ import {
   IsNumber,
   IsNotEmpty,
   IsOptional,
+  IsPositive,
+  Min,
+  Max,
 } from "class-validator";
 
 export class AddProductInventoryDTO {
@@ -17,6 +20,7 @@ export class AddProductInventoryDTO {
 
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   readonly quantity!: number;
 
   @IsNotEmpty()
@@ -27,5 +31,15 @@ export class AddProductInventoryDTO {
 export class UpdateProductInventoryDTO {
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   readonly quantity!: number;
+}
+
+export class GetLowQuantityProductsDTO {
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  @Min(2)
+  @Max(10)
+  readonly threshold!: number;
 }
