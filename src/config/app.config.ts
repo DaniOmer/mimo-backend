@@ -48,4 +48,9 @@ export const AppConfig = {
       secretKey: process.env.STRIPE_SECRET_KEY,
     },
   },
+  cart: {
+    product: {
+      expirationTime: process.env.CART_PRODUCT_EXPIRATION_TIME || "900",
+    },
+  },
 };

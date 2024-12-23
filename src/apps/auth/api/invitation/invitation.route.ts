@@ -10,6 +10,13 @@ import { InvitationCreateDTO, UserCreateDTO } from "../../domain/invitation/invi
 const invitationController = new InvitationController();
 const router = Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Invitations
+ *   description: API for managing invitations
+ */
+
 router.post(
   "/",
   authenticateMiddleware, 
@@ -17,10 +24,4 @@ router.post(
   validateDtoMiddleware(InvitationCreateDTO), 
   invitationController.createInvitation.bind(invitationController)
 );
-
-router.post(
-    "/createUserFromInvitation",
-    validateDtoMiddleware(UserCreateDTO), 
-    invitationController.createUserFromInvitation.bind(invitationController) 
-  );
 export default router;

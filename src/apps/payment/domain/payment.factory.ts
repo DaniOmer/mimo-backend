@@ -1,5 +1,5 @@
 import PaymentStrategy from "./payment.strategy";
-import { CardPayment } from "./payment.stripe";
+import { CardPayment } from "./payment.card";
 import { PayPalPayment } from "./payment.paypal";
 import BadRequestError from "../../../config/error/bad.request.config";
 

@@ -11,6 +11,7 @@
     "build": "tsc && copyfiles -u 1 src/templates/**/* dist/index.js",
     "start": "node dist/index.js",
     "dev": "tsc && copyfiles -u 1 src/templates/**/* dist/index.js && node dist/index.js",
+    "init:role": "tsc && node dist/index.js/config/scripts/initRole.script.js",
     "live": "nodemon dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

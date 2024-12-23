@@ -4,7 +4,7 @@ import { ISize } from "./size.interface";
 const SizeSchema = new Schema<ISize>(
   {
     name: { type: String, required: true },
-    dimensions: { type: String },
+    dimensions: { type: String, required: true},
     volume: { type: Number },
     weightCapacity: { type: Number },
     isPopular: { type: Boolean, default: false },

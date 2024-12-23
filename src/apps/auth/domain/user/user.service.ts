@@ -1,8 +1,10 @@
-import { IUser, UserRepository } from "../../data-access";
+import { AuthType, IUser, UserRepository } from "../../data-access";
 import { BaseService } from "../../../../librairies/services";
 import BadRequestError from "../../../../config/error/bad.request.config";
 import { UserUpdateDTO } from "./user.dto";
 import TokenService from "../token/token.service";
+import { InvitationService } from "../invitation/invitation.service";
+import { SecurityUtils } from "../../../../utils/security.utils";
 
 export class UserService extends BaseService {
   private repository: UserRepository;
@@ -49,6 +51,45 @@ export class UserService extends BaseService {
       throw new BadRequestError({ message: "User not found", code: 404 });
     }
     const { password, ...userWithoutPassword } = deletedUser.toObject();
+    return userWithoutPassword;
+  }
+
+  async createUserFromInvitation(
+    tokenHash: string,
+    password: string,
+    isTermsOfSale: boolean,
+    invitationService: InvitationService
+  ): Promise<Omit<IUser, "password">> {
+    // Valider l'invitation et récupérer les détails
+    const {
+      firstName,
+      lastName,
+      email,
+      role,
+      invitationId,
+    } = await invitationService.validateInvitation(tokenHash);
+
+    // Hacher le mot de passe
+    const hashedPassword = await SecurityUtils.hashPassword(password);
+
+    // Créer l'utilisateur
+    const newUser = await this.repository.create({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      roles: [role],
+      isTermsOfSale,
+      isVerified: true,
+      isDisabled: false,
+      authType: AuthType.Basic,
+    });
+
+    // Supprimer l'invitation
+    await invitationService.deleteInvitation(invitationId);
+
+    // Retourner l'utilisateur sans mot de passe
+    const { password: _, ...userWithoutPassword } = newUser.toObject();
     return userWithoutPassword;
   }
 

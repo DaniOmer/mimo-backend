@@ -31,7 +31,7 @@ export class InvitationService extends BaseService {
     firstName: string,
     lastName: string,
     email: string,
-    admin: IUser,
+    currentUserId: string,
     roleId: string
   ): Promise<void> {
     const existingUser = await this.userRepository.getByEmail(email);
@@ -47,19 +47,25 @@ export class InvitationService extends BaseService {
       });
     }
 
-    const token = await this.tokenService.createToken(admin, TokenType.Confirmation);
-
-    await this.invitationRepository.create({
+    const currentUser = await this.userRepository.getById(currentUserId);
+    if (!currentUser) {
+      throw new BadRequestError({ message: "User not found", code: 400 });
+    }
+  
+    const token = await this.tokenService.createToken(currentUser, TokenType.Confirmation);
+ 
+     await this.invitationRepository.create({
       firstName,
       lastName,
       email,
-      admin: new Types.ObjectId(admin._id),
+      admin: new Types.ObjectId(currentUserId),
       token: new Types.ObjectId(token._id),
       role: new Types.ObjectId(roleId),
     });
 
     const registrationLink = `${AppConfig.client.url}/users/register?tokenHash=${token.hash}`;
     await this.sendInvitationEmail(email, firstName, registrationLink);
+
   }
 
   /**
@@ -75,15 +81,24 @@ export class InvitationService extends BaseService {
   }
 
   /**
-   * Créer un utilisateur à partir d'une invitation
+   * valider l'invitation
    */
-  async createUserFromInvitation(
-    tokenHash: string,
-    password: string,
-    isTermsOfSale: boolean
-  ): Promise<Response> {
-    const token = await this.tokenService.validateAndReturnToken(tokenHash, TokenType.Confirmation);
+  async validateInvitation(
+    tokenHash: string
+  ): Promise<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: IRole;
+    invitationId: string;
+  }> {
+   
+    const token = await this.tokenService.validateAndReturnToken(
+      tokenHash,
+      TokenType.Confirmation
+    );
 
+  
     const validInvitation = await this.invitationRepository.findByToken(token._id);
     if (!validInvitation) {
       throw new BadRequestError({
@@ -92,23 +107,16 @@ export class InvitationService extends BaseService {
       });
     }
 
-    const hashedPassword = await SecurityUtils.hashPassword(password);
-
-    const newUser = await this.userRepository.create({
+    return {
       firstName: validInvitation.firstName,
       lastName: validInvitation.lastName,
       email: validInvitation.email,
-      password: hashedPassword,
-      roles:[validInvitation.role] as IRole[],
-      isTermsOfSale:isTermsOfSale,
-      isVerified: true,
-      isDisabled: false,
-      authType: AuthType.Basic,
-    });
+      role: validInvitation.role as IRole,
+      invitationId: validInvitation._id.toString(),
+    };
+}
 
-    await this.invitationRepository.deleteById(validInvitation._id);
-
-    const { password: _, ...userWithoutPassword } = newUser.toObject();
-    return userWithoutPassword;
-  }
+async deleteInvitation(invitationId: string): Promise<void> {
+  await this.invitationRepository.deleteById(invitationId);
+}
 }

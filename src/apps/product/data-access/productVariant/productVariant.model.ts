@@ -3,13 +3,12 @@ import { IProductVariant } from "./productVariant.interface";
 
 const ProductVariantSchema = new Schema<IProductVariant>(
   {
-    price_etx: { type: Number, required: true },
-    price_vat: { type: Number, required: true },
-    quantity: { type: Number, required: true },
-    stripe_id: { type: String, unique: true, sparse: true },
-    product_id: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-    size_id: { type: Schema.Types.ObjectId, ref: "Size", required: true },
-    color_id: { type: Schema.Types.ObjectId, ref: "Color", required: true },
+    priceEtx: { type: Number, required: true },
+    priceVat: { type: Number, required: true },
+    stripeId: { type: String, unique: true, sparse: true },
+    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    sizeId: { type: Schema.Types.ObjectId, ref: "Size", required: true },
+    colorId: { type: Schema.Types.ObjectId, ref: "Color", required: true },
     material: { type: String },
     weight: { type: Number, required: true },
     isLimitedEdition: { type: Boolean, default: false },
