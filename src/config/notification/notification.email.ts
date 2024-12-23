@@ -1,7 +1,7 @@
 import NotificationStrategy from "./notification.strategy";
 import { BrevoMailer } from "./backends/email/brevo.backend";
 import { AppConfig } from "../app.config";
-import { htmlTemplateReader } from "../../utils/helpers.utils";
+import { GeneralUtils } from "../../utils/general.utils";
 
 export type MailerDataType = {
   recipient: string;
@@ -21,7 +21,7 @@ export class EmailNotification implements NotificationStrategy {
 
   prepare(data: MailerDataType) {
     const { recipient, subject, templateName, params } = data;
-    const templateContent = htmlTemplateReader(templateName);
+    const templateContent = GeneralUtils.htmlTemplateReader(templateName);
     return {
       recipient: recipient,
       subject: subject,

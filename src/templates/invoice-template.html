@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0;">
+  <div>
+    <div style="padding: 16px;">
+      <div style="padding: 24px 56px;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tbody>
+            <tr>
+              <td style="width: 100%; vertical-align: top;">
+                <div>
+                  <img src="https://raw.githubusercontent.com/templid/email-templates/main/templid-dynamic-templates/invoice-02/brand-sample.png" style="height: 48px;" />
+                </div>
+              </td>
+
+              <td style="vertical-align: top;">
+                <div style="font-size: 14px;">
+                  <table style="border-collapse: collapse;">
+                    <tbody>
+                      <tr>
+                        <td style="border-right: 1px solid #ccc; padding-right: 16px;">
+                          <div>
+                            <p style="color: #718096; text-align: right; margin: 0;">Date</p>
+                            <p style="font-weight: bold; color: #000; text-align: right; margin: 0;">{{ invoice.createdAt }}</p>
+                          </div>
+                        </td>
+                        <td style="padding-left: 16px;">
+                          <div>
+                            <p style="color: #718096; text-align: right; margin: 0;">Invoice #</p>
+                            <p style="font-weight: bold; color: #000; text-align: right; margin: 0;">{{ invoice.number }}</p>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background-color: #f1f5f9; padding: 24px 56px; font-size: 14px;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tbody>
+            <tr>
+              <td style="width: 50%; vertical-align: top; color: #4a5568;">
+                <div>
+                  <p style="font-weight: bold;">Mimo INC</p>
+                  <p>SIREN: 2345678908384</p>
+                  <p>VAT: 23456789</p>
+                  <p>120 Allée de la tour rendez-vous</p>
+                  <p>93320 Les pavillons-sous-bois</p>
+                  <p>France</p>
+                </div>
+              </td>
+              <td style="width: 50%; vertical-align: top; text-align: right; color: #4a5568;">
+                <div>
+                  <p style="font-weight: bold;">{{customer.firstName}} {{customer.lastName}}</p>
+                  <p>N° de commande: {{ order.number }}</p>
+                  <p>VAT: 23456789</p>
+                  <p>9552 Vandervort Spurs</p>
+                  <p>Paradise, 43325</p>
+                  <p>United States</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="padding: 40px 56px; font-size: 14px; color: #2d3748;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <td style="border-bottom: 2px solid #000; padding-bottom: 12px; padding-left: 12px; font-weight: bold; color: #000;">#</td>
+              <td style="border-bottom: 2px solid #000; padding-bottom: 12px; padding-left: 8px; font-weight: bold; color: #000;">Détails des articles</td>
+              <td style="border-bottom: 2px solid #000; padding-bottom: 12px; padding-left: 8px; text-align: right; font-weight: bold; color: #000;">Prix</td>
+              <td style="border-bottom: 2px solid #000; padding-bottom: 12px; padding-left: 8px; text-align: center; font-weight: bold; color: #000;">Quantité.</td>
+              <td style="border-bottom: 2px solid #000; padding-bottom: 12px; padding-left: 8px; text-align: center; font-weight: bold; color: #000;">TVA</td>
+              <td style="border-bottom: 2px solid #000; padding-bottom: 12px; padding-left: 8px; text-align: right; font-weight: bold; color: #000;">Sous total</td>
+              <td style="border-bottom: 2px solid #000; padding-bottom: 12px; padding-left: 8px; padding-right: 12px; text-align: right; font-weight: bold; color: #000;">Sous total + TVA</td>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each items}}
+              <tr>
+                <td style="border-bottom: 1px solid #ccc; padding: 12px;">{{ itemNumber }}</td>
+                <td style="border-bottom: 1px solid #ccc; padding: 12px;">{{ productName }}</td>
+                <td style="border-bottom: 1px solid #ccc; padding: 12px; text-align: right;">{{ unitPrice }}€</td>
+                <td style="border-bottom: 1px solid #ccc; padding: 12px; text-align: center;">{{ quantity }}</td>
+                <td style="border-bottom: 1px solid #ccc; padding: 12px; text-align: center;">20%</td>
+                <td style="border-bottom: 1px solid #ccc; padding: 12px; text-align: right;">{{ subTotal }}</td>
+                <td style="border-bottom: 1px solid #ccc; padding: 12px; text-align: right;">{{ subTotalAndVat }}</td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="padding: 24px 56px; font-size: 14px; color: #2d3748;">
+        <p style="color: #000; font-weight: bold;">Détails de paiement</p>
+        <p>Banks of Banks</p>
+        <p>Bank/Sort Code: 1234567</p>
+        <p>Account Number: 123456678</p>
+        <p>Payment Reference: BRA-00335</p>
+      </div>
+
+      <footer style="position: fixed; bottom: 0; left: 0; background-color: #f1f5f9; width: 100%; text-align: center; font-size: 12px; color: #4a5568; padding: 12px;">
+        Mimo Inc
+        <span style="color: #cbd5e0; margin: 0 8px;">|</span>
+        info@mimo.com
+        <span style="color: #cbd5e0; margin: 0 8px;">|</span>
+        +33 17171717
+      </footer>
+    </div>
+</body>
+
+</html>
