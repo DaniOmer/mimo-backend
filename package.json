@@ -39,6 +39,7 @@
     "mongodb": "^6.9.0",
     "mongoose": "^8.7.1",
     "node": "^20.9.0",
+    "reflect-metadata": "^0.2.2",
     "stripe": "^17.4.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",

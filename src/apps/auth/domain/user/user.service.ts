@@ -2,6 +2,7 @@ import { IUser, UserRepository } from "../../data-access";
 import { BaseService } from "../../../../librairies/services";
 import BadRequestError from "../../../../config/error/bad.request.config";
 import { UserUpdateDTO } from "./user.dto";
+import TokenService from "../token/token.service";
 
 export class UserService extends BaseService {
   private repository: UserRepository;
@@ -13,7 +14,7 @@ export class UserService extends BaseService {
     this.tokenService = new TokenService();
   }
 
-  async getAllUsers(): Promise<UserResponse[]> {
+  async getAllUsers(): Promise<Response[]> {
     const users = await this.repository.getAll();
     return users.map((user) => {
       const { password, ...userWithoutPassword } = user.toObject();
@@ -21,7 +22,7 @@ export class UserService extends BaseService {
     });
   }
 
-  async getUserById(id: string): Promise<UserResponse> {
+  async getUserById(id: string): Promise<Response> {
     const user = await this.repository.getById(id);
     if (!user) {
       throw new BadRequestError({ message: "User not found", code: 404 });
@@ -42,7 +43,7 @@ export class UserService extends BaseService {
     return userWithoutPassword;
   }
 
-  async deleteUserById(id: string): Promise<UserResponse> {
+  async deleteUserById(id: string): Promise<Response> {
     const deletedUser = await this.repository.deleteById(id);
     if (!deletedUser) {
       throw new BadRequestError({ message: "User not found", code: 404 });
@@ -51,88 +52,4 @@ export class UserService extends BaseService {
     return userWithoutPassword;
   }
 
-  async createInvitation(
-    firstName: string,
-    lastName: string,
-    email: string,
-    adminId: string,
-    role: Role
-  ): Promise<void> {
-    
-    const existingUser = await this.repository.getByEmail(email);
-    if (existingUser) {
-      throw new BadRequestError({ message: "Email already in use", code: 400 });
-    }
-
-   
-    const admin = await this.repository.getById(adminId);
-    if (!admin) {
-      throw new BadRequestError({ message: "Admin user not found", code: 404 });
-    }
-
-    const token = await this.tokenService.createToken(admin, TokenType.Confirmation);
-    if (!token || !token._id) {
-      throw new BadRequestError({ message: "Failed to create token for invitation", code: 400 });
-    }
-
-    const newInvitation = new InvitationModel({
-      firstName,
-      lastName,
-      email,
-      admin: adminId,
-      token: token._id,
-      role,
-    });
-    await newInvitation.save();
-
-    // Send an email with the invitation link
-    const registrationLink = `${AppConfig.client.url}/users/register?tokenHash=${token.hash}`;
-    await this.sendInvitationEmail(email, firstName, registrationLink);
-  }
-
-  /**
-   * Send an invitation email to the user
-   */
-  private async sendInvitationEmail(email: string, firstName: string, registrationLink: string): Promise<void> {
-    await this.emailNotifier.send({
-      recipient: email,
-      subject: "You're Invited to Join!",
-      templateName: "invitation-email.html",
-      params: { firstName, registration_link: registrationLink },
-    });
-  }
-
-  /**
-   * Create a new user based on a valid invitation token
-   */
-  async createUser(
-    tokenHash: string,
-    userData: Pick<IUser, "password" | "isTermsOfSale">
-  ): Promise<UserResponse> {
-    const token = await this.tokenService.validateAndReturnToken(tokenHash, TokenType.Confirmation);
-
-    const validInvitation = await InvitationModel.findOne({ token: token._id }).exec();
-    if (!validInvitation) {
-      throw new BadRequestError({ message: "Invitation not found", code: 400 });
-    }
-
-    const hashedPassword = await SecurityUtils.hashPassword(userData.password);
-
-    const newUser = await this.repository.create({
-      firstName: validInvitation.firstName,
-      lastName: validInvitation.lastName,
-      email: validInvitation.email,
-      password: hashedPassword,
-      role: validInvitation.role,
-      isTermsOfSale: userData.isTermsOfSale,
-      isVerified: true,
-      isDisabled: false,
-      authType: AuthType.Basic,
-    });
-
-    await InvitationModel.findByIdAndDelete(validInvitation._id);
-
-    const { password, ...userWithoutPassword } = newUser.toObject();
-    return userWithoutPassword;
-  }
 }

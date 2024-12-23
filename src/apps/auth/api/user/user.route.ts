@@ -34,14 +34,4 @@ router.delete(
   userController.deleteUserById.bind(userController)
 );
 
-
-router.post(
-  "/invite",
-  userController.createInvitation.bind(userController)
-);
-
-router.post(
-  "/createUser",
-  userController.createUser.bind(userController)
-);
 export default router;

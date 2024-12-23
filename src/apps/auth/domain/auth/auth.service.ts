@@ -112,15 +112,15 @@ export class AuthService extends BaseService {
   }
 
   async confirmPasswordReset(data: ConfirmPasswordResetDTO): Promise<IUser> {
-    const tokenUser = await this.tokenService.validateTokenAndReturnUser(
+    const tokenUser = await this.tokenService.validateAndReturnToken(
       data.token,
       TokenType.PasswordReset
     );
 
     const user =
-      typeof token.user === "string"
-        ? await this.userRepository.getById(token.user)
-        : token.user;
+      typeof tokenUser.user === "string"
+        ? await this.userRepository.getById(tokenUser.user)
+        : tokenUser.user;
 
     if (!user) {
       throw new BadRequestError({

@@ -52,25 +52,6 @@ export class UserController extends BaseController {
     }
   }
 
-  async createInvitation(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-       const { firstName, lastName, email, adminId, role } = req.body;
-       await this.userService.createInvitation(firstName, lastName, email, adminId, role);
-       ApiResponse.success(res, "Invitation created successfully and email sent", null, 201);
-    } catch (error) {
-       next(error);
-
-    }
- }
- 
-  async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-        const { password, isTermsOfSale,tokenHash } = req.body;
-        const newUser = await this.userService.createUser(tokenHash as string, { password, isTermsOfSale });
-        ApiResponse.success(res, "User registered successfully", newUser, 201);
-    } catch (error) {
-        next(error);
-  }
-}
+  
 
 }

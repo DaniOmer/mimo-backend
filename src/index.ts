@@ -13,6 +13,7 @@ import productRouter from "./apps/product/api/product.route";
 import permissionRouter from "./apps/auth/api/permission/permission.route";
 import roleRouter from "./apps/auth/api/role/role.route";
 import paymentRouter from "./apps/payment/api/payment.route";
+import invitationRouter from "./apps/auth/api/invitation/invitation.route";
 
 async function startApp() {
   const app: Express = express();
@@ -51,6 +52,9 @@ async function startApp() {
 
     // Payment routes
     app.use("/api/payment", paymentRouter);
+
+    //invitations routes
+    app.use("/api/invitations", invitationRouter);
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);

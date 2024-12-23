@@ -1,6 +1,5 @@
 import { Schema, model } from "mongoose";
 import { IInvitation } from "./invitation.interface";
-import { Role } from "./user.interface";
 
 const invitationSchema = new Schema<IInvitation>(
   {
@@ -9,7 +8,7 @@ const invitationSchema = new Schema<IInvitation>(
     email: { type: String, required: true },
     admin: { type: Schema.Types.ObjectId, ref: "User", required: true },
     token: { type: Schema.Types.ObjectId, ref: "Token", required: true },
-    role: { type: String, enum: Object.values(Role), required: true },
+    role: { type: Schema.Types.ObjectId, ref: "Role", required: true },
   },
   { timestamps: true, collection: "invitations", versionKey: false }
 );

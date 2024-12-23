@@ -21,4 +21,5 @@ export interface IUser extends Timestamps, Document {
   isVerified: boolean;
   isDisabled: boolean;
   authType: AuthType;
+  createdBy?: string;
 }

@@ -27,6 +27,7 @@ const product_route_1 = __importDefault(require("./apps/product/api/product.rout
 const permission_route_1 = __importDefault(require("./apps/auth/api/permission/permission.route"));
 const role_route_1 = __importDefault(require("./apps/auth/api/role/role.route"));
 const payment_route_1 = __importDefault(require("./apps/payment/api/payment.route"));
+const invitation_route_1 = __importDefault(require("./apps/auth/api/invitation/invitation.route"));
 function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
@@ -54,6 +55,8 @@ function startApp() {
             app.use("/api/roles", role_route_1.default);
             // Payment routes
             app.use("/api/payment", payment_route_1.default);
+            //invitations routes
+            app.use("/api/invitations", invitation_route_1.default);
             // Error handling middleware
             app.use(error_middleware_1.errorHandlerMiddleware);
             app.listen(port, () => {

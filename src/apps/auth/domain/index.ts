@@ -19,3 +19,7 @@ export * from "./permission/permission.service";
 
 // Token management
 export * from "./token/token.service";
+
+// Invitation management
+export * from "./invitation/invitation.service";
+export * from "./invitation/invitation.dto";

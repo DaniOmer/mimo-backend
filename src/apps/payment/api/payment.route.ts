@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { PaymentController } from "./payment.controller";
-import { CardMethodDTO, CardPaymentIntentDTO } from "../domain/payment.dto";
+import { CardMethodDTO,CardPaymentIntentDTO } from "../domain/payment.dto"; 
 import { validateDtoMiddleware } from "../../../librairies/middlewares";
 
 const router = Router();
