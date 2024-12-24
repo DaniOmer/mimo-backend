@@ -8,7 +8,7 @@ export class ProductImageRepository extends MongooseRepository<IProductImage> {
   }
 
   async findByProductId(productId: string): Promise<IProductImage[]> {
-    return this.model.find({ productId: productId }).sort({ order: 1 }).exec();
+    return this.model.find({ productId }).exec();
   }
 
 

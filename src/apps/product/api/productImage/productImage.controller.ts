@@ -20,7 +20,7 @@ export class ProductImageController {
 
   async getImagesByProductId(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const images = await this.service.getImagesByProductId(req.params.product_id);
+      const images = await this.service.getImagesByProductId(req.params.productId);
       ApiResponse.success(res, "Product images retrieved successfully", images, 200);
     } catch (error) {
       next(error);

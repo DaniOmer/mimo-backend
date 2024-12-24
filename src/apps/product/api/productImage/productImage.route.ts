@@ -59,7 +59,6 @@ router.post(
 router.get(
   "/:productId",
   authenticateMiddleware,
-  validateIdMiddleware("Product"),
   productImageController.getImagesByProductId.bind(productImageController)
 );
 
