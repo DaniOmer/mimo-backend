@@ -56,4 +56,68 @@ export class ProductController {
       next(error);
     }
   }
+
+  async toggleProductActivation(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { isActive } = req.body;
+      const updatedProduct = await this.productService.toggleProductActivation(id, isActive);
+      ApiResponse.success(res, "Product activation status updated successfully", updatedProduct, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async searchProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const filters = req.query;
+      const products = await this.productService.searchProducts(filters);
+      ApiResponse.success(res, "Products retrieved successfully", products, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async duplicateProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const duplicatedProduct = await this.productService.duplicateProduct(id);
+      ApiResponse.success(res, "Product duplicated successfully", duplicatedProduct, 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getProductsByStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { isActive } = req.query;
+      const products = await this.productService.getProductsByStatus(isActive === "true");
+      ApiResponse.success(res, "Products retrieved successfully", products, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async addImagesToProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { productId } = req.params;
+      const images = req.body.images; 
+      const updatedProduct = await this.productService.addImagesToProduct(productId, images);
+      ApiResponse.success(res, "Images added to product successfully", updatedProduct, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async removeImageFromProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { productId, imageId } = req.params;
+      const updatedProduct = await this.productService.removeImageFromProduct(productId, imageId);
+      ApiResponse.success(res, "Image removed from product successfully", updatedProduct, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  
 }
