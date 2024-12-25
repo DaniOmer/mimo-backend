@@ -13,9 +13,9 @@ export class CartItemService extends BaseService {
   }
 
   async getCartItem(
-    cartId: ObjectId,
-    productId: ObjectId,
-    productVariantId: ObjectId | null
+    cartId: string,
+    productId: string,
+    productVariantId: string | null
   ): Promise<ICartItem | null> {
     const cartItem = await this.repository.getCartItem(
       cartId,
@@ -32,7 +32,7 @@ export class CartItemService extends BaseService {
     return cartItem;
   }
 
-  async getItemsByCart(cartId: ObjectId): Promise<ICartItem[]> {
+  async getItemsByCart(cartId: string): Promise<ICartItem[]> {
     const cartItems = await this.repository.getCartItemsByCart(cartId);
     if (!cartItems) {
       return [];
@@ -41,7 +41,7 @@ export class CartItemService extends BaseService {
   }
 
   async createCartItem(
-    cartId: ObjectId,
+    cartId: string,
     product: IProduct,
     productVariant: IProductVariant | null,
     quantity: number
@@ -110,7 +110,7 @@ export class CartItemService extends BaseService {
 
   async deleteAllItemsForCart(cart: ICart): Promise<number> {
     const { deletedCount } = await this.repository.deleteManyItemsByCart(
-      cart._id
+      cart.id
     );
     if (!deletedCount) {
       throw new BadRequestError({

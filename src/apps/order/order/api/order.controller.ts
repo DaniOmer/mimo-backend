@@ -28,7 +28,7 @@ export class OrderController {
     }
   }
 
-  async getAllOrders(
+  async getAllOrdersByUser(
     req: Request,
     res: Response,
     next: NextFunction

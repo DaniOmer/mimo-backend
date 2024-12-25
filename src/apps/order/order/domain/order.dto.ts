@@ -1,34 +1,4 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsMongoId,
-  IsNumber,
-  IsPositive,
-} from "class-validator";
-
-import { ObjectId } from "mongoose";
-
-export class AddressDTO {
-  @IsNotEmpty()
-  @IsString()
-  readonly street!: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly city!: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly state!: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly postalCode!: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly country!: string;
-}
+import { IsNotEmpty, IsMongoId, IsNumber, IsPositive } from "class-validator";
 
 export class OrderItemDTO {
   @IsNotEmpty()
@@ -48,7 +18,7 @@ export class OrderItemDTO {
 export class OrderCreateFromCartDTO {
   @IsNotEmpty()
   @IsMongoId()
-  readonly cartId!: ObjectId;
+  readonly cartId!: string;
 
   @IsNotEmpty()
   @IsMongoId()

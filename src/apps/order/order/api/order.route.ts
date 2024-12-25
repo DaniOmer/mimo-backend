@@ -19,9 +19,9 @@ router.post(
 );
 
 router.get(
-  "/",
+  "/me",
   authenticateMiddleware,
-  orderController.getAllOrders.bind(orderController)
+  orderController.getAllOrdersByUser.bind(orderController)
 );
 
 router.get(

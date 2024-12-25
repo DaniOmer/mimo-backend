@@ -1,14 +1,13 @@
 import { IsNotEmpty, IsPositive, IsNumber, IsMongoId } from "class-validator";
-import { ObjectId } from "mongoose";
 
 export class CartItemDTO {
   @IsNotEmpty()
   @IsMongoId()
-  readonly productId!: ObjectId;
+  readonly productId!: string;
 
   @IsNotEmpty()
   @IsMongoId()
-  readonly productVariantId!: ObjectId;
+  readonly productVariantId!: string;
 
   @IsNotEmpty()
   @IsPositive()

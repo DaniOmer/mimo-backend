@@ -9,9 +9,9 @@ export class CartItemRepository extends MongooseRepository<ICartItem> {
   }
 
   async getCartItem(
-    cart: ObjectId,
-    product: ObjectId,
-    productVariant: ObjectId | null
+    cart: string,
+    product: string,
+    productVariant: string | null
   ): Promise<ICartItem | null> {
     return await this.model
       .findOne({ cart, product, productVariant })
@@ -21,7 +21,7 @@ export class CartItemRepository extends MongooseRepository<ICartItem> {
       .exec();
   }
 
-  async getCartItemsByCart(cart: ObjectId): Promise<ICartItem[]> {
+  async getCartItemsByCart(cart: string): Promise<ICartItem[]> {
     return await this.model
       .find({ cart })
       .populate("cart")

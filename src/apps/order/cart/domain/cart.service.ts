@@ -1,4 +1,3 @@
-import { ObjectId } from "mongoose";
 import { BaseService } from "../../../../librairies/services";
 import { ICart } from "../data-access/cart.interface";
 import { CartRepository, ICartItem } from "../data-access";
@@ -9,6 +8,8 @@ import { ProductVariantService } from "../../../product/domain";
 import BadRequestError from "../../../../config/error/bad.request.config";
 import { InventoryService } from "../../../product/domain/inventory/inventory.service";
 import { SecurityUtils, UserDataToJWT } from "../../../../utils/security.utils";
+
+export type IcartResponse = ICart & { items: ICartItem[] };
 
 export class CartService extends BaseService {
   readonly repository: CartRepository;
@@ -26,8 +27,8 @@ export class CartService extends BaseService {
     this.inventoryService = new InventoryService();
   }
 
-  async getCartById(id: ObjectId): Promise<ICart & { items: ICartItem[] }> {
-    const existingCart = await this.repository.getById(id.toString());
+  async getCartById(id: string): Promise<ICart & { items: ICartItem[] }> {
+    const existingCart = await this.repository.getById(id);
     if (!existingCart) {
       throw new BadRequestError({
         message: "Failed to find cart with given id",
@@ -41,7 +42,7 @@ export class CartService extends BaseService {
     };
   }
 
-  async getCartByUser(user: ObjectId): Promise<ICart & { items: ICartItem[] }> {
+  async getCartByUser(user: string): Promise<IcartResponse> {
     let existingCart = await this.repository.getCartByUserId(user.toString());
     if (!existingCart) {
       existingCart = await this.repository.create({ user });
@@ -53,7 +54,7 @@ export class CartService extends BaseService {
     };
   }
 
-  async addItemToCart(data: CartItemDTO, user: ObjectId): Promise<void> {
+  async addItemToCart(data: CartItemDTO, user: string): Promise<void> {
     const cart = await this.getCartByUser(user);
     if (!cart) {
       throw new BadRequestError({
@@ -97,9 +98,9 @@ export class CartService extends BaseService {
 
   async updateCartItemQuantity(
     currentUser: UserDataToJWT,
-    cartId: ObjectId,
-    productId: ObjectId,
-    productVariantId: ObjectId | null,
+    cartId: string,
+    productId: string,
+    productVariantId: string | null,
     newQuantity: number
   ): Promise<void> {
     const existingCartItem = await this.cartItemService.getCartItem(
@@ -116,15 +117,7 @@ export class CartService extends BaseService {
     }
 
     const cart = existingCartItem.cart as ICart;
-    const itemOwner = cart.user.toString();
-    const hasAccess = SecurityUtils.isOwnerOrAdmin(itemOwner, currentUser);
-    if (!hasAccess) {
-      throw new BadRequestError({
-        message: "Unauthorized to update this cart item",
-        logging: true,
-        code: 403,
-      });
-    }
+    this.checkCartOwner(cart, currentUser);
 
     const { product, productVariant } =
       await this.inventoryService.validateProductAndVariant(
@@ -152,20 +145,25 @@ export class CartService extends BaseService {
         logging: true,
       });
     }
-    const cartOwner = cart.user.toString();
-    const hasAccess = SecurityUtils.isOwnerOrAdmin(cartOwner, currentUser);
-    if (!hasAccess) {
-      throw new BadRequestError({
-        message: "Unauthorized to clear this cart",
-        logging: true,
-        code: 403,
-      });
-    }
+    this.checkCartOwner(cart, currentUser);
+
     const deletedCount = await this.cartItemService.deleteAllItemsForCart(cart);
     if (deletedCount === 0) {
       throw new BadRequestError({
         message: "Cart is empty. Nothing to clear",
         logging: true,
+      });
+    }
+  }
+
+  checkCartOwner(cart: ICart, currentUser: UserDataToJWT): void {
+    const itemOwner = cart.user.toString();
+    const hasAccess = SecurityUtils.isOwnerOrAdmin(itemOwner, currentUser);
+    if (!hasAccess) {
+      throw new BadRequestError({
+        message: "Unauthorized to update this cart item",
+        logging: true,
+        code: 403,
       });
     }
   }

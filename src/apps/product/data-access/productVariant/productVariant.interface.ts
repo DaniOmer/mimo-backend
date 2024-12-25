@@ -1,8 +1,8 @@
-import { Document, Types, ObjectId } from "mongoose";
+import { Document, Types } from "mongoose";
 import { Timestamps } from "../../../../librairies/types/timestamps.interface";
 
 export interface IProductVariant extends Document, Timestamps {
-  _id: ObjectId;
+  _id: string;
   priceEtx: number;
   priceVat: number;
   stripeId?: string;

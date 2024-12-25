@@ -8,7 +8,7 @@ export enum AddressStatus {
 }
 export enum AddressType {
   Billing = "billing",
-  Invoice = "invoice",
+  Invoice = "shipping",
 }
 
 export interface IAddress extends Timestamps, Document {

@@ -142,7 +142,7 @@ export class InventoryService extends BaseService {
     if (!newReservedStock) {
       throw new BadRequestError({
         message: "Failed to reserve stock",
-        context: { inventory_workflow: "Failed to addReservedProduct" },
+        context: { inventory_workflow: "Failed to reserved produc stock" },
         code: 500,
       });
     }
