@@ -79,6 +79,42 @@ router.get("/",
 
 /**
  * @swagger
+ * /api/products/search:
+ *   get:
+ *     summary: Search products by criteria
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Product name
+ *       - in: query
+ *         name: categoryIds
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Category IDs
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Minimum price
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Maximum price
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully
+ */
+router.get("/search", authenticateMiddleware, productController.searchProducts.bind(productController));
+
+
+/**
+ * @swagger
  * /api/products/{id}:
  *   get:
  *     summary: Get a product by ID
@@ -217,40 +253,6 @@ router.patch(
   productController.toggleProductActivation.bind(productController)
 );
 
-/**
- * @swagger
- * /api/products/search:
- *   get:
- *     summary: Search products by criteria
- *     tags: [Products]
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: Product name
- *       - in: query
- *         name: categoryIds
- *         schema:
- *           type: array
- *           items:
- *             type: string
- *         description: Category IDs
- *       - in: query
- *         name: minPrice
- *         schema:
- *           type: number
- *         description: Minimum price
- *       - in: query
- *         name: maxPrice
- *         schema:
- *           type: number
- *         description: Maximum price
- *     responses:
- *       200:
- *         description: Products retrieved successfully
- */
-router.get("/search", authenticateMiddleware, productController.searchProducts.bind(productController));
 
 /**
  * @swagger

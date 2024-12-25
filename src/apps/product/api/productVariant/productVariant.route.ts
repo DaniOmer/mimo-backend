@@ -47,15 +47,15 @@ const router = Router();
  *                 type: string
  *                 description: Stripe unique identifier
  *                 example: "stripe_123456"
- *               product_id:
+ *               productId:
  *                 type: string
  *                 description: ID of the related product
  *                 example: "64bc6e5b2f8e4c0f8890a5a3"
- *               size_id:
+ *               sizeId:
  *                 type: string
  *                 description: ID of the related size
  *                 example: "64bc6e6c2f8e4c0f8890a5a4"
- *               color_id:
+ *               colorId:
  *                 type: string
  *                 description: ID of the related color
  *                 example: "64bc6e7e2f8e4c0f8890a5a5"
@@ -75,6 +75,48 @@ router.post(
   checkRoleMiddleware(["admin"]),
   validateDtoMiddleware(ProductVariantCreateDTO),
   productVariantController.createVariant.bind(productVariantController)
+);
+
+/**
+ * @swagger
+ * /api/product-variants/search:
+ *   get:
+ *     summary: Search product variants by criteria
+ *     tags: [ProductVariants]
+ *     parameters:
+ *       - in: query
+ *         name: productId
+ *         schema:
+ *           type: string
+ *         description: ID of the product
+ *       - in: query
+ *         name: productId
+ *         schema:
+ *           type: string
+ *         description: ID of the size
+ *       - in: query
+ *         name: colorId
+ *         schema:
+ *           type: string
+ *         description: ID of the color
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Minimum price
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Maximum price
+ *     responses:
+ *       200:
+ *         description: Product variants retrieved successfully
+ */
+router.get(
+  "/search",
+  authenticateMiddleware,
+  productVariantController.searchVariants.bind(productVariantController)
 );
 
 /**
@@ -194,47 +236,6 @@ router.delete(
   productVariantController.deleteVariantById.bind(productVariantController)
 );
 
-/**
- * @swagger
- * /api/product-variants/search:
- *   get:
- *     summary: Search product variants by criteria
- *     tags: [ProductVariants]
- *     parameters:
- *       - in: query
- *         name: productId
- *         schema:
- *           type: string
- *         description: ID of the product
- *       - in: query
- *         name: sizeId
- *         schema:
- *           type: string
- *         description: ID of the size
- *       - in: query
- *         name: colorId
- *         schema:
- *           type: string
- *         description: ID of the color
- *       - in: query
- *         name: minPrice
- *         schema:
- *           type: number
- *         description: Minimum price
- *       - in: query
- *         name: maxPrice
- *         schema:
- *           type: number
- *         description: Maximum price
- *     responses:
- *       200:
- *         description: Product variants retrieved successfully
- */
-router.get(
-  "/search",
-  authenticateMiddleware,
-  productVariantController.searchVariants.bind(productVariantController)
-);
 
 /**
  * @swagger

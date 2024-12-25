@@ -42,13 +42,13 @@ router.post(
 
 /**
  * @swagger
- * /api/product-images/{product_id}:
+ * /api/product-images/{productId}:
  *   get:
  *     summary: Get all images for a product
  *     tags: [ProductImages]
  *     parameters:
  *       - in: path
- *         name: product_id
+ *         name: productId
  *         required: true
  *         schema:
  *           type: string

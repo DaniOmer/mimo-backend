@@ -9,10 +9,6 @@ export class ProductVariantCreateDTO {
   @IsNumber()
   readonly priceVat!: number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  readonly quantity!: number;
-
   @IsOptional()
   @IsString()
   readonly stripeId?: string;

@@ -75,7 +75,7 @@ export class ProductService extends BaseService {
     if (!product) {
       throw new BadRequestError({
         message: "Product not found.",
-        context: { product_id: `No product found with ID: ${id}` },
+        context: { productId: `No product found with ID: ${id}` },
         code: 404,
       });
     }
@@ -108,7 +108,7 @@ export class ProductService extends BaseService {
     if (!product) {
       throw new BadRequestError({
         message: "Product not found.",
-        context: { product_id: `No product found with ID: ${id}` },
+        context: { productId: `No product found with ID: ${id}` },
         code: 404,
       });
     }
@@ -130,7 +130,7 @@ export class ProductService extends BaseService {
     if (!product) {
       throw new BadRequestError({
         message: "Product not found.",
-        context: { product_id: `No product found with ID: ${productId}` },
+        context: { productId: `No product found with ID: ${productId}` },
         code: 404,
       });
     }
@@ -154,7 +154,7 @@ export class ProductService extends BaseService {
     if (!product) {
       throw new BadRequestError({
         message: "Product not found.",
-        context: { product_id: `No product found with ID: ${productId}` },
+        context: { productId: `No product found with ID: ${productId}` },
         code: 404,
       });
     }
@@ -162,7 +162,7 @@ export class ProductService extends BaseService {
     if (!product.images || !product.images.includes(imageId as any)) {
       throw new BadRequestError({
         message: "Image not associated with this product.",
-        context: { product_id: productId, image_id: imageId },
+        context: { productId: productId, image_id: imageId },
         code: 400,
       });
     }
