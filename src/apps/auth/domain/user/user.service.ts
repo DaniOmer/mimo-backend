@@ -60,7 +60,7 @@ export class UserService extends BaseService {
     isTermsOfSale: boolean,
     invitationService: InvitationService
   ): Promise<Omit<IUser, "password">> {
-    // Valider l'invitation et récupérer les détails
+  
     const {
       firstName,
       lastName,
@@ -69,10 +69,8 @@ export class UserService extends BaseService {
       invitationId,
     } = await invitationService.validateInvitation(tokenHash);
 
-    // Hacher le mot de passe
     const hashedPassword = await SecurityUtils.hashPassword(password);
-
-    // Créer l'utilisateur
+    
     const newUser = await this.repository.create({
       firstName,
       lastName,

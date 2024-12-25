@@ -10,10 +10,7 @@ export class InvitationController {
   constructor() {
     this.invitationService = new InvitationService();
   }
-
-  /**
-   * Créer une invitation
-   */
+  
   async createInvitation(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { firstName, lastName, email, roleId } = req.body;
