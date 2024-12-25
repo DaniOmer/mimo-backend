@@ -22,10 +22,10 @@ router.post(
   cartController.addProductToCart.bind(cartController)
 );
 
-router.delete(
-  "/",
+router.post(
+  "/clear-products",
   authenticateMiddleware,
-  cartController.deleteCart.bind(cartController)
+  cartController.removeAllProductsFromCart.bind(cartController)
 );
 
 export default router;

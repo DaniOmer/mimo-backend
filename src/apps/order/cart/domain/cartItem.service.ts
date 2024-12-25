@@ -32,6 +32,14 @@ export class CartItemService extends BaseService {
     return cartItem;
   }
 
+  async getItemsByCart(cartId: ObjectId): Promise<ICartItem[]> {
+    const cartItems = await this.repository.getCartItemsByCart(cartId);
+    if (!cartItems) {
+      return [];
+    }
+    return cartItems;
+  }
+
   async createCartItem(
     cartId: ObjectId,
     product: IProduct,

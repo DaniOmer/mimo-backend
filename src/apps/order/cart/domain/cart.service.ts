@@ -1,8 +1,7 @@
 import { ObjectId } from "mongoose";
 import { BaseService } from "../../../../librairies/services";
-import { CartModel } from "../data-access/cart.model";
 import { ICart } from "../data-access/cart.interface";
-import { CartRepository } from "../data-access";
+import { CartRepository, ICartItem } from "../data-access";
 import { CartItemDTO } from "./cart.dto";
 import { CartItemService } from "./cartItem.service";
 import { ProductService } from "../../../product/domain";
@@ -27,13 +26,16 @@ export class CartService extends BaseService {
     this.inventoryService = new InventoryService();
   }
 
-  async getCartByUser(user: ObjectId): Promise<ICart> {
-    const cart = await this.repository.getCartByUserId(user.toString());
-    if (!cart) {
-      const createdCart = await this.repository.create({ user });
-      return createdCart;
+  async getCartByUser(user: ObjectId): Promise<ICart & { items: ICartItem[] }> {
+    let existingCart = await this.repository.getCartByUserId(user.toString());
+    if (!existingCart) {
+      existingCart = await this.repository.create({ user });
     }
-    return cart;
+    const items = await this.cartItemService.getItemsByCart(existingCart._id);
+    return {
+      ...existingCart.toObject(),
+      items,
+    };
   }
 
   async addItemToCart(data: CartItemDTO, user: ObjectId): Promise<void> {
@@ -151,17 +153,5 @@ export class CartService extends BaseService {
         logging: true,
       });
     }
-  }
-
-  async deleteCartByUserId(userId: string): Promise<ICart> {
-    const deletedCart = await CartModel.findOneAndDelete({ userId });
-    if (!deletedCart) {
-      throw new BadRequestError({
-        message: `Cart for user with ID ${userId} not found`,
-        context: { userId },
-        logging: true,
-      });
-    }
-    return deletedCart;
   }
 }

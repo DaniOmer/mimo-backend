@@ -70,15 +70,16 @@ export class CartController extends BaseController {
     }
   }
 
-  async deleteCart(
+  async removeAllProductsFromCart(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const currentUserId = req.user.user;
-      await this.cartService.deleteCartByUserId(currentUserId);
-      ApiResponse.success(res, "Cart deleted successfully", null, 204);
+      const currentUser = req.user;
+      const { cartId } = req.body;
+      await this.cartService.clearCart(currentUser, cartId);
+      ApiResponse.success(res, "Cart cleared successfully", null, 200);
     } catch (error) {
       next(error);
     }
