@@ -12,7 +12,7 @@ export class OrderService extends BaseService {
     this.repository = new OrderRepository();
   }
 
-  async createOrder(data: OrderCreateDTO): Promise<IOrder> {
+  async createOrder(data: OrderCreateDTO, userId: string): Promise<IOrder> {
     return this.repository.create(data);
   }
 
@@ -63,7 +63,7 @@ export class OrderService extends BaseService {
 
       return orders;
     } catch (error) {
-      throw new Error('Error fetching orders for user');
+      throw new Error("Error fetching orders for user");
     }
   }
 }

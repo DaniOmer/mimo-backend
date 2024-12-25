@@ -10,7 +10,7 @@ export const checkRoleMiddleware =
       if (!user) {
         throw new BadRequestError({
           message: "Unauthorized access: User not authenticated",
-          code: 403,
+          code: 401,
           logging: true,
         });
       }

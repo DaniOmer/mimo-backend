@@ -1,10 +1,17 @@
-import { IsNotEmpty, IsString, IsDate, IsEnum, IsOptional, MaxLength, MinLength, IsMongoId, IsNumber, IsPositive, ValidateNested, IsArray, ArrayMinSize } from "class-validator";
-import { Type } from "class-transformer";
-import { OrderStatus } from "../data-access/order.interface";
-import 'reflect-metadata';
-import { Schema } from "mongoose";
+import {
+  IsNotEmpty,
+  IsString,
+  IsMongoId,
+  IsNumber,
+  IsPositive,
+  ValidateNested,
+  IsArray,
+  ArrayMinSize,
+} from "class-validator";
 
-class AddressDTO {
+import { ObjectId } from "mongoose";
+
+export class AddressDTO {
   @IsNotEmpty()
   @IsString()
   readonly street!: string;
@@ -26,92 +33,33 @@ class AddressDTO {
   readonly country!: string;
 }
 
-class OrderItemDTO {
+export class OrderItemDTO {
   @IsNotEmpty()
   @IsMongoId()
-  readonly product_id!: Schema.Types.ObjectId;
+  readonly productId!: ObjectId;
 
   @IsNotEmpty()
   @IsMongoId()
-  readonly productVariant_id!: Schema.Types.ObjectId;
+  readonly productVariantId!: ObjectId;
 
   @IsNotEmpty()
   @IsPositive()
   @IsNumber()
   readonly quantity!: number;
-
-  @IsNotEmpty()
-  @IsPositive()
-  @IsNumber()
-  readonly priceEtx!: number;
-
-  @IsNotEmpty()
-  @IsPositive()
-  @IsNumber()
-  readonly priceVat!: number;
-
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => AddressDTO)
-  readonly shippingAddress!: AddressDTO;
-
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => AddressDTO)
-  readonly billingAddress!: AddressDTO;
 }
 
 export class OrderCreateDTO {
   @IsNotEmpty()
-  @IsString()
-  @MinLength(3)
-  @MaxLength(255)
-  readonly orderNumber!: string;
-
-  @IsNotEmpty()
-  @Type(() => Date)
-  @IsDate()
-  readonly orderDate!: Date;
-
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  shipDate?: Date;
-
-  @IsNotEmpty()
-  @IsEnum(OrderStatus, { message: `Status must be one of: ${Object.values(OrderStatus).join(", ")}` })
-  status!: OrderStatus;
+  @IsMongoId()
+  readonly shippingAddressId!: ObjectId;
 
   @IsNotEmpty()
   @IsMongoId()
-  readonly user_id!: Schema.Types.ObjectId;
-
-  @IsNotEmpty()
-  @IsPositive()
-  @IsNumber()
-  @Type(() => Number)
-  readonly priceEtx!: number;
-
-  @IsNotEmpty()
-  @IsPositive()
-  @IsNumber()
-  @Type(() => Number)
-  readonly priceVat!: number;
-
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => AddressDTO)
-  readonly shippingAddress!: AddressDTO;
-
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => AddressDTO)
-  readonly billingAddress!: AddressDTO;
+  readonly billingAddressId!: ObjectId;
 
   @IsNotEmpty()
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
-  @Type(() => OrderItemDTO)
   readonly orderItems!: OrderItemDTO[];
 }

@@ -1,5 +1,6 @@
-export * from "./auth.controller";
-export * from "./auth.route";
+export * from "./auth/auth.controller";
+export * from "./auth/auth.route";
+export * from "./auth/auth.swagger.docs";
 
 // User management
 export * from "./user/user.controller";

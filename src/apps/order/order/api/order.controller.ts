@@ -4,22 +4,35 @@ import { ApiResponse } from "../../../../librairies/controllers/api.response";
 import BadRequestError from "../../../../config/error/bad.request.config";
 
 export class OrderController {
-  private orderService: OrderService;
+  readonly orderService: OrderService;
 
   constructor() {
     this.orderService = new OrderService();
   }
 
-  async createOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async createOrder(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const newOrder = await this.orderService.createOrder(req.body);
-      ApiResponse.success(res, "Order created successfully", newOrder, 201);
+      const currentUserId = req.user.userId;
+      const orderData = req.body;
+      const createdOrder = await this.orderService.createOrder(
+        orderData,
+        currentUserId
+      );
+      ApiResponse.success(res, "Order created successfully", createdOrder, 201);
     } catch (error) {
       next(error);
     }
   }
 
-  async getAllOrders(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getAllOrders(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const userId = req.user.id;
       const orders = await this.orderService.getOrdersByUserId(userId);
@@ -29,7 +42,11 @@ export class OrderController {
     }
   }
 
-  async getOrderById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getOrderById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const orderId = req.params.id;
       const userId = req.user.id;
@@ -46,7 +63,11 @@ export class OrderController {
     }
   }
 
-  async updateOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async updateOrder(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const orderId = req.params.id;
       const updates = req.body;
@@ -58,14 +79,21 @@ export class OrderController {
           logging: true,
         });
       }
-      const updatedOrder = await this.orderService.updateOrderById(orderId, updates);
+      const updatedOrder = await this.orderService.updateOrderById(
+        orderId,
+        updates
+      );
       ApiResponse.success(res, "Order updated successfully", updatedOrder, 200);
     } catch (error) {
       next(error);
     }
   }
 
-  async deleteOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async deleteOrder(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const orderId = req.params.id;
       const userId = req.user.id;

@@ -3,64 +3,25 @@ import { OrderStatus, IOrder } from "./order.interface";
 
 const addressSchema = new Schema(
   {
-    street: { 
-      type: String, 
-      required: true 
+    street: {
+      type: String,
+      required: true,
     },
-    city: { 
-      type: String, 
-      required: true 
+    city: {
+      type: String,
+      required: true,
     },
-    state: { 
-      type: String, 
-      required: true 
+    state: {
+      type: String,
+      required: true,
     },
-    postalCode: { 
-      type: String, 
-      required: true 
+    postalCode: {
+      type: String,
+      required: true,
     },
-    country: { 
-      type: String, 
-      required: true 
-    },
-  },
-  { _id: false }
-);
-
-const orderItemSchema = new Schema(
-  {
-    product_id: { 
-      type: Schema.Types.ObjectId, 
-      ref: "Product", 
-      required: true 
-    },
-    productVariant_id: { 
-      type: Schema.Types.ObjectId, 
-      ref: "ProductVariant", 
-      required: true 
-    },
-    quantity: { 
-      type: Number, 
-      required: true, 
-      min: 1 
-    },
-    priceEtx: { 
-      type: Number, 
-      required: true, 
-      min: 0 
-    },
-    priceVat: { 
-      type: Number, 
-      required: true, 
-      min: 0 
-    },
-    shippingAddress: { 
-      type: addressSchema, 
-      required: true 
-    },
-    billingAddress: { 
-      type: addressSchema, 
-      required: true 
+    country: {
+      type: String,
+      required: true,
     },
   },
   { _id: false }
@@ -73,10 +34,6 @@ const orderSchema = new Schema<IOrder>(
       required: true,
       unique: true,
     },
-    orderDate: {
-      type: Date,
-      required: true,
-    },
     shipDate: {
       type: Date,
       required: false,
@@ -87,20 +44,20 @@ const orderSchema = new Schema<IOrder>(
       default: OrderStatus.Pending,
       required: true,
     },
-    priceEtx: { 
-      type: Number, 
-      required: true, 
-      min: 0 
+    priceEtx: {
+      type: Number,
+      required: true,
+      min: 0,
     },
-    priceVat: { 
-      type: Number, 
-      required: true, 
-      min: 0 
+    priceVat: {
+      type: Number,
+      required: true,
+      min: 0,
     },
-    user: { 
-      type: Schema.Types.ObjectId, 
-      ref: "User", 
-      required: true 
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     shippingAddress: {
       type: addressSchema,
@@ -110,12 +67,11 @@ const orderSchema = new Schema<IOrder>(
       type: addressSchema,
       required: true,
     },
-    orderItems: [orderItemSchema]
   },
   {
     timestamps: true,
     collection: "orders",
-    versionKey: false
+    versionKey: false,
   }
 );
 

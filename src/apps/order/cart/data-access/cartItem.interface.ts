@@ -1,8 +1,15 @@
-import { ObjectId } from "mongodb";
-import { IOrderItem } from "../../orderItems/data-access";
+import { ObjectId, Document } from "mongoose";
+import { ICart } from "./cart.interface";
+import { IProduct, IProductVariant } from "../../../product/data-access";
+import { Timestamps } from "../../../../librairies/types/timestamps.interface";
 
-export interface ICartItem {
-  orderItem: ObjectId | IOrderItem;
+export interface ICartItem extends Document, Timestamps {
+  _id: ObjectId;
+  product: ObjectId | IProduct;
+  productVariant: ObjectId | IProductVariant;
+  cart: ObjectId | ICart;
+  priceEtx: number;
+  priceVat: number;
   quantity: number;
-  price: number;
+  subTotal: number;
 }

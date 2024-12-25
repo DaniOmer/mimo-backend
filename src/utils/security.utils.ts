@@ -4,10 +4,10 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { AppConfig } from "../config/app.config";
 import BadRequestError from "../config/error/bad.request.config";
 
-type UserDataToJWT = {
+export type UserDataToJWT = {
   id: string;
-  roles: object[];
-  permissions: object[];
+  roles: { name: string }[];
+  permissions: { name: string }[];
 };
 
 export class SecurityUtils {
@@ -62,7 +62,7 @@ export class SecurityUtils {
         if (error) {
           throw new BadRequestError({
             code: 401,
-            message: "Invalid token",
+            message: "Invalid JWT token",
             logging: true,
           });
         } else {
@@ -83,5 +83,15 @@ export class SecurityUtils {
     storedToken: string
   ): Promise<boolean> {
     return this.comparePassword(inputToken, storedToken);
+  }
+
+  static isOwnerOrAdmin(
+    resourceUserId: string,
+    currentUser: UserDataToJWT
+  ): boolean {
+    const isOwner = resourceUserId === currentUser.id;
+    const isAdmin = currentUser.roles.some((role) => role.name === "admin");
+
+    return isOwner || isAdmin;
   }
 }

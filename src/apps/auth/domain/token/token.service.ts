@@ -1,8 +1,7 @@
-import { BaseService } from "../../../../librairies/services";
-import { IUser } from "../../data-access/user.interface";
-import { IToken, TokenType } from "../../data-access/token/token.interface";
-import { SecurityUtils } from "../../../../utils/security.utils";
 import { AppConfig } from "../../../../config/app.config";
+import { IUser, IToken, TokenType } from "../../data-access";
+import { BaseService } from "../../../../librairies/services";
+import { SecurityUtils } from "../../../../utils/security.utils";
 import TokenRepository from "../../data-access/token/token.repository";
 import BadRequestError from "../../../../config/error/bad.request.config";
 
@@ -47,7 +46,7 @@ export default class TokenService extends BaseService {
     if (!existingToken || existingToken.type !== tokenType) {
       throw new BadRequestError({
         logging: true,
-        context: { reset_password_token: "Invalid token" },
+        context: { reset_password_token: "Invalid JWT token" },
       });
     }
 

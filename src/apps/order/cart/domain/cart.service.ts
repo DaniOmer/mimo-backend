@@ -1,110 +1,156 @@
+import { ObjectId } from "mongoose";
 import { BaseService } from "../../../../librairies/services";
 import { CartModel } from "../data-access/cart.model";
 import { ICart } from "../data-access/cart.interface";
+import { CartRepository } from "../data-access";
+import { CartItemDTO } from "./cart.dto";
+import { CartItemService } from "./cartItem.service";
+import { ProductService } from "../../../product/domain";
+import { ProductVariantService } from "../../../product/domain";
 import BadRequestError from "../../../../config/error/bad.request.config";
-import { ICartItem } from "../data-access";
-import { ObjectId } from "mongodb";
-import { OrderItemModel } from "../../orderItems/data-access/orderItems.model";
+import { InventoryService } from "../../../product/domain/inventory/inventory.service";
+import { SecurityUtils, UserDataToJWT } from "../../../../utils/security.utils";
 
 export class CartService extends BaseService {
+  readonly repository: CartRepository;
+  readonly cartItemService: CartItemService;
+  readonly productService: ProductService;
+  readonly productVariantService: ProductVariantService;
+  readonly inventoryService: InventoryService;
+
   constructor() {
     super("Cart");
+    this.repository = new CartRepository();
+    this.productService = new ProductService();
+    this.productVariantService = new ProductVariantService();
+    this.cartItemService = new CartItemService();
+    this.inventoryService = new InventoryService();
   }
 
-  async createCart(data: Partial<ICart>): Promise<ICart> {
-    try {
-      const cart = await CartModel.create(data);
-      return cart;
-    } catch (error) {
-      throw new BadRequestError({
-        message: "Failed to create cart",
-        context: { data },
-        logging: true,
-      });
-    }
-  }
-
-  async getCartByUserId(userId: string): Promise<ICart> {
-    const cart = await CartModel.findOne({ userId });
+  async getCartByUser(user: ObjectId): Promise<ICart> {
+    const cart = await this.repository.getCartByUserId(user.toString());
     if (!cart) {
-      throw new BadRequestError({
-        message: `Cart for user with ID ${userId} not found`,
-        context: { userId },
-        logging: true,
-      });
+      const createdCart = await this.repository.create({ user });
+      return createdCart;
     }
     return cart;
   }
 
-  async addItemToCart(userId: string, orderItemId: string, quantity: number): Promise<ICart> {
-    const cart = await this.getCartByUserId(userId);
-
-    const orderItemObjectId = new ObjectId(orderItemId);
-
-    const orderItem = await OrderItemModel.findById(orderItemObjectId);
-
-    if (!orderItem) {
+  async addItemToCart(data: CartItemDTO, user: ObjectId): Promise<void> {
+    const cart = await this.getCartByUser(user);
+    if (!cart) {
       throw new BadRequestError({
-        message: `OrderItem with ID ${orderItemId} not found`,
-        context: { orderItemId },
+        message: "Failed to find cart for current user",
+        logging: true,
+      });
+    }
+    const existingItem = await this.cartItemService.getCartItem(
+      cart._id,
+      data.productId,
+      data.productVariantId
+    );
+
+    if (existingItem) {
+      await this.cartItemService.incrementCartItemQuantity(
+        existingItem,
+        data.quantity
+      );
+      return;
+    }
+
+    const { product, productVariant } =
+      await this.inventoryService.validateProductAndVariant(
+        data.productId.toString(),
+        data.productVariantId ? data.productVariantId.toString() : null
+      );
+
+    await this.inventoryService.validateInventoryStock(
+      product,
+      productVariant,
+      data.quantity
+    );
+
+    await this.cartItemService.createCartItem(
+      cart._id,
+      product,
+      productVariant,
+      data.quantity
+    );
+  }
+
+  async updateCartItemQuantity(
+    currentUser: UserDataToJWT,
+    cartId: ObjectId,
+    productId: ObjectId,
+    productVariantId: ObjectId | null,
+    newQuantity: number
+  ): Promise<void> {
+    const existingCartItem = await this.cartItemService.getCartItem(
+      cartId,
+      productId,
+      productVariantId
+    );
+    if (!existingCartItem) {
+      throw new BadRequestError({
+        message: `Cart item for product with ID ${productId} not found`,
+        context: { update_cart_item: "Item not found" },
         logging: true,
       });
     }
 
-    const itemPrice = orderItem.priceVat;
-
-    const existingCartItem = cart.items.find(item => item.orderItem.toString() === orderItemId);
-
-    if (existingCartItem) {
-      existingCartItem.quantity += quantity;
-    } else {
-      const newCartItem: ICartItem = {
-        orderItem: orderItemObjectId,
-        quantity,
-        price: itemPrice,
-      };
-      cart.items.push(newCartItem);
+    const cart = existingCartItem.cart as ICart;
+    const itemOwner = cart.user.toString();
+    const hasAccess = SecurityUtils.isOwnerOrAdmin(itemOwner, currentUser);
+    if (!hasAccess) {
+      throw new BadRequestError({
+        message: "Unauthorized to update this cart item",
+        logging: true,
+        code: 403,
+      });
     }
 
-    await this.updateTotalPrice(cart);
+    const { product, productVariant } =
+      await this.inventoryService.validateProductAndVariant(
+        productId.toString(),
+        productVariantId ? productVariantId.toString() : null
+      );
 
-    return cart.save();
+    await this.inventoryService.validateInventoryStock(
+      product,
+      productVariant,
+      newQuantity
+    );
+
+    await this.cartItemService.updateItemQuantity(
+      existingCartItem,
+      newQuantity
+    );
   }
 
-  async updateCartByUserId(userId: string, updates: { items: ICartItem[] }): Promise<ICart> {
-    const cart = await this.getCartByUserId(userId);
-
-    // Updating cart items
-    for (const updateItem of updates.items) {
-      const existingCartItem = cart.items.find(item => item.orderItem.toString() === updateItem.orderItem.toString());
-
-      if (existingCartItem) {
-        existingCartItem.quantity = updateItem.quantity;
-      } else {
-        const orderItem = await OrderItemModel.findById(updateItem.orderItem);
-
-        if (!orderItem) {
-          throw new BadRequestError({
-            message: `OrderItem with ID ${updateItem.orderItem} not found`,
-            context: { orderItemId: updateItem.orderItem },
-            logging: true,
-          });
-        }
-
-        const itemPrice = orderItem.priceVat;
-
-        const newCartItem: ICartItem = {
-          orderItem: updateItem.orderItem,
-          quantity: updateItem.quantity,
-          price: itemPrice,
-        };
-        cart.items.push(newCartItem);
-      }
+  async clearCart(currentUser: UserDataToJWT, cartId: string): Promise<void> {
+    const cart = await this.repository.getById(cartId);
+    if (!cart) {
+      throw new BadRequestError({
+        message: "Failed to find cart to clear",
+        logging: true,
+      });
     }
-
-    await this.updateTotalPrice(cart);
-
-    return cart.save();
+    const cartOwner = cart.user.toString();
+    const hasAccess = SecurityUtils.isOwnerOrAdmin(cartOwner, currentUser);
+    if (!hasAccess) {
+      throw new BadRequestError({
+        message: "Unauthorized to clear this cart",
+        logging: true,
+        code: 403,
+      });
+    }
+    const deletedCount = await this.cartItemService.deleteAllItemsForCart(cart);
+    if (deletedCount === 0) {
+      throw new BadRequestError({
+        message: "Cart is empty. Nothing to clear",
+        logging: true,
+      });
+    }
   }
 
   async deleteCartByUserId(userId: string): Promise<ICart> {
@@ -117,13 +163,5 @@ export class CartService extends BaseService {
       });
     }
     return deletedCart;
-  }
-
-  private async updateTotalPrice(cart: ICart): Promise<void> {
-    const totalPrice = cart.items.reduce((total, item) => {
-      return total + (item.price * item.quantity);
-    }, 0);
-  
-    cart.totalPrice = totalPrice;
   }
 }

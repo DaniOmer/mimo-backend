@@ -1,45 +1,23 @@
 import { Schema, model } from "mongoose";
 import { ICart } from "./cart.interface";
 
-const cartItemSchema = new Schema(
-  {
-    orderItem_id: { 
-      type: Schema.Types.ObjectId,
-      ref: "OrderItem",
-      required: true 
-    },
-    quantity: { 
-      type: Number, 
-      required: true 
-    },
-    price: { 
-      type: Number, 
-      required: true 
-    },
-  },
-  {
-    timestamps: true,
-    collection: "cartItems",
-    versionKey: false
-  }
-);
-
 const cartSchema = new Schema<ICart>(
   {
-    user: { 
+    user: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true, 
-      unique: true 
+      required: true,
+      unique: true,
     },
-    items: { 
-      type: [cartItemSchema], 
-      default: [] 
+    priceEtx: {
+      type: Number,
+      required: true,
+      default: 0,
     },
-    totalPrice: { 
-      type: Number, 
-      required: true, 
-      default: 0
+    priceVat: {
+      type: Number,
+      required: true,
+      default: 0,
     },
   },
   {

@@ -1,57 +1,83 @@
 import { Request, Response, NextFunction } from "express";
 import { CartService } from "../domain/cart.service";
 import { ApiResponse } from "../../../../librairies/controllers/api.response";
-import BadRequestError from "../../../../config/error/bad.request.config";
-import BaseController from "../../../../librairies/controllers/base.controller";
+import { BaseController } from "../../../../librairies/controllers";
+import { CartItemService } from "../domain/cartItem.service";
 
 export class CartController extends BaseController {
-  private cartService: CartService;
+  readonly cartService: CartService;
 
   constructor() {
-    super()
+    super();
     this.cartService = new CartService();
   }
 
-  async getCart(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getCurrentUserCart(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const cart = await this.cartService.getCartByUserId(req.user.id);
-      if (!cart || cart.user.toString() !== req.user.id) {
-        throw new BadRequestError({
-          message: "Cart does not belong to the authenticated user.",
-          logging: true
-        });
-      }
+      const currentUserId = req.user.userId;
+      const cart = await this.cartService.getCartByUser(currentUserId);
       ApiResponse.success(res, "Cart retrieved successfully", cart, 200);
     } catch (error) {
       next(error);
     }
   }
 
-  async updateCart(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async addProductToCart(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const updatedCart = await this.cartService.updateCartByUserId(req.user.id, req.body);
-      if (!updatedCart || updatedCart.user.toString() !== req.user.id) {
-        throw new BadRequestError({
-          message: "Cart does not belong to the authenticated user.",
-          logging: true
-        });
-      }
-      ApiResponse.success(res, "Cart updated successfully", updatedCart, 200);
+      const currentUserId = req.user.userId;
+      const { productId, productVariantId, quantity } = req.body;
+      await this.cartService.addItemToCart(
+        { productId, productVariantId, quantity },
+        currentUserId
+      );
+      ApiResponse.success(res, "Item added to cart successfully", null, 201);
     } catch (error) {
       next(error);
     }
   }
 
-  async deleteCart(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async updateCartItemQuantity(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const cart = await this.cartService.getCartByUserId(req.user.id);
-      if (!cart || cart.user.toString() !== req.user.id) {
-        throw new BadRequestError({
-          message: "Cart does not belong to the authenticated user.",
-          logging: true
-        });
-      }
-      await this.cartService.deleteCartByUserId(req.user.id);
+      const currentUser = req.user;
+      const { cartId, productId, productVariantId, newQuantity } = req.body;
+      await this.cartService.updateCartItemQuantity(
+        currentUser,
+        cartId,
+        productId,
+        productVariantId,
+        newQuantity
+      );
+      ApiResponse.success(
+        res,
+        "Cart item quantity updated successfully",
+        null,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteCart(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const currentUserId = req.user.user;
+      await this.cartService.deleteCartByUserId(currentUserId);
       ApiResponse.success(res, "Cart deleted successfully", null, 204);
     } catch (error) {
       next(error);

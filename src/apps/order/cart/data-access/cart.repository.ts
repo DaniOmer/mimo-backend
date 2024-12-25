@@ -4,6 +4,10 @@ import { MongooseRepository } from "../../../../librairies/repositories/mongoose
 
 export class CartRepository extends MongooseRepository<ICart> {
   constructor() {
-    super(CartModel); 
+    super(CartModel);
+  }
+
+  async getCartByUserId(user: string): Promise<ICart | null> {
+    return await this.model.findOne({ user: user }).exec();
   }
 }

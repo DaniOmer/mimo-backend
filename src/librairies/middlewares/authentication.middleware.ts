@@ -19,7 +19,7 @@ export const authenticateMiddleware = async (
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       throw new BadRequestError({
-        message: "No authorization header provided",
+        message: "Unauthorized access: No authorization header provided",
         code: 401,
         logging: true,
       });
@@ -28,7 +28,7 @@ export const authenticateMiddleware = async (
     const token = authHeader.split(" ")[1];
     if (!token) {
       throw new BadRequestError({
-        message: "Unauthorized: Token missing",
+        message: "Unauthorized access: Token missing",
         code: 401,
         logging: true,
       });
