@@ -26,6 +26,21 @@ export class CartService extends BaseService {
     this.inventoryService = new InventoryService();
   }
 
+  async getCartById(id: ObjectId): Promise<ICart & { items: ICartItem[] }> {
+    const existingCart = await this.repository.getById(id.toString());
+    if (!existingCart) {
+      throw new BadRequestError({
+        message: "Failed to find cart with given id",
+        logging: true,
+      });
+    }
+    const items = await this.cartItemService.getItemsByCart(existingCart._id);
+    return {
+      ...existingCart.toObject(),
+      items,
+    };
+  }
+
   async getCartByUser(user: ObjectId): Promise<ICart & { items: ICartItem[] }> {
     let existingCart = await this.repository.getCartByUserId(user.toString());
     if (!existingCart) {

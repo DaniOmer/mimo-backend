@@ -74,6 +74,13 @@ export class BasicAuthStrategy implements AuthStrategy {
 
   async authenticate(userData: UserLoginDTO): Promise<UserLoginResponse> {
     const user = await this.checkUserExistsAndValidate(userData);
+    if (!user) {
+      throw new BadRequestError({
+        message: "Invalid credentials",
+        code: 401,
+        logging: true,
+      });
+    }
     const { _id, password, updatedAt, ...userToDisplay } = user?.toObject();
     const rolesWDate = this.getRolesWithoutDate(userToDisplay.roles);
     const permissionsWDate = this.getPermissionsWithoutDate(
@@ -81,7 +88,8 @@ export class BasicAuthStrategy implements AuthStrategy {
     );
 
     const token = await SecurityUtils.generateJWTToken({
-      id: user?._id.toString() as string,
+      _id: user._id,
+      id: user.id,
       roles: rolesWDate,
       permissions: permissionsWDate,
     });

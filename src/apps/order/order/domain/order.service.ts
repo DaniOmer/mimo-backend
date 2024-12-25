@@ -1,19 +1,41 @@
+import { Types } from "mongoose";
 import BadRequestError from "../../../../config/error/bad.request.config";
 import { BaseService } from "../../../../librairies/services";
 import { IOrder, OrderModel, OrderRepository } from "../data-access";
-import { OrderCreateDTO } from "./order.dto";
-import { Types } from "mongoose";
+import { OrderCreateFromCartDTO } from "./order.dto";
+import { UserDataToJWT } from "../../../../utils/security.utils";
+import { CartService } from "../../cart/domain";
 
 export class OrderService extends BaseService {
-  private repository: OrderRepository;
+  readonly repository: OrderRepository;
+  readonly cartService: CartService;
 
   constructor() {
     super("Order");
     this.repository = new OrderRepository();
+    this.cartService = new CartService();
   }
 
-  async createOrder(data: OrderCreateDTO, userId: string): Promise<IOrder> {
-    return this.repository.create(data);
+  async createOrderFromCart(
+    data: OrderCreateFromCartDTO,
+    user: UserDataToJWT
+  ): Promise<void> {
+    const cart = await this.cartService.getCartById(data.cartId);
+    if (cart.items.length <= 0) {
+      throw new BadRequestError({
+        message: "Cart is empty, cannot create an order",
+        logging: true,
+      });
+    }
+    const totalPriceEtx = cart.items.reduce(
+      (sum, item) => sum + item.priceEtx * item.quantity,
+      0
+    );
+    const totalPriceVat = cart.items.reduce(
+      (sum, item) => sum + item.priceVat * item.quantity,
+      0
+    );
+    // return this.repository.create(data);
   }
 
   async getOrderById(id: string): Promise<IOrder> {

@@ -10,17 +10,17 @@ export class OrderController {
     this.orderService = new OrderService();
   }
 
-  async createOrder(
+  async createOrderFromCart(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const currentUserId = req.user.userId;
-      const orderData = req.body;
-      const createdOrder = await this.orderService.createOrder(
-        orderData,
-        currentUserId
+      const currentUser = req.user;
+      const data = req.body;
+      const createdOrder = await this.orderService.createOrderFromCart(
+        data,
+        currentUser
       );
       ApiResponse.success(res, "Order created successfully", createdOrder, 201);
     } catch (error) {

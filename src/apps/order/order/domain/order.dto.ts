@@ -4,9 +4,6 @@ import {
   IsMongoId,
   IsNumber,
   IsPositive,
-  ValidateNested,
-  IsArray,
-  ArrayMinSize,
 } from "class-validator";
 
 import { ObjectId } from "mongoose";
@@ -36,11 +33,11 @@ export class AddressDTO {
 export class OrderItemDTO {
   @IsNotEmpty()
   @IsMongoId()
-  readonly productId!: ObjectId;
+  readonly productId!: string;
 
   @IsNotEmpty()
   @IsMongoId()
-  readonly productVariantId!: ObjectId;
+  readonly productVariantId!: string;
 
   @IsNotEmpty()
   @IsPositive()
@@ -48,18 +45,16 @@ export class OrderItemDTO {
   readonly quantity!: number;
 }
 
-export class OrderCreateDTO {
+export class OrderCreateFromCartDTO {
   @IsNotEmpty()
   @IsMongoId()
-  readonly shippingAddressId!: ObjectId;
+  readonly cartId!: ObjectId;
 
   @IsNotEmpty()
   @IsMongoId()
-  readonly billingAddressId!: ObjectId;
+  readonly shippingAddressId!: string;
 
   @IsNotEmpty()
-  @IsArray()
-  @ArrayMinSize(1)
-  @ValidateNested({ each: true })
-  readonly orderItems!: OrderItemDTO[];
+  @IsMongoId()
+  readonly billingAddressId!: string;
 }

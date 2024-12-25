@@ -1,13 +1,4 @@
-import {
-  IsNotEmpty,
-  IsPositive,
-  IsArray,
-  ValidateNested,
-  IsNumber,
-  Min,
-  IsMongoId,
-} from "class-validator";
-import { Type } from "class-transformer";
+import { IsNotEmpty, IsPositive, IsNumber, IsMongoId } from "class-validator";
 import { ObjectId } from "mongoose";
 
 export class CartItemDTO {
@@ -23,11 +14,4 @@ export class CartItemDTO {
   @IsPositive()
   @IsNumber()
   readonly quantity!: number;
-}
-
-export class CartCreateDTO {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CartItemDTO)
-  readonly items!: CartItemDTO[];
 }

@@ -17,8 +17,9 @@ import sizeRouter from "./apps/product/api/size/size.route";
 import colorRouter from "./apps/product/api/color/color.route";
 import paymentRouter from "./apps/payment/api/payment.route";
 import inventoryRouter from "./apps/product/api/inventory/inventory.route";
-
-import orderRoute from "./apps/order/order/api/order.route";
+import addressRouter from "./apps/address/api/address.route";
+import cartRouter from "./apps/order/cart/api/cart.route";
+import orderRouter from "./apps/order/order/api/order.route";
 
 async function startApp() {
   const app: Express = express();
@@ -68,10 +69,16 @@ async function startApp() {
     app.use("/api/roles", roleRouter);
 
     // Payment routes
-    app.use("/api/payment", paymentRouter);
+    app.use("/api/payments", paymentRouter);
+
+    // Cart routes
+    app.use("/api/carts", cartRouter);
 
     // Order Routes
-    app.use("/api/orders", orderRoute);
+    app.use("/api/orders", orderRouter);
+
+    // Address routes
+    app.use("/api/addresses", addressRouter);
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);

@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import { CartService } from "../domain/cart.service";
 import { ApiResponse } from "../../../../librairies/controllers/api.response";
 import { BaseController } from "../../../../librairies/controllers";
-import { CartItemService } from "../domain/cartItem.service";
 
 export class CartController extends BaseController {
   readonly cartService: CartService;
@@ -18,7 +17,7 @@ export class CartController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const currentUserId = req.user.userId;
+      const currentUserId = req.user.id;
       const cart = await this.cartService.getCartByUser(currentUserId);
       ApiResponse.success(res, "Cart retrieved successfully", cart, 200);
     } catch (error) {
@@ -32,7 +31,7 @@ export class CartController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const currentUserId = req.user.userId;
+      const currentUserId = req.user.id;
       const { productId, productVariantId, quantity } = req.body;
       await this.cartService.addItemToCart(
         { productId, productVariantId, quantity },
