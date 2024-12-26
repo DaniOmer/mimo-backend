@@ -70,7 +70,7 @@ export class UserService extends BaseService {
     } = await invitationService.validateInvitation(tokenHash);
 
     const hashedPassword = await SecurityUtils.hashPassword(password);
-    
+
     const newUser = await this.repository.create({
       firstName,
       lastName,
@@ -83,10 +83,8 @@ export class UserService extends BaseService {
       authType: AuthType.Basic,
     });
 
-    // Supprimer l'invitation
     await invitationService.deleteInvitation(invitationId);
 
-    // Retourner l'utilisateur sans mot de passe
     const { password: _, ...userWithoutPassword } = newUser.toObject();
     return userWithoutPassword;
   }
