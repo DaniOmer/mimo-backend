@@ -6,4 +6,8 @@ export class OrderRepository extends MongooseRepository<IOrder> {
   constructor() {
     super(OrderModel);
   }
+
+  async getOrdersByUserId(userId: string): Promise<IOrder[]> {
+    return await OrderModel.find({ user: userId }).exec();
+  }
 }

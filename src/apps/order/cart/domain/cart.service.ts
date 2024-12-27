@@ -29,7 +29,7 @@ export class CartService extends BaseService {
     this.inventoryService = new InventoryService();
   }
 
-  async getCartById(id: string): Promise<ICart & { items: ICartItem[] }> {
+  async getCartById(id: string): Promise<IcartResponse> {
     const existingCart = await this.repository.getById(id);
     if (!existingCart) {
       throw new BadRequestError({
@@ -70,7 +70,7 @@ export class CartService extends BaseService {
   async addItemToCart(
     data: CartItemCreateDTO,
     currentUser: UserDataToJWT
-  ): Promise<ICart & { items: ICartItem[] }> {
+  ): Promise<IcartResponse> {
     const existingCart = await this.getCartByUser(currentUser._id);
     if (!existingCart) {
       throw new BadRequestError({
@@ -132,14 +132,8 @@ export class CartService extends BaseService {
         data.productId.toString(),
         data.productVariantId ? data.productVariantId.toString() : null
       );
-    // FIRST RELEASE RESERVERD STOCK RELATED TO OLD QUANTITY BEFORE NEW RESERVE
-    // await this.releaseStockForCart(
-    //   existingCartItem.quantity,
-    //   existingCartItem,
-    //   currentUser
-    // );
 
-    // THEN RESERVE STOCK RELATED TO NEW QUANTITY AFTER UPDATION
+    // RESERVE STOCK RELATED TO NEW QUANTITY AFTER UPDATE
     await this.reserveStockForCart(
       data.quantity,
       existingCartItem,
@@ -163,15 +157,9 @@ export class CartService extends BaseService {
       });
     }
     this.checkCartOwner(cart, currentUser);
-
-    // ADD LOGIC HERE TO RELEASE RESERVED INVENTORY BEFORE CLEAR CART
-    // await this.releaseStockForCart(
-    //   cart.items.reduce((sum, item) => sum + item.quantity, 0),
-    //   cart,
-    //   currentUser
-    // );
-
     await this.cartItemService.deleteAllItemsForCart(cart);
+    await this.releaseStockForCart(cart, currentUser);
+
     const deletedCount = await this.cartItemService.deleteAllItemsForCart(cart);
     if (deletedCount === 0) {
       throw new BadRequestError({
@@ -206,7 +194,6 @@ export class CartService extends BaseService {
         variant ? variant._id : null
       );
 
-    // this.inventoryService.validateInventoryStock(inventory, quantity);
     await this.inventoryService.reserveStock(
       inventory,
       quantity,
@@ -214,7 +201,25 @@ export class CartService extends BaseService {
     );
   }
 
-  private async setCartExpiration(
+  async releaseStockForCart(
+    cart: ICart,
+    currentUser: UserDataToJWT
+  ): Promise<void> {
+    const items = await this.cartItemService.getItemsByCart(cart._id);
+    for (const item of items) {
+      const product = item.product as IProduct;
+      const variant = item.productVariant as IProductVariant | null;
+      const inventory =
+        await this.inventoryService.getInventoryByProductAndVariantId(
+          product._id,
+          variant ? variant._id : null
+        );
+
+      await this.inventoryService.releaseStock(inventory, currentUser._id);
+    }
+  }
+
+  async setCartExpiration(
     cart: ICart
   ): Promise<ICart & { items: ICartItem[] }> {
     const expirationTime = this.getReservationDuration();

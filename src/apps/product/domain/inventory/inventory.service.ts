@@ -169,15 +169,7 @@ export class InventoryService extends BaseService {
     });
   }
 
-  async releaseStock(inventoryId: string, userId: string): Promise<void> {
-    const inventory = await this.repository.getById(inventoryId);
-    if (!inventory) {
-      throw new BadRequestError({
-        message: "Inventory not found",
-        code: 404,
-      });
-    }
-
+  async releaseStock(inventory: IIventory, userId: string): Promise<void> {
     const reservedStock =
       await this.reservedStockService.getReservedProductByInventoryAndUserId(
         inventory._id,
@@ -195,7 +187,7 @@ export class InventoryService extends BaseService {
       inventory.quantity + reservedStock.quantity;
     const updatedInventoryReservedQuantity =
       inventory.reservedQuantity - reservedStock.quantity;
-    const updatedInventory = await this.repository.updateById(inventoryId, {
+    const updatedInventory = await this.repository.updateById(inventory._id, {
       quantity: updatedInventoryQuantity,
       reservedQuantity: updatedInventoryReservedQuantity,
     });

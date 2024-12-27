@@ -30,7 +30,7 @@ router.put(
 );
 
 router.post(
-  "/clear-products",
+  "/clear",
   authenticateMiddleware,
   cartController.removeAllProductsFromCart.bind(cartController)
 );
