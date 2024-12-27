@@ -164,8 +164,6 @@ export class OrderService extends BaseService {
 
     // RELEASE RESERVED STOCK AND UPDATE INVENTORY QUANTITY
     await this.releaseStockForOrder(cart, currentUser._id);
-
-    // PROCESS PAYMENT WORKFLOW
   }
 
   private async validateOrderAddresses(
@@ -201,10 +199,7 @@ export class OrderService extends BaseService {
         );
       // VALID ORDER ITEM INVENTORY
       await this.inventoryService.validateInventoryStock(
-        inventory.product as IProduct,
-        inventory.productVariant
-          ? (inventory.productVariant as IProductVariant)
-          : null,
+        inventory,
         item.quantity
       );
       // RESERVE STOCK FOR ORDER ITEM

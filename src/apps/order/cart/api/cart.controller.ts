@@ -31,11 +31,11 @@ export class CartController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const currentUserId = req.user.id;
+      const currentUser = req.user;
       const { productId, productVariantId, quantity } = req.body;
       await this.cartService.addItemToCart(
         { productId, productVariantId, quantity },
-        currentUserId
+        currentUser
       );
       ApiResponse.success(res, "Item added to cart successfully", null, 201);
     } catch (error) {

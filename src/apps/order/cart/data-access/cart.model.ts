@@ -9,16 +9,7 @@ const cartSchema = new Schema<ICart>(
       required: true,
       unique: true,
     },
-    priceEtx: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    priceVat: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
+    expireAt: { type: Date, required: true },
   },
   {
     timestamps: true,

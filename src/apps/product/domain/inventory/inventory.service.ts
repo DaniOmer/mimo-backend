@@ -26,7 +26,7 @@ export class InventoryService extends BaseService {
     const existingInventory =
       await this.repository.getInventoryByProductAndVariantId(
         data.product.toString(),
-        data.productVariant && data.productVariant.toString()
+        data.productVariant ? data.productVariant.toString() : null
       );
     if (existingInventory) {
       throw new BadRequestError({
@@ -96,29 +96,18 @@ export class InventoryService extends BaseService {
   }
 
   async validateInventoryStock(
-    product: IProduct,
-    productVariant: IProductVariant | null,
+    inventory: IIventory,
     quantity: number
   ): Promise<void> {
-    const inventory = await this.repository.getInventoryByProductAndVariantId(
-      product._id.toString(),
-      productVariant?._id?.toString()
-    );
-    if (!inventory) {
-      throw new BadRequestError({
-        message: "Inventory not found",
-        code: 404,
-      });
-    }
-
     const availableQuantity = inventory.quantity - inventory.reservedQuantity;
+    console.log(availableQuantity);
+    console.log(quantity);
     if (availableQuantity < quantity) {
       throw new BadRequestError({
         message: "Not enough stock available",
         code: 400,
       });
     }
-    // return inventory;
   }
 
   async reserveStock(
@@ -204,7 +193,7 @@ export class InventoryService extends BaseService {
   }
 
   private getReservationDuration(): number {
-    const expirationTime = parseInt(AppConfig.cart.product.expirationTime, 10);
+    const expirationTime = parseInt(AppConfig.cart.expirationTime, 10);
     if (isNaN(expirationTime) || expirationTime <= 0) {
       throw new BadRequestError({
         message: "Invalid product expiration time",
@@ -230,7 +219,7 @@ export class InventoryService extends BaseService {
 
   async getInventoryByProductAndVariantId(
     productId: string,
-    productVariantId: string | undefined
+    productVariantId: string | null
   ): Promise<IIventory> {
     const inventory = await this.repository.getInventoryByProductAndVariantId(
       productId,

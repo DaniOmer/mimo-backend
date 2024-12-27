@@ -15,15 +15,14 @@ export const cartItemSchema = new Schema(
       required: false,
       default: null,
     },
-    order: {
+    cart: {
       type: Schema.Types.ObjectId,
-      ref: "Order",
+      ref: "Cart",
       required: true,
     },
     quantity: {
       type: Number,
       required: true,
-      min: 1,
     },
     priceEtx: {
       type: Number,
@@ -42,7 +41,7 @@ export const cartItemSchema = new Schema(
   },
   {
     timestamps: true,
-    collection: "orderItems",
+    collection: "cartItems",
     versionKey: false,
   }
 );

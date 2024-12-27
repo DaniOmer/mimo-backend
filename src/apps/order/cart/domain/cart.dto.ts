@@ -1,11 +1,17 @@
-import { IsNotEmpty, IsPositive, IsNumber, IsMongoId } from "class-validator";
+import {
+  IsNotEmpty,
+  IsPositive,
+  IsNumber,
+  IsMongoId,
+  IsOptional,
+} from "class-validator";
 
 export class CartItemDTO {
   @IsNotEmpty()
   @IsMongoId()
   readonly productId!: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsMongoId()
   readonly productVariantId!: string;
 
