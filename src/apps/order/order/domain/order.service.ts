@@ -198,10 +198,7 @@ export class OrderService extends BaseService {
           item.productVariant.toString()
         );
       // VALID ORDER ITEM INVENTORY
-      await this.inventoryService.validateInventoryStock(
-        inventory,
-        item.quantity
-      );
+      this.inventoryService.validateInventoryStock(inventory, item.quantity);
       // RESERVE STOCK FOR ORDER ITEM
       await this.inventoryService.reserveStock(
         inventory,

@@ -1,4 +1,3 @@
-import { AppConfig } from "../../../../config/app.config";
 import { IIventory } from "../../data-access/inventory/inventory.interface";
 import { BaseService } from "../../../../librairies/services";
 import { InventoryRepository } from "../../data-access/inventory/inventory.repository";
@@ -95,14 +94,18 @@ export class InventoryService extends BaseService {
     return updatedInventory;
   }
 
-  async validateInventoryStock(
+  validateInventoryStock(
     inventory: IIventory,
-    quantity: number
-  ): Promise<void> {
+    requestedReservedQuantity: number,
+    currentReservedQuantity: number = 0
+  ): void {
     const availableQuantity = inventory.quantity - inventory.reservedQuantity;
-    console.log(availableQuantity);
-    console.log(quantity);
-    if (availableQuantity < quantity) {
+    const difference = requestedReservedQuantity - currentReservedQuantity;
+
+    if (difference <= 0) {
+      return;
+    }
+    if (availableQuantity < difference) {
       throw new BadRequestError({
         message: "Not enough stock available",
         code: 400,
@@ -112,7 +115,7 @@ export class InventoryService extends BaseService {
 
   async reserveStock(
     inventory: IIventory,
-    quantity: number,
+    requestedReservedQuantity: number,
     userId: string
   ): Promise<void> {
     const inventoryId = inventory._id;
@@ -125,7 +128,7 @@ export class InventoryService extends BaseService {
 
     if (reservedStock) {
       const currentReservedQuantity = reservedStock.quantity;
-      const difference = quantity - currentReservedQuantity;
+      const difference = requestedReservedQuantity - currentReservedQuantity;
       if (currentReservedQuantity + difference < 0) {
         throw new BadRequestError({
           message: "Cannot reserve less stock than currently reserved",
@@ -134,8 +137,16 @@ export class InventoryService extends BaseService {
         });
       }
 
-      reservedStock.quantity = currentReservedQuantity + difference;
-      await this.reservedStockService.updateReservedProduct(reservedStock);
+      this.validateInventoryStock(
+        inventory,
+        requestedReservedQuantity,
+        reservedStock.quantity
+      );
+      const newQuantity = currentReservedQuantity + difference;
+      await this.reservedStockService.updateReservedProduct(reservedStock._id, {
+        quantity: newQuantity,
+      });
+
       const newInventoryReservedQuantity =
         inventory.reservedQuantity + difference;
       await this.repository.updateById(inventoryId, {
@@ -144,13 +155,15 @@ export class InventoryService extends BaseService {
       return;
     }
 
+    this.validateInventoryStock(inventory, requestedReservedQuantity);
     await this.reservedStockService.addReservedProduct({
       inventoryId,
-      quantity,
+      quantity: requestedReservedQuantity,
       reservedById: userId,
     });
 
-    const newInventoryReservedQuantity = inventory.reservedQuantity + quantity;
+    const newInventoryReservedQuantity =
+      inventory.reservedQuantity + requestedReservedQuantity;
     await this.repository.updateById(inventoryId, {
       reservedQuantity: newInventoryReservedQuantity,
     });
@@ -196,18 +209,6 @@ export class InventoryService extends BaseService {
     }
 
     await this.reservedStockService.deleteReservedProduct(reservedStock._id);
-  }
-
-  private getReservationDuration(): number {
-    const expirationTime = parseInt(AppConfig.cart.expirationTime, 10);
-    if (isNaN(expirationTime) || expirationTime <= 0) {
-      throw new BadRequestError({
-        message: "Invalid product expiration time",
-        code: 400,
-      });
-    }
-
-    return expirationTime * 1000;
   }
 
   async getLowQuantityProductsByThershold(

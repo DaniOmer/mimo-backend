@@ -4,7 +4,7 @@ import {
   validateDtoMiddleware,
   authenticateMiddleware,
 } from "../../../../librairies/middlewares";
-import { CartItemDTO } from "../domain/cart.dto";
+import { CartItemCreateDTO, CartItemUpdateDTO } from "../domain/cart.dto";
 
 const router = Router();
 const cartController = new CartController();
@@ -16,10 +16,17 @@ router.get(
 );
 
 router.post(
-  "/add-product",
+  "/item",
   authenticateMiddleware,
-  validateDtoMiddleware(CartItemDTO),
+  validateDtoMiddleware(CartItemCreateDTO),
   cartController.addProductToCart.bind(cartController)
+);
+
+router.put(
+  "/item/:id",
+  authenticateMiddleware,
+  validateDtoMiddleware(CartItemUpdateDTO),
+  cartController.updateCartItemQuantity.bind(cartController)
 );
 
 router.post(

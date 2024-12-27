@@ -2,7 +2,7 @@ import { AppConfig } from "../../../../config/app.config";
 import { BaseService } from "../../../../librairies/services";
 import { ICart } from "../data-access/cart.interface";
 import { CartRepository, ICartItem } from "../data-access";
-import { CartItemDTO } from "./cart.dto";
+import { CartItemCreateDTO, CartItemUpdateDTO } from "./cart.dto";
 import { CartItemService } from "./cartItem.service";
 import { ProductService } from "../../../product/domain";
 import { ProductVariantService } from "../../../product/domain";
@@ -68,7 +68,7 @@ export class CartService extends BaseService {
   }
 
   async addItemToCart(
-    data: CartItemDTO,
+    data: CartItemCreateDTO,
     currentUser: UserDataToJWT
   ): Promise<ICart & { items: ICartItem[] }> {
     const existingCart = await this.getCartByUser(currentUser._id);
@@ -109,16 +109,13 @@ export class CartService extends BaseService {
   }
 
   async updateCartItemQuantity(
-    currentUser: UserDataToJWT,
-    cartId: string,
-    productId: string,
-    productVariantId: string | null,
-    newQuantity: number
+    data: CartItemUpdateDTO,
+    currentUser: UserDataToJWT
   ): Promise<ICart & { items: ICartItem[] }> {
     const existingCartItem = await this.cartItemService.getCartItem(
-      cartId,
-      productId,
-      productVariantId
+      data.cartId,
+      data.productId,
+      data.productVariantId
     );
     if (!existingCartItem) {
       throw new BadRequestError({
@@ -132,8 +129,8 @@ export class CartService extends BaseService {
 
     const { product, productVariant } =
       await this.inventoryService.validateProductAndVariant(
-        productId.toString(),
-        productVariantId ? productVariantId.toString() : null
+        data.productId.toString(),
+        data.productVariantId ? data.productVariantId.toString() : null
       );
     // FIRST RELEASE RESERVERD STOCK RELATED TO OLD QUANTITY BEFORE NEW RESERVE
     // await this.releaseStockForCart(
@@ -143,10 +140,14 @@ export class CartService extends BaseService {
     // );
 
     // THEN RESERVE STOCK RELATED TO NEW QUANTITY AFTER UPDATION
-    await this.reserveStockForCart(newQuantity, existingCartItem, currentUser);
+    await this.reserveStockForCart(
+      data.quantity,
+      existingCartItem,
+      currentUser
+    );
     await this.cartItemService.updateItemQuantity(
       existingCartItem,
-      newQuantity
+      data.quantity
     );
 
     // LOGIC HERE TO UPDATE CART EXPIRATION TIME
@@ -205,7 +206,7 @@ export class CartService extends BaseService {
         variant ? variant._id : null
       );
 
-    await this.inventoryService.validateInventoryStock(inventory, quantity);
+    // this.inventoryService.validateInventoryStock(inventory, quantity);
     await this.inventoryService.reserveStock(
       inventory,
       quantity,
@@ -218,7 +219,7 @@ export class CartService extends BaseService {
   ): Promise<ICart & { items: ICartItem[] }> {
     const expirationTime = this.getReservationDuration();
     cart.expireAt = new Date(Date.now() + expirationTime);
-    const updatedCart = await this.updateCart(cart.id, {
+    const updatedCart = await this.updateCart(cart._id, {
       expireAt: cart.expireAt,
     });
     const items = await this.cartItemService.getItemsByCart(updatedCart._id);

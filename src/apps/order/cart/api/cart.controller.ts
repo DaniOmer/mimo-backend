@@ -32,11 +32,8 @@ export class CartController extends BaseController {
   ): Promise<void> {
     try {
       const currentUser = req.user;
-      const { productId, productVariantId, quantity } = req.body;
-      await this.cartService.addItemToCart(
-        { productId, productVariantId, quantity },
-        currentUser
-      );
+      const data = req.body;
+      await this.cartService.addItemToCart(data, currentUser);
       ApiResponse.success(res, "Item added to cart successfully", null, 201);
     } catch (error) {
       next(error);
@@ -50,14 +47,8 @@ export class CartController extends BaseController {
   ): Promise<void> {
     try {
       const currentUser = req.user;
-      const { cartId, productId, productVariantId, newQuantity } = req.body;
-      await this.cartService.updateCartItemQuantity(
-        currentUser,
-        cartId,
-        productId,
-        productVariantId,
-        newQuantity
-      );
+      const data = req.body;
+      await this.cartService.updateCartItemQuantity(data, currentUser);
       ApiResponse.success(
         res,
         "Cart item quantity updated successfully",
