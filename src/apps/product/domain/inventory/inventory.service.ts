@@ -116,38 +116,44 @@ export class InventoryService extends BaseService {
     userId: string
   ): Promise<void> {
     const inventoryId = inventory._id;
-    const reservationDuration = this.getReservationDuration();
-    const reservedUntil = new Date(Date.now() + reservationDuration);
 
-    const newReservedStock = await this.reservedStockService.addReservedProduct(
-      {
+    const reservedStock =
+      await this.reservedStockService.getReservedProductByInventoryAndUserId(
         inventoryId,
-        quantity,
-        reservedById: userId,
-        reservedUntil,
-      }
-    );
+        userId
+      );
 
-    if (!newReservedStock) {
-      throw new BadRequestError({
-        message: "Failed to reserve stock",
-        context: { inventory_workflow: "Failed to reserved produc stock" },
-        code: 500,
+    if (reservedStock) {
+      const currentReservedQuantity = reservedStock.quantity;
+      const difference = quantity - currentReservedQuantity;
+      if (currentReservedQuantity + difference < 0) {
+        throw new BadRequestError({
+          message: "Cannot reserve less stock than currently reserved",
+          context: { update_cart_item: "Failed to reserve item quantity" },
+          code: 400,
+        });
+      }
+
+      reservedStock.quantity = currentReservedQuantity + difference;
+      await this.reservedStockService.updateReservedProduct(reservedStock);
+      const newInventoryReservedQuantity =
+        inventory.reservedQuantity + difference;
+      await this.repository.updateById(inventoryId, {
+        reservedQuantity: newInventoryReservedQuantity,
       });
+      return;
     }
 
-    const newInventoryReservedQuantity = inventory.reservedQuantity + quantity;
-    const updatedInventory = await this.repository.updateById(inventoryId, {
-      reservedQuantity: newInventoryReservedQuantity,
+    await this.reservedStockService.addReservedProduct({
+      inventoryId,
+      quantity,
+      reservedById: userId,
     });
 
-    if (!updatedInventory) {
-      throw new BadRequestError({
-        message: "Failed to update inventory after reservation",
-        context: { inventory_workflow: "Failed to update inventory" },
-        code: 500,
-      });
-    }
+    const newInventoryReservedQuantity = inventory.reservedQuantity + quantity;
+    await this.repository.updateById(inventoryId, {
+      reservedQuantity: newInventoryReservedQuantity,
+    });
   }
 
   async releaseStock(inventoryId: string, userId: string): Promise<void> {

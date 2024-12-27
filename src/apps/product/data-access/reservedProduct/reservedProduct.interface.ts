@@ -6,5 +6,4 @@ export interface IReservedProduct extends Document, Timestamps {
   inventoryId: ObjectId;
   quantity: number;
   reservedById: ObjectId;
-  reservedUntil: Date;
 }
