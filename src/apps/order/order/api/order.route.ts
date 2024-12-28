@@ -24,6 +24,18 @@ router.get(
 );
 
 router.get(
+  "/status/:status",
+  authenticateMiddleware,
+  orderController.getAllOrdersByStatus.bind(orderController)
+);
+
+router.get(
+  "/number/:number",
+  authenticateMiddleware,
+  orderController.getOrderByNumber.bind(orderController)
+);
+
+router.get(
   "/:id",
   authenticateMiddleware,
   validateIdMiddleware("Order"),

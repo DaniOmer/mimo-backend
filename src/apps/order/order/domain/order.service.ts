@@ -237,4 +237,40 @@ export class OrderService extends BaseService {
     const orderNumber = GeneralUtils.generateUniqueIdentifier("ORD");
     return orderNumber;
   }
+
+  async getOrdersByStatus(status: string): Promise<IOrder[]> {
+    if (Object.values(OrderStatus).includes(status as OrderStatus) == false) {
+      throw new BadRequestError({
+        message: `Invalid order status: ${status}`,
+        logging: true,
+      });
+    }
+    const orders = await this.repository.getOrdersByStatus(
+      status as OrderStatus
+    );
+    return orders;
+  }
+
+  async getOrderByNumber(
+    orderNumber: string,
+    currentUser: UserDataToJWT
+  ): Promise<IOrder> {
+    const order = await this.repository.getOrderByNumber(orderNumber);
+    if (!order) {
+      throw new BadRequestError({
+        message: `Order with the given number not found`,
+        logging: true,
+      });
+    }
+    const orderOwner = order.user.toString();
+    const hasAccess = SecurityUtils.isOwnerOrAdmin(orderOwner, currentUser);
+    if (!hasAccess) {
+      throw new BadRequestError({
+        message: "Unauthorized request",
+        logging: true,
+        code: 403,
+      });
+    }
+    return order;
+  }
 }

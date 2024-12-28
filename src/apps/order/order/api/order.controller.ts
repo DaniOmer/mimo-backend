@@ -75,4 +75,36 @@ export class OrderController {
       next(error);
     }
   }
+
+  async getAllOrdersByStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const status = req.params.status;
+      const orders = await this.orderService.getOrdersByStatus(status);
+      ApiResponse.success(res, "Orders retrieved successfully", orders, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getOrderByNumber(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const orderNumber = req.params.number;
+      const currentUser = req.user;
+      const order = await this.orderService.getOrderByNumber(
+        orderNumber,
+        currentUser
+      );
+      ApiResponse.success(res, "Order retrieved successfully", order, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
