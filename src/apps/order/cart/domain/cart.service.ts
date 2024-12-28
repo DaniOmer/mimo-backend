@@ -7,11 +7,18 @@ import { CartItemService } from "./cartItem.service";
 import { ProductService } from "../../../product/domain";
 import { ProductVariantService } from "../../../product/domain";
 import BadRequestError from "../../../../config/error/bad.request.config";
-import { InventoryService } from "../../../product/domain/inventory/inventory.service";
+import {
+  InventoryService,
+  ReleaseType,
+} from "../../../product/domain/inventory/inventory.service";
 import { SecurityUtils, UserDataToJWT } from "../../../../utils/security.utils";
 import { IProduct, IProductVariant } from "../../../product/data-access";
 
 export type IcartResponse = ICart & { items: ICartItem[] };
+export enum CartExpirationType {
+  DEFAULT = "default",
+  IMMEDIATE = "immediate",
+}
 
 export class CartService extends BaseService {
   readonly repository: CartRepository;
@@ -72,40 +79,41 @@ export class CartService extends BaseService {
     currentUser: UserDataToJWT
   ): Promise<IcartResponse> {
     const existingCart = await this.getCartByUser(currentUser._id);
-    if (!existingCart) {
-      throw new BadRequestError({
-        message: "Failed to find cart for current user",
-        logging: true,
-      });
-    }
-    let cartItem = await this.cartItemService.getCartItem(
+    const existingCartItem = await this.cartItemService.getCartItem(
       existingCart._id,
       data.productId,
       data.productVariantId
     );
 
-    if (!cartItem) {
-      const { product, productVariant } =
-        await this.inventoryService.validateProductAndVariant(
-          data.productId.toString(),
-          data.productVariantId ? data.productVariantId.toString() : null
-        );
-      const defaultQuantity = 0;
-
-      cartItem = await this.cartItemService.createCartItem(
-        existingCart._id,
-        product,
-        productVariant,
-        defaultQuantity
-      );
+    if (existingCartItem) {
+      throw new BadRequestError({
+        message: "Cart item already exists for current user",
+        logging: true,
+      });
     }
-    await this.reserveStockForCart(data.quantity, cartItem, currentUser);
+    const { product, productVariant } =
+      await this.inventoryService.validateProductAndVariant(
+        data.productId.toString(),
+        data.productVariantId ? data.productVariantId.toString() : null
+      );
+    const defaultQuantity = 0;
+
+    const createdCartItem = await this.cartItemService.createCartItem(
+      existingCart._id,
+      product,
+      productVariant,
+      defaultQuantity
+    );
+    await this.reserveStockForCart(data.quantity, createdCartItem, currentUser);
     await this.cartItemService.incrementCartItemQuantity(
-      cartItem,
+      createdCartItem,
       data.quantity
     );
     // LOGIC HERE TO DEFINE CART EXPIRATION TIME
-    return await this.setCartExpiration(existingCart);
+    return await this.setCartExpiration(
+      existingCart,
+      CartExpirationType.DEFAULT
+    );
   }
 
   async updateCartItemQuantity(
@@ -145,10 +153,14 @@ export class CartService extends BaseService {
     );
 
     // LOGIC HERE TO UPDATE CART EXPIRATION TIME
-    return await this.setCartExpiration(cart);
+    return await this.setCartExpiration(cart, CartExpirationType.DEFAULT);
   }
 
-  async clearCart(currentUser: UserDataToJWT, cartId: string): Promise<void> {
+  async clearCart(
+    cartId: string,
+    type: ReleaseType,
+    currentUser: UserDataToJWT
+  ): Promise<void> {
     const cart = await this.repository.getById(cartId);
     if (!cart) {
       throw new BadRequestError({
@@ -157,16 +169,30 @@ export class CartService extends BaseService {
       });
     }
     this.checkCartOwner(cart, currentUser);
-    await this.cartItemService.deleteAllItemsForCart(cart);
-    await this.releaseStockForCart(cart, currentUser);
-
+    await this.releaseStockForCart(cart, currentUser, type);
     const deletedCount = await this.cartItemService.deleteAllItemsForCart(cart);
+
     if (deletedCount === 0) {
       throw new BadRequestError({
         message: "Cart is empty. Nothing to clear",
         logging: true,
       });
     }
+    await this.setCartExpiration(cart, CartExpirationType.IMMEDIATE);
+  }
+
+  async clearCartForCancel(
+    cartId: string,
+    currentUser: UserDataToJWT
+  ): Promise<void> {
+    await this.clearCart(cartId, ReleaseType.CANCEL, currentUser);
+  }
+
+  async clearCartForOrder(
+    cartId: string,
+    currentUser: UserDataToJWT
+  ): Promise<void> {
+    await this.clearCart(cartId, ReleaseType.FINALIZED, currentUser);
   }
 
   checkCartOwner(cart: ICart, currentUser: UserDataToJWT): void {
@@ -203,7 +229,8 @@ export class CartService extends BaseService {
 
   async releaseStockForCart(
     cart: ICart,
-    currentUser: UserDataToJWT
+    currentUser: UserDataToJWT,
+    type: ReleaseType
   ): Promise<void> {
     const items = await this.cartItemService.getItemsByCart(cart._id);
     for (const item of items) {
@@ -215,15 +242,33 @@ export class CartService extends BaseService {
           variant ? variant._id : null
         );
 
-      await this.inventoryService.releaseStock(inventory, currentUser._id);
+      await this.inventoryService.releaseStock(
+        inventory,
+        currentUser._id,
+        type
+      );
     }
   }
 
   async setCartExpiration(
-    cart: ICart
+    cart: ICart,
+    type: CartExpirationType
   ): Promise<ICart & { items: ICartItem[] }> {
-    const expirationTime = this.getReservationDuration();
-    cart.expireAt = new Date(Date.now() + expirationTime);
+    let expirationTime: Date;
+
+    if (type === CartExpirationType.DEFAULT) {
+      const reservationDuration = this.getReservationDuration();
+      expirationTime = new Date(Date.now() + reservationDuration);
+    } else if (type === CartExpirationType.IMMEDIATE) {
+      expirationTime = new Date();
+    } else {
+      throw new BadRequestError({
+        message: "Invalid cart expiration type provided",
+        code: 400,
+      });
+    }
+
+    cart.expireAt = expirationTime;
     const updatedCart = await this.updateCart(cart._id, {
       expireAt: cart.expireAt,
     });

@@ -4,7 +4,6 @@ import {
   validateDtoMiddleware,
   validateIdMiddleware,
   authenticateMiddleware,
-  checkRoleMiddleware,
 } from "../../../../librairies/middlewares/";
 import { OrderCreateFromCartDTO } from "../domain/order.dto";
 
@@ -36,14 +35,6 @@ router.put(
   authenticateMiddleware,
   validateIdMiddleware("Order"),
   orderController.updateOrder.bind(orderController)
-);
-
-router.delete(
-  "/:id",
-  authenticateMiddleware,
-  checkRoleMiddleware(["admin"]),
-  validateIdMiddleware("Order"),
-  orderController.deleteOrder.bind(orderController)
 );
 
 export default router;

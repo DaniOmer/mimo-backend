@@ -6,7 +6,12 @@ import { ProductService } from "../product.service";
 import { ProductVariantService } from "../productVariant/productVariant.service";
 import BadRequestError from "../../../../config/error/bad.request.config";
 import { IProduct, IProductVariant } from "../../data-access";
+import { IReservedProduct } from "../../data-access/reservedProduct/reservedProduct.interface";
 
+export enum ReleaseType {
+  CANCEL = "cancel",
+  FINALIZED = "finalize",
+}
 export class InventoryService extends BaseService {
   readonly repository: InventoryRepository;
   readonly reservedStockService: ReservedProductService;
@@ -169,7 +174,11 @@ export class InventoryService extends BaseService {
     });
   }
 
-  async releaseStock(inventory: IIventory, userId: string): Promise<void> {
+  async releaseStock(
+    inventory: IIventory,
+    userId: string,
+    type: ReleaseType
+  ): Promise<void> {
     const reservedStock =
       await this.reservedStockService.getReservedProductByInventoryAndUserId(
         inventory._id,
@@ -183,14 +192,20 @@ export class InventoryService extends BaseService {
       });
     }
 
-    const updatedInventoryQuantity =
-      inventory.quantity + reservedStock.quantity;
-    const updatedInventoryReservedQuantity =
-      inventory.reservedQuantity - reservedStock.quantity;
-    const updatedInventory = await this.repository.updateById(inventory._id, {
-      quantity: updatedInventoryQuantity,
-      reservedQuantity: updatedInventoryReservedQuantity,
-    });
+    let updatedInventory;
+    if (type === ReleaseType.CANCEL) {
+      updatedInventory = await this.handleCancelStock(inventory, reservedStock);
+    } else if (type === ReleaseType.FINALIZED) {
+      updatedInventory = await this.handleFinalizeStock(
+        inventory,
+        reservedStock
+      );
+    } else {
+      throw new BadRequestError({
+        message: "Invalid stock release type provided",
+        code: 400,
+      });
+    }
 
     if (!updatedInventory) {
       throw new BadRequestError({
@@ -201,6 +216,36 @@ export class InventoryService extends BaseService {
     }
 
     await this.reservedStockService.deleteReservedProduct(reservedStock._id);
+  }
+
+  private async handleCancelStock(
+    inventory: IIventory,
+    reservedStock: IReservedProduct
+  ): Promise<IIventory | null> {
+    const updatedInventoryQuantity =
+      inventory.quantity + reservedStock.quantity;
+    const updatedInventoryReservedQuantity =
+      inventory.reservedQuantity - reservedStock.quantity;
+
+    return this.repository.updateById(inventory._id, {
+      quantity: updatedInventoryQuantity,
+      reservedQuantity: updatedInventoryReservedQuantity,
+    });
+  }
+
+  private async handleFinalizeStock(
+    inventory: IIventory,
+    reservedStock: IReservedProduct
+  ): Promise<IIventory | null> {
+    const updatedInventoryQuantity =
+      inventory.quantity - reservedStock.quantity;
+    const updatedInventoryReservedQuantity =
+      inventory.reservedQuantity - reservedStock.quantity;
+
+    return this.repository.updateById(inventory._id, {
+      quantity: updatedInventoryQuantity,
+      reservedQuantity: updatedInventoryReservedQuantity,
+    });
   }
 
   async getLowQuantityProductsByThershold(

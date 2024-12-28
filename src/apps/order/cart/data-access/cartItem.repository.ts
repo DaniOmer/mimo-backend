@@ -29,10 +29,6 @@ export class CartItemRepository extends MongooseRepository<ICartItem> {
       .exec();
   }
 
-  async updateItem(item: ICartItem): Promise<ICartItem | null> {
-    return await item.save();
-  }
-
   async deleteManyItemsByCart(
     cart: ObjectId
   ): Promise<{ deletedCount: number }> {

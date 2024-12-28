@@ -68,7 +68,7 @@ export class CartController extends BaseController {
     try {
       const currentUser = req.user;
       const { cartId } = req.body;
-      await this.cartService.clearCart(currentUser, cartId);
+      await this.cartService.clearCartForCancel(cartId, currentUser);
       ApiResponse.success(res, "Cart cleared successfully", null, 200);
     } catch (error) {
       next(error);

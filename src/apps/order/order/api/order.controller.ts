@@ -48,7 +48,7 @@ export class OrderController {
   ): Promise<void> {
     try {
       const orderId = req.params.id;
-      const currentUser = req.user.id;
+      const currentUser = req.user;
       const order = await this.orderService.getOrderById(orderId, currentUser);
       ApiResponse.success(res, "Order retrieved successfully", order, 200);
     } catch (error) {
@@ -64,7 +64,7 @@ export class OrderController {
     try {
       const orderId = req.params.id;
       const data = req.body;
-      const currentUser = req.user.id;
+      const currentUser = req.user;
       const updatedOrder = this.orderService.updateOrderById(
         orderId,
         data,

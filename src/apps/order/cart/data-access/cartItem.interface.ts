@@ -1,4 +1,4 @@
-import { ObjectId, Document } from "mongoose";
+import { Document } from "mongoose";
 import { ICart } from "./cart.interface";
 import { IProduct, IProductVariant } from "../../../product/data-access";
 import { Timestamps } from "../../../../librairies/types/timestamps.interface";

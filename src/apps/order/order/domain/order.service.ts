@@ -3,7 +3,11 @@ import { BaseService } from "../../../../librairies/services";
 import { IOrder, OrderRepository, OrderStatus } from "../data-access";
 import { OrderCreateFromCartDTO, OrderUpdateDTO } from "./order.dto";
 import { SecurityUtils, UserDataToJWT } from "../../../../utils/security.utils";
-import { CartService, IcartResponse } from "../../cart/domain";
+import {
+  CartService,
+  IcartResponse,
+  CartExpirationType,
+} from "../../cart/domain";
 import { IAddress } from "../../../address/data-access";
 import { AddressService } from "../../../address/domain";
 import { ProductService } from "../../../product/domain";
@@ -124,8 +128,8 @@ export class OrderService extends BaseService {
     }
     this.cartService.checkCartOwner(cart, currentUser);
 
-    // UPDATE CART EXPIRATION TIME TO HANDLE EXPIRATION DURING CHECKOUT
-    this.cartService.setCartExpiration(cart);
+    // UPDATE CART EXPIRATION TIME TO AVOID EXPIRATION DURING CHECKOUT
+    this.cartService.setCartExpiration(cart, CartExpirationType.DEFAULT);
 
     // GET CART PRICING
     const { totalPriceEtx, totalPriceVat } = await this.getOrderPricing(cart);
@@ -155,8 +159,7 @@ export class OrderService extends BaseService {
     data: OrderCreateFromCartDTO,
     currentUser: UserDataToJWT
   ): Promise<any> {
-    // CLEAR USER CART
-    await this.cartService.clearCart(currentUser, data.cartId);
+    await this.cartService.clearCartForOrder(data.cartId, currentUser);
   }
 
   private async validateOrderAddresses(
@@ -178,44 +181,6 @@ export class OrderService extends BaseService {
 
     return { shippingAddress, billingAddress };
   }
-
-  // private async reserveStockForOrder(
-  //   cart: IcartResponse,
-  //   userId: string
-  // ): Promise<any> {
-  //   for (const item of cart.items) {
-  //     // GET INVENTORY WITH PRODUCT AND PRODUCT VARIANT DETAILS FOR ORDER ITEM
-  //     const inventory =
-  //       await this.inventoryService.getInventoryByProductAndVariantId(
-  //         item.product.toString(),
-  //         item.productVariant.toString()
-  //       );
-  //     // VALID ORDER ITEM INVENTORY
-  //     this.inventoryService.validateInventoryStock(inventory, item.quantity);
-  //     // RESERVE STOCK FOR ORDER ITEM
-  //     await this.inventoryService.reserveStock(
-  //       inventory,
-  //       item.quantity,
-  //       userId
-  //     );
-  //   }
-  // }
-
-  // private async releaseStockForOrder(
-  //   cart: IcartResponse,
-  //   userId: string
-  // ): Promise<any> {
-  //   for (const item of cart.items) {
-  //     // GET INVENTORY WITH PRODUCT AND PRODUCT VARIANT DETAILS FOR ORDER ITEM
-  //     const inventory =
-  //       await this.inventoryService.getInventoryByProductAndVariantId(
-  //         item.product.toString(),
-  //         item.productVariant.toString()
-  //       );
-  //     // RELEASE RESERVED STOCK AND UPDATE INVENTORY QUANTITY
-  //     await this.inventoryService.releaseStock(inventory, userId);
-  //   }
-  // }
 
   private async getOrderPricing(
     cart: IcartResponse
