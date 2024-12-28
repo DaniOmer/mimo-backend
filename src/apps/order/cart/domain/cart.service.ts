@@ -98,13 +98,17 @@ export class CartService extends BaseService {
       );
     const defaultQuantity = 0;
 
+    await this.reserveStockForCart(
+      data.quantity,
+      { product, productVariant },
+      currentUser
+    );
     const createdCartItem = await this.cartItemService.createCartItem(
       existingCart._id,
       product,
       productVariant,
       defaultQuantity
     );
-    await this.reserveStockForCart(data.quantity, createdCartItem, currentUser);
     await this.cartItemService.incrementCartItemQuantity(
       createdCartItem,
       data.quantity
@@ -144,7 +148,7 @@ export class CartService extends BaseService {
     // RESERVE STOCK RELATED TO NEW QUANTITY AFTER UPDATE
     await this.reserveStockForCart(
       data.quantity,
-      existingCartItem,
+      { product, productVariant },
       currentUser
     );
     await this.cartItemService.updateItemQuantity(
@@ -209,11 +213,11 @@ export class CartService extends BaseService {
 
   async reserveStockForCart(
     quantity: number,
-    item: ICartItem,
+    data: { product: IProduct; productVariant: IProductVariant | null },
     currentUser: UserDataToJWT
   ): Promise<void> {
-    const product = item.product as IProduct;
-    const variant = item.productVariant as IProductVariant | null;
+    const product = data.product as IProduct;
+    const variant = data.productVariant as IProductVariant | null;
     const inventory =
       await this.inventoryService.getInventoryByProductAndVariantId(
         product._id,

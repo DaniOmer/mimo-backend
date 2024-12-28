@@ -10,7 +10,7 @@ export class OrderItemRepository extends MongooseRepository<IOrderItem> {
   }
 
   async createOrderItems(
-    orderItemsList: Omit<IOrderItem, "_id">[],
+    orderItemsList: Partial<IOrderItem>[],
     session?: mongoose.ClientSession
   ): Promise<IOrderItem[]> {
     return await OrderItemModel.insertMany(orderItemsList, { session });

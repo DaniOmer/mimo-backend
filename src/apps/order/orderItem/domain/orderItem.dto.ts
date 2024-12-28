@@ -1,14 +1,23 @@
-import { IsNotEmpty, IsNumber, IsPositive, IsMongoId } from "class-validator";
-import { Schema } from "mongoose";
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsMongoId,
+  IsOptional,
+} from "class-validator";
 
 export class OrderItemCreateDTO {
   @IsNotEmpty()
   @IsMongoId()
-  readonly order_id!: Schema.Types.ObjectId;
+  readonly order!: string;
 
   @IsNotEmpty()
   @IsMongoId()
-  readonly productVariant_id!: Schema.Types.ObjectId;
+  readonly product!: string;
+
+  @IsOptional()
+  @IsMongoId()
+  readonly productVariant?: string | null;
 
   @IsNotEmpty()
   @IsPositive()
@@ -28,5 +37,10 @@ export class OrderItemCreateDTO {
   @IsNotEmpty()
   @IsPositive()
   @IsNumber()
-  readonly subtotal!: number;
+  readonly subTotalEtx!: number;
+
+  @IsNotEmpty()
+  @IsPositive()
+  @IsNumber()
+  readonly subTotalVat!: number;
 }

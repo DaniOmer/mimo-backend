@@ -6,8 +6,7 @@ const orderItemSchema = new Schema<IOrderItem>(
     product: {
       type: Schema.Types.ObjectId,
       ref: "Product",
-      required: false,
-      default: null,
+      required: true,
     },
     productVariant: {
       type: Schema.Types.ObjectId,
@@ -35,7 +34,11 @@ const orderItemSchema = new Schema<IOrderItem>(
       required: true,
       min: 0,
     },
-    subTotal: {
+    subTotalEtx: {
+      type: Number,
+      required: true,
+    },
+    subTotalVat: {
       type: Number,
       required: true,
     },

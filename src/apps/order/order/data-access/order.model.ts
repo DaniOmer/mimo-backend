@@ -17,12 +17,12 @@ const orderSchema = new Schema<IOrder>(
       type: Date,
       required: false,
     },
-    priceEtx: {
+    amountEtx: {
       type: Number,
       required: true,
       min: 0,
     },
-    priceVat: {
+    amountVat: {
       type: Number,
       required: true,
       min: 0,

@@ -13,6 +13,9 @@ import { AddressService } from "../../../address/domain";
 import { ProductService } from "../../../product/domain";
 import { ProductVariantService } from "../../../product/domain";
 import { InventoryService } from "../../../product/domain/inventory/inventory.service";
+import { IOrderItem } from "../../orderItem/data-access";
+import { OrderItemService } from "../../orderItem/domain";
+import { IProduct, IProductVariant } from "../../../product/data-access";
 
 export class OrderService extends BaseService {
   readonly repository: OrderRepository;
@@ -21,6 +24,7 @@ export class OrderService extends BaseService {
   readonly productService: ProductService;
   readonly productVariantService: ProductVariantService;
   readonly inventoryService: InventoryService;
+  readonly orderItemService: OrderItemService;
 
   constructor() {
     super("Order");
@@ -30,12 +34,13 @@ export class OrderService extends BaseService {
     this.productService = new ProductService();
     this.productVariantService = new ProductVariantService();
     this.inventoryService = new InventoryService();
+    this.orderItemService = new OrderItemService();
   }
 
   async createOrderFromCart(
     data: OrderCreateFromCartDTO,
     user: UserDataToJWT
-  ): Promise<IOrder> {
+  ): Promise<IOrder & { items: IOrderItem[] }> {
     // PRE ORDER PROCESSING
     const { cart, ...order } = await this.preOrder(data, user);
 
@@ -50,8 +55,8 @@ export class OrderService extends BaseService {
     }
 
     // POST ORDER PROCESSING
-    await this.postOrder(data, user);
-    return createdOrder;
+    const items = await this.postOrder(cart, createdOrder, user);
+    return { ...createdOrder.toObject(), items };
   }
 
   async getOrderById(id: string, currentUser: UserDataToJWT): Promise<IOrder> {
@@ -141,7 +146,7 @@ export class OrderService extends BaseService {
         data.shippingAddressId
       );
 
-    const orderNumber = "ORD-9829833-fhH483"; // TO IMPLEMENT LATER
+    const orderNumber = "ORD-9120833-fhH511"; // TO IMPLEMENT LATER
 
     return {
       cart,
@@ -150,16 +155,23 @@ export class OrderService extends BaseService {
       shippingAddress: shippingAddress._id,
       billingAddress: billingAddress._id,
       status: OrderStatus.Pending,
-      priceEtx: totalPriceEtx,
-      priceVat: totalPriceVat,
+      amountEtx: totalPriceEtx,
+      amountVat: totalPriceVat,
     };
   }
 
   private async postOrder(
-    data: OrderCreateFromCartDTO,
+    cart: IcartResponse,
+    order: IOrder,
     currentUser: UserDataToJWT
-  ): Promise<any> {
-    await this.cartService.clearCartForOrder(data.cartId, currentUser);
+  ): Promise<IOrderItem[]> {
+    // CREATE ORDER ITEMS
+    const orderItems = await this.createItemsForOrder(cart, order);
+
+    // CLEAR USER CART
+    await this.cartService.clearCartForOrder(cart._id, currentUser);
+
+    return orderItems;
   }
 
   private async validateOrderAddresses(
@@ -194,5 +206,30 @@ export class OrderService extends BaseService {
       0
     );
     return { totalPriceEtx, totalPriceVat };
+  }
+
+  private async createItemsForOrder(
+    cart: IcartResponse,
+    order: IOrder
+  ): Promise<IOrderItem[]> {
+    const items = cart.items.map((item) => {
+      const product = item.product as IProduct;
+      const productVariant = item.productVariant as IProductVariant;
+
+      const orderItem = {
+        product: product._id,
+        productVariant: productVariant ? productVariant._id : null,
+        order: order._id,
+        quantity: item.quantity,
+        priceEtx: item.priceEtx,
+        priceVat: item.priceVat,
+        subTotalEtx: item.priceEtx * item.quantity,
+        subTotalVat: item.priceVat * item.quantity,
+      };
+      return orderItem;
+    });
+
+    const orderItems = await this.orderItemService.createManyOrderItems(items);
+    return orderItems;
   }
 }

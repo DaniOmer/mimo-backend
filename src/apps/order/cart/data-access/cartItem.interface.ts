@@ -11,5 +11,6 @@ export interface ICartItem extends Document, Timestamps {
   priceEtx: number;
   priceVat: number;
   quantity: number;
-  subTotal: number;
+  subTotalEtx: number;
+  subTotalVat: number;
 }

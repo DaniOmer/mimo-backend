@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { ICartItem } from "./cartItem.interface";
 
-export const cartItemSchema = new Schema(
+export const cartItemSchema = new Schema<ICartItem>(
   {
     product: {
       type: Schema.Types.ObjectId,
@@ -34,7 +34,11 @@ export const cartItemSchema = new Schema(
       required: true,
       min: 0,
     },
-    subTotal: {
+    subTotalEtx: {
+      type: Number,
+      required: true,
+    },
+    subTotalVat: {
       type: Number,
       required: true,
     },

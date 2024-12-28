@@ -1,4 +1,4 @@
-import { Document, Types } from "mongoose";
+import { Document } from "mongoose";
 import { IProduct, IProductVariant } from "../../../product/data-access";
 import { IOrder } from "../../order/data-access";
 
@@ -11,11 +11,12 @@ export interface Address {
 }
 
 export interface IOrderItem extends Document {
-  product: Types.ObjectId | IProduct;
-  productVariant: Types.ObjectId | IProductVariant;
-  order: Types.ObjectId | IOrder;
+  product: string | IProduct;
+  productVariant: string | IProductVariant | null;
+  order: string | IOrder;
   quantity: number;
   priceEtx: number;
   priceVat: number;
-  subTotal: number;
+  subTotalEtx: number;
+  subTotalVat: number;
 }

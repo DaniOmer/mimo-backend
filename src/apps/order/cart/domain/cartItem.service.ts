@@ -55,7 +55,8 @@ export class CartItemService extends BaseService {
       priceEtx,
       priceVat,
       quantity,
-      subTotal: priceEtx * quantity,
+      subTotalEtx: priceEtx * quantity,
+      subTotalVat: priceVat * quantity,
     });
     if (!cartItem) {
       throw new BadRequestError({
@@ -73,7 +74,8 @@ export class CartItemService extends BaseService {
     const updatedQuantity = item.quantity + quantity;
 
     item.quantity = updatedQuantity;
-    item.subTotal = item.priceEtx * updatedQuantity;
+    item.subTotalEtx = item.priceEtx * updatedQuantity;
+    item.subTotalVat = item.priceVat * updatedQuantity;
     await this.repository.updateById(item._id.toString(), item);
   }
 
@@ -83,7 +85,8 @@ export class CartItemService extends BaseService {
       return;
     }
     item.quantity = quantity;
-    item.subTotal = item.priceEtx * quantity;
+    item.subTotalEtx = item.priceEtx * quantity;
+    item.subTotalVat = item.priceVat * quantity;
     const updatedItem = await this.repository.updateById(
       item._id.toString(),
       item

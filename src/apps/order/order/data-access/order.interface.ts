@@ -17,8 +17,8 @@ export interface IOrder extends Timestamps, Document {
   number: string;
   shipDate?: Date;
   status: OrderStatus;
-  priceEtx: number;
-  priceVat: number;
+  amountEtx: number;
+  amountVat: number;
   shippingAddress: string | IAddress;
   billingAddress: string | IAddress;
 }
