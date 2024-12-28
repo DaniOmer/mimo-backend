@@ -2,7 +2,7 @@ import BadRequestError from "../../../../config/error/bad.request.config";
 import { BaseService } from "../../../../librairies/services";
 import { IOrder, OrderRepository, OrderStatus } from "../data-access";
 import { OrderCreateFromCartDTO, OrderUpdateDTO } from "./order.dto";
-import { SecurityUtils, UserDataToJWT } from "../../../../utils/security.utils";
+import { SecurityUtils, UserDataToJWT, GeneralUtils } from "../../../../utils";
 import {
   CartService,
   IcartResponse,
@@ -146,7 +146,7 @@ export class OrderService extends BaseService {
         data.shippingAddressId
       );
 
-    const orderNumber = "ORD-9120833-fhH511"; // TO IMPLEMENT LATER
+    const orderNumber = this.generateOrderNumber();
 
     return {
       cart,
@@ -231,5 +231,10 @@ export class OrderService extends BaseService {
 
     const orderItems = await this.orderItemService.createManyOrderItems(items);
     return orderItems;
+  }
+
+  private generateOrderNumber(): string {
+    const orderNumber = GeneralUtils.generateUniqueIdentifier("ORD");
+    return orderNumber;
   }
 }
