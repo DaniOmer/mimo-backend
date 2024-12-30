@@ -8,6 +8,7 @@ import {
   IPermission,
   UserRepository,
   TokenType,
+  AuthType,
 } from "../../data-access";
 import TokenService from "../token/token.service";
 import { UserCreateResponse, UserLoginResponse } from "./auth.service";
@@ -63,6 +64,7 @@ export class BasicAuthStrategy implements AuthStrategy {
     const hashedPassword = await SecurityUtils.hashPassword(userData.password);
     const newUser = await this.userRepository.create({
       ...userData,
+      authType: AuthType.Basic,
       password: hashedPassword,
       roles: existingRoles,
     });
