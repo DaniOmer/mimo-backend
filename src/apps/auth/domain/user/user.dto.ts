@@ -4,7 +4,6 @@ import {
   IsAlpha,
   IsNotEmpty,
   IsEmail,
-  IsEnum,
   IsBoolean,
   IsUrl,
   IsOptional,
@@ -41,11 +40,6 @@ export class UserRegisterDTO {
   @IsUrl()
   @MaxLength(250)
   readonly avatar?: string;
-
-  @IsNotEmpty()
-  @IsArray()
-  @IsString({ each: true })
-  roles!: string[];
 
   @IsOptional()
   @IsBoolean()

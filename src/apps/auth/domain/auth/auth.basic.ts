@@ -9,6 +9,7 @@ import {
   UserRepository,
   TokenType,
   AuthType,
+  RoleAvailable,
 } from "../../data-access";
 import TokenService from "../token/token.service";
 import { UserCreateResponse, UserLoginResponse } from "./auth.service";
@@ -45,28 +46,22 @@ export class BasicAuthStrategy implements AuthStrategy {
       });
     }
 
-    const existingRoles: IRole[] = [];
-    const rolesPromises = userData.roles.map(async (roleName) => {
-      const role = await this.roleService.getRoleByName(roleName);
-      if (!role) {
-        throw new BadRequestError({
-          message: `Role ${roleName} not found`,
-          code: 400,
-          context: { field_validation: ["roles"] },
-          logging: true,
-        });
-      }
-      return role;
-    });
-
-    existingRoles.push(...(await Promise.all(rolesPromises)));
+    const adminRole = await this.roleService.getRoleByName(RoleAvailable.ADMIN);
+    if (!adminRole) {
+      throw new BadRequestError({
+        message: `Role not found`,
+        code: 400,
+        context: { app_initialization_failed: "Init role are not available" },
+        logging: true,
+      });
+    }
 
     const hashedPassword = await SecurityUtils.hashPassword(userData.password);
     const newUser = await this.userRepository.create({
       ...userData,
       authType: AuthType.Basic,
       password: hashedPassword,
-      roles: existingRoles,
+      roles: [adminRole],
     });
 
     const userObject = newUser.toObject();
