@@ -115,7 +115,6 @@ router.post(
  */
 router.get(
   "/search",
-  authenticateMiddleware,
   productVariantController.searchVariants.bind(productVariantController)
 );
 
@@ -137,7 +136,6 @@ router.get(
  */
 router.get(
   "/",
-  authenticateMiddleware,
   productVariantController.getAllVariants.bind(productVariantController)
 );
 
@@ -166,7 +164,6 @@ router.get(
  */
 router.get(
   "/:id",
-  authenticateMiddleware,
   validateIdMiddleware("ProductVariant"),
   productVariantController.getVariantById.bind(productVariantController)
 );
@@ -249,7 +246,6 @@ router.delete(
  */
 router.get(
   "/limited-edition",
-  authenticateMiddleware,
   productVariantController.getLimitedEditionVariants.bind(productVariantController)
 );
 

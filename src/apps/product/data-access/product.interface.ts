@@ -5,7 +5,8 @@ export interface IProduct extends Document, Timestamps {
   _id: string;
   name: string;
   description?: string;
-  basePrice?: number;
+  priceEtx?: number;
+  priceVat?: number;
   isActive: boolean;
   images?: Types.ObjectId[];
   categoryIds: Types.ObjectId[];

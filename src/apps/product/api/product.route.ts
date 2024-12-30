@@ -74,7 +74,6 @@ router.post(
  *                 $ref: '#/components/schemas/Product'
  */
 router.get("/",
-  authenticateMiddleware,
    productController.getAllProducts.bind(productController));
 
 /**
@@ -110,7 +109,7 @@ router.get("/",
  *       200:
  *         description: Products retrieved successfully
  */
-router.get("/search", authenticateMiddleware, productController.searchProducts.bind(productController));
+router.get("/search", productController.searchProducts.bind(productController));
 
 
 /**
@@ -138,7 +137,6 @@ router.get("/search", authenticateMiddleware, productController.searchProducts.b
  */
 router.get(
   "/:id",
-  authenticateMiddleware,
   validateIdMiddleware("Product"),
   productController.getProductById.bind(productController)
 );

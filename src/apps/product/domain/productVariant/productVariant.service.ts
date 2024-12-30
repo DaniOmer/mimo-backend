@@ -96,12 +96,25 @@ export class ProductVariantService extends BaseService {
 
   async duplicateVariant(id: string): Promise<IProductVariant> {
     const variant = await this.repository.getById(id);
-    this.validateDataExists(variant, id);
+    if (!variant) {
+      throw new BadRequestError({
+        message: "Variant not found.",
+        context: { variantId: `No variant found with ID: ${id}` },
+        code: 404,
+      });
+    }
+
+    const { productId, sizeId, colorId, priceEtx, priceVat, material, weight, isLimitedEdition } = variant.toObject();
 
     const duplicatedVariantData = {
-      ...variant?.toObject(),
-      _id: undefined,
-      stripeId: undefined, 
+      productId,
+      sizeId,
+      colorId,
+      priceEtx,
+      priceVat,
+      material,
+      weight,
+      isLimitedEdition,
     };
     return this.repository.create(duplicatedVariantData);
   }

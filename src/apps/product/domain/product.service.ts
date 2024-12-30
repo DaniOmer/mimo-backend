@@ -95,9 +95,9 @@ export class ProductService extends BaseService {
     if (filters.name) query.name = { $regex: filters.name, $options: "i" };
     if (filters.categoryIds) query.categoryIds = { $in: filters.categoryIds };
     if (filters.minPrice || filters.maxPrice) {
-      query.basePrice = {};
-      if (filters.minPrice) query.basePrice.$gte = filters.minPrice;
-      if (filters.maxPrice) query.basePrice.$lte = filters.maxPrice;
+      query.priceEtx = {};
+      if (filters.minPrice) query.priceEtx.$gte = filters.minPrice;
+      if (filters.maxPrice) query.priceEtx.$lte = filters.maxPrice;
     }
 
     return this.repository.findByCriteria(query);
@@ -112,11 +112,18 @@ export class ProductService extends BaseService {
         code: 404,
       });
     }
+    const { name, description, priceEtx, priceVat, isActive, images, categoryIds, featureIds, createdBy } = product.toObject();
 
     const duplicatedProduct = {
-      ...product.toObject(),
-      _id: undefined,
-      name: `${product.name} (Copy)`,
+      name: `${name} - Copy`,
+      description,
+      priceEtx,
+      priceVat,
+      isActive,
+      images,
+      categoryIds,
+      featureIds,
+      createdBy,
     };
     return this.repository.create(duplicatedProduct);
   }

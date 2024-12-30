@@ -5,7 +5,8 @@ const ProductSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
     description: { type: String },
-    basePrice: { type: Number },
+    priceEtx: { type: Number  },
+    priceVat: { type: Number },
     isActive: { type: Boolean, required: true, default: true },
     images: [{ type: Schema.Types.ObjectId, ref: "ProductImage" }],
     categoryIds: [{ type: Schema.Types.ObjectId, ref: "Category", required: true }],

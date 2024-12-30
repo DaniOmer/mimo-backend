@@ -27,12 +27,10 @@ router.post(
 );
 
 router.get("/",
-    authenticateMiddleware,
    productFeatureController.getAll.bind(productFeatureController));
 
 router.get(
   "/:id",
-  authenticateMiddleware,
   validateIdMiddleware("ProductFeature"),
   productFeatureController.getById.bind(productFeatureController)
 );

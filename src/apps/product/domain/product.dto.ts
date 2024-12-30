@@ -23,7 +23,11 @@ export class ProductCreateDTO {
 
   @IsOptional()
   @IsNumber()
-  readonly basePrice?: number;
+  readonly priceEtx?: number;
+
+  @IsOptional()
+  @IsNumber()
+  readonly priceVat?: number;
 
   @IsNotEmpty()
   @IsBoolean()
@@ -67,7 +71,11 @@ export class ProductUpdateDTO {
 
   @IsOptional()
   @IsNumber()
-  readonly basePrice?: number;
+  readonly priceEtx?: number;
+
+  @IsOptional()
+  @IsNumber()
+  readonly priceVat?: number;
 
   @IsOptional()
   @IsBoolean()
