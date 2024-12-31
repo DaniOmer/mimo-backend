@@ -12,8 +12,8 @@ export class ProductService extends BaseService {
   private featureService: ProductFeatureService;
   private imageService: ProductImageService;
   private userService: UserService;
-  private productVariantService!: ProductVariantService; 
-  private inventoryService!: InventoryService;
+  private productVariantService: ProductVariantService | null = null;
+  private inventoryService: InventoryService | null = null;
 
 
 
@@ -28,13 +28,18 @@ export class ProductService extends BaseService {
   }
 
   setProductVariantService(service: ProductVariantService) {
+    if (!service) {
+      throw new Error("ProductVariantService cannot be null.");
+    }
     this.productVariantService = service;
   }
 
   setInventoryService(service: InventoryService) {
+    if (!service) {
+      throw new Error("InventoryService cannot be null.");
+    }
     this.inventoryService = service;
   }
-
 
   async createProduct(data: Partial<IProduct>): Promise<IProduct> {
     await this.validateDependencies(data);
@@ -185,28 +190,37 @@ export class ProductService extends BaseService {
   }
 
   async getProductWithVariants(id: string): Promise<any> {
+    if (!this.productVariantService || !this.inventoryService) {
+      throw new Error("Dependencies not initialized.");
+    }
+
     const product = await this.repository.findByIdWithRelations(id);
     if (!product) {
-      throw new BadRequestError({ message: "Product not found.", code: 404 });
+        throw new BadRequestError({ message: "Product not found.", code: 404 });
     }
-  
+
     const variants = await this.productVariantService.getVariantsByProductId(id);
     const inventories = await this.inventoryService.getInventoriesWithProductAndVariant();
-  
+
     const variantDetails = variants.map((variant) => {
-      const inventory = inventories.find(
-        (inv) => inv.productVariant?.toString() === variant._id.toString()
-      );
-      return {
-        ...variant.toObject(),
-        quantity: inventory ? inventory.quantity - inventory.reservedQuantity : 0,
-      };
+        const inventory = inventories.find(
+            (inv) => inv.productVariant?.toString() === variant._id.toString()
+        );
+        return {
+            ...variant.toObject(),
+            quantity: inventory ? inventory.quantity - inventory.reservedQuantity : 0,
+        };
     });
-  
+
     return { product, variants: variantDetails };
-  }
+}
 
   async getAllProductsWithVariants(): Promise<any[]> {
+
+    if (!this.productVariantService || !this.inventoryService) {
+      throw new Error("Dependencies not initialized.");
+    }
+
     const products = await this.repository.findAllWithRelations();
     const variants = await this.productVariantService.getAllVariants();
   

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ProductService } from "../domain/product.service";
+import { ProductService, ProductVariantService, InventoryService } from "../domain/";
 import { ApiResponse } from "../../../librairies/controllers/api.response";
 
 export class ProductController {
@@ -7,6 +7,11 @@ export class ProductController {
 
   constructor() {
     this.productService = new ProductService();
+    const productVariantService = new ProductVariantService();
+    const inventoryService = new InventoryService();
+
+    this.productService.setProductVariantService(productVariantService);
+    this.productService.setInventoryService(inventoryService);
   }
 
   async createProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
