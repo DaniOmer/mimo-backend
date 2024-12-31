@@ -16,7 +16,7 @@ export class ReservedProductRepository extends MongooseRepository<IReservedProdu
     userId: string
   ): Promise<IReservedProduct | null> {
     return this.model
-      .findOne({ inventoryId: inventoryId, userId: userId })
+      .findOne({ inventoryId: inventoryId, reservedById: userId })
       .exec();
   }
 }

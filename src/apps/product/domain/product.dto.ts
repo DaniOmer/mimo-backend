@@ -2,27 +2,31 @@ import {
   IsArray,
   IsBoolean,
   IsNotEmpty,
-  IsOptional,
-  IsString,
   MaxLength,
-  IsNumber,
   MinLength,
+  IsString,
+  IsNumber,
+  Min,
+  IsOptional,
 } from "class-validator";
 
-export class ProductCreateDTO {
+export class ProductDTO {
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
   @MaxLength(100)
   readonly name!: string;
 
+
   @IsOptional()
   @IsString()
+  @MinLength(10)
   @MaxLength(1000)
   readonly description?: string;
 
   @IsOptional()
   @IsNumber()
+  @Min(0)
   readonly priceEtx?: number;
 
   @IsOptional()
@@ -70,14 +74,6 @@ export class ProductUpdateDTO {
   readonly description?: string;
 
   @IsOptional()
-  @IsNumber()
-  readonly priceEtx?: number;
-
-  @IsOptional()
-  @IsNumber()
-  readonly priceVat?: number;
-
-  @IsOptional()
   @IsBoolean()
   readonly isActive?: boolean;
 
@@ -99,4 +95,15 @@ export class ProductUpdateDTO {
   @IsOptional()
   @IsString()
   readonly updatedBy?: string;
+
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  readonly priceEtx!: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  readonly priceVat!: number;
 }

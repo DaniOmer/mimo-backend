@@ -3,11 +3,13 @@ import * as bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { AppConfig } from "../config/app.config";
 import BadRequestError from "../config/error/bad.request.config";
+import { ObjectId } from "mongoose";
 
-type UserDataToJWT = {
-  id: string;
-  roles: object[];
-  permissions: object[];
+export type UserDataToJWT = {
+  _id: string;
+  id: ObjectId;
+  roles: { name: string }[];
+  permissions: { name: string }[];
 };
 
 export class SecurityUtils {
@@ -41,18 +43,10 @@ export class SecurityUtils {
 
   static async generateJWTToken(userDataToJWT: UserDataToJWT): Promise<string> {
     const secret = this.getJWTSecret();
-    return jwt.sign(
-      {
-        userId: userDataToJWT.id,
-        roles: userDataToJWT.roles,
-        permission: userDataToJWT.permissions,
-      },
-      secret,
-      {
-        algorithm: "HS256",
-        expiresIn: AppConfig.jwt.expiresIn,
-      }
-    );
+    return jwt.sign(userDataToJWT, secret, {
+      algorithm: "HS256",
+      expiresIn: AppConfig.jwt.expiresIn,
+    });
   }
 
   static async verifyJWTToken(token: string): Promise<string | JwtPayload> {
@@ -83,5 +77,15 @@ export class SecurityUtils {
     storedToken: string
   ): Promise<boolean> {
     return this.comparePassword(inputToken, storedToken);
+  }
+
+  static isOwnerOrAdmin(
+    resourceUserId: string,
+    currentUser: UserDataToJWT
+  ): boolean {
+    const isOwner = resourceUserId === currentUser._id;
+    const isAdmin = currentUser.roles.some((role) => role.name === "admin");
+
+    return isOwner || isAdmin;
   }
 }

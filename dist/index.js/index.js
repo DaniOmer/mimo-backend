@@ -26,8 +26,14 @@ const user_route_1 = __importDefault(require("./apps/auth/api/user/user.route"))
 const product_route_1 = __importDefault(require("./apps/product/api/product.route"));
 const permission_route_1 = __importDefault(require("./apps/auth/api/permission/permission.route"));
 const role_route_1 = __importDefault(require("./apps/auth/api/role/role.route"));
+const category_route_1 = __importDefault(require("./apps/product/api/category/category.route"));
+const size_route_1 = __importDefault(require("./apps/product/api/size/size.route"));
+const color_route_1 = __importDefault(require("./apps/product/api/color/color.route"));
 const payment_route_1 = __importDefault(require("./apps/payment/api/payment.route"));
 const inventory_route_1 = __importDefault(require("./apps/product/api/inventory/inventory.route"));
+const address_route_1 = __importDefault(require("./apps/address/api/address.route"));
+const cart_route_1 = __importDefault(require("./apps/order/cart/api/cart.route"));
+const order_route_1 = __importDefault(require("./apps/order/order/api/order.route"));
 function startApp() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
@@ -49,6 +55,12 @@ function startApp() {
             app.use("/api/products", product_route_1.default);
             // Inventory routes
             app.use("/api/products/inventory", inventory_route_1.default);
+            // category routes
+            app.use("/api/categories", category_route_1.default);
+            // Size routes
+            app.use("/api/sizes", size_route_1.default);
+            // Color routes
+            app.use("/api/colors", color_route_1.default);
             // User routes
             app.use("/api/users", user_route_1.default);
             // Permission routes
@@ -56,7 +68,13 @@ function startApp() {
             // Role routes
             app.use("/api/roles", role_route_1.default);
             // Payment routes
-            app.use("/api/payment", payment_route_1.default);
+            app.use("/api/payments", payment_route_1.default);
+            // Cart routes
+            app.use("/api/carts", cart_route_1.default);
+            // Order Routes
+            app.use("/api/orders", order_route_1.default);
+            // Address routes
+            app.use("/api/addresses", address_route_1.default);
             // Error handling middleware
             app.use(error_middleware_1.errorHandlerMiddleware);
             app.listen(port, () => {

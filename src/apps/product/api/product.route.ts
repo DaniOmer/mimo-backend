@@ -6,8 +6,7 @@ import {
   authenticateMiddleware,
   checkRoleMiddleware
 } from "../../../librairies/middlewares/";
-import { ProductCreateDTO, ProductUpdateDTO } from "../domain/";
-
+import { ProductDTO, ProductUpdateDTO } from "../domain/";
 const productController = new ProductController();
 const router = Router();
 
@@ -53,7 +52,7 @@ router.post(
   "/",
   authenticateMiddleware,
   checkRoleMiddleware(["admin"]),
-  validateDtoMiddleware(ProductCreateDTO),
+  validateDtoMiddleware(ProductDTO),
   productController.createProduct.bind(productController)
 );
 

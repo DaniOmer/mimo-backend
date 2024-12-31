@@ -45,6 +45,7 @@ export class ProductVariantService extends BaseService {
         code: 404,
       });
     }
+
     return productVariant;
   }
 

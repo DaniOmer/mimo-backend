@@ -20,6 +20,9 @@ import inventoryRouter from "./apps/product/api/inventory/inventory.route";
 import ProductFeatureRouter from "./apps/product/api/productFeature/productFeature.route";
 import ProductImageRouter from "./apps/product/api/productImage/productImage.route";
 import ProductVariantRouter from "./apps/product/api/productVariant/productVariant.route";
+import addressRouter from "./apps/address/api/address.route";
+import cartRouter from "./apps/order/cart/api/cart.route";
+import orderRouter from "./apps/order/order/api/order.route";
 
 
 async function startApp() {
@@ -48,11 +51,9 @@ async function startApp() {
     // Product routes
     app.use("/api/products", productRouter);
 
-
     // Inventory routes
     app.use("/api/products/inventory", inventoryRouter);
 
-  
     // category routes
     app.use("/api/categories", categoryRouter);
 
@@ -61,7 +62,6 @@ async function startApp() {
 
     // Color routes
     app.use("/api/colors", colorRouter);
-
 
     // User routes
     app.use("/api/users", userRouter);
@@ -73,7 +73,16 @@ async function startApp() {
     app.use("/api/roles", roleRouter);
 
     // Payment routes
-    app.use("/api/payment", paymentRouter);
+    app.use("/api/payments", paymentRouter);
+
+    // Cart routes
+    app.use("/api/carts", cartRouter);
+
+    // Order Routes
+    app.use("/api/orders", orderRouter);
+
+    // Address routes
+    app.use("/api/addresses", addressRouter);
 
     // Product Feature routes
     app.use("/api/product-features", ProductFeatureRouter);
