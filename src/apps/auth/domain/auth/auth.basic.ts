@@ -99,13 +99,13 @@ export class BasicAuthStrategy implements AuthStrategy {
     };
   }
 
-  async requestEmailValidation(user: IUser): Promise<string> {
+  async getEmailValidationLink(user: IUser): Promise<string> {
     const token = await this.tokenService.createToken(
       user,
       TokenType.Confirmation
     );
 
-    const emailValidationLink = `${AppConfig.client.url}/auth/email-validation?token=${token.hash}`;
+    const emailValidationLink = `${AppConfig.client.url}/auth/email-validation/${token.hash}`;
     return emailValidationLink;
   }
 
