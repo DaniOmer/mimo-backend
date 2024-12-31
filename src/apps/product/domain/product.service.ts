@@ -12,8 +12,9 @@ export class ProductService extends BaseService {
   private featureService: ProductFeatureService;
   private imageService: ProductImageService;
   private userService: UserService;
-  private productVariantService: ProductVariantService;
-  private inventoryService: InventoryService;
+  private productVariantService!: ProductVariantService; 
+  private inventoryService!: InventoryService;
+
 
 
   constructor() {
@@ -23,10 +24,17 @@ export class ProductService extends BaseService {
     this.featureService = new ProductFeatureService();
     this.imageService = new ProductImageService();
     this.userService = new UserService();
-    this.productVariantService = new ProductVariantService();
-    this.inventoryService = new InventoryService();
 
   }
+
+  setProductVariantService(service: ProductVariantService) {
+    this.productVariantService = service;
+  }
+
+  setInventoryService(service: InventoryService) {
+    this.inventoryService = service;
+  }
+
 
   async createProduct(data: Partial<IProduct>): Promise<IProduct> {
     await this.validateDependencies(data);
