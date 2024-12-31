@@ -222,13 +222,12 @@ export class ProductService extends BaseService {
     }
 
     const products = await this.repository.findAllWithRelations();
-    const variants = await this.productVariantService.getAllVariants();
-  
+    const variants = await this.productVariantService.getAllVariants();  
     const inventoryData = await this.inventoryService.getInventoriesWithProductAndVariant();
   
     return products.map((product) => {
       const productVariants = variants
-        .filter((variant) => variant.productId.toString() === product._id.toString())
+        .filter((variant) => variant.productId._id.toString() === product._id.toString())
         .map((variant) => {
           const inventory = inventoryData.find(
             (inv) => inv.productVariant?.toString() === variant._id.toString()
