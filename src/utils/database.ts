@@ -22,7 +22,7 @@ export class DatabaseTestUtils {
         username: process.env.MONGODB_USERNAME || "mimo",
         password: process.env.MONGODB_PASSWORD || "mimo",
       },
-      authSource: "admin", // Ajout de authSource pour MongoDB avec auth
+      authSource: "admin", 
       useNewUrlParser: true,
       useUnifiedTopology: true,
     } as ConnectOptions);
