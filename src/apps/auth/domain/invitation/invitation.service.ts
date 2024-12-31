@@ -11,22 +11,20 @@ import { TokenType } from "../../data-access/token/token.interface";
 import { BaseService } from "../../../../librairies/services";
 
 import { IRole } from "../../data-access";
+import { UserService } from "../user/user.service";
 
 export class InvitationService extends BaseService {
   private invitationRepository: InvitationRepository;
-  private userRepository: UserRepository;
+  private userService: UserService;
   private tokenService: TokenService;
 
   constructor() {
     super("Invitation");
     this.invitationRepository = new InvitationRepository();
-    this.userRepository = new UserRepository();
+    this.userService = new UserService();
     this.tokenService = new TokenService();
   }
 
-  /**
-   * Créer une nouvelle invitation
-   */
   async createInvitation(
     firstName: string,
     lastName: string,
@@ -34,11 +32,11 @@ export class InvitationService extends BaseService {
     currentUserId: string,
     roleId: string
   ): Promise<void> {
-    const existingUser = await this.userRepository.getByEmail(email);
+    const existingUser = await this.userService.getUserByEmail(email);
     if (existingUser) {
       throw new BadRequestError({ message: "Email already in use", code: 400 });
     }
-
+  
     const existingInvitation = await this.invitationRepository.findByEmail(email);
     if (existingInvitation) {
       throw new BadRequestError({
@@ -46,8 +44,8 @@ export class InvitationService extends BaseService {
         code: 400,
       });
     }
-
-    const currentUser = await this.userRepository.getById(currentUserId);
+   
+    const currentUser = await this.userService.getUserById(currentUserId);
     if (!currentUser) {
       throw new BadRequestError({ message: "User not found", code: 400 });
     }
@@ -68,9 +66,6 @@ export class InvitationService extends BaseService {
 
   }
 
-  /**
-   * Envoyer un email d'invitation
-   */
   private async sendInvitationEmail(email: string, firstName: string, registrationLink: string): Promise<void> {
     await this.emailNotifier.send({
       recipient: email,
@@ -80,9 +75,7 @@ export class InvitationService extends BaseService {
     });
   }
 
-  /**
-   * valider l'invitation
-   */
+  
   async validateInvitation(
     tokenHash: string
   ): Promise<{

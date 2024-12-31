@@ -4,6 +4,7 @@ import {
   validateIdMiddleware,
   authenticateMiddleware,
   validateDtoMiddleware,
+  checkRoleMiddleware,
 } from "../../../../librairies/middlewares";
 import { UserCreateDTO, UserRegisterDTO } from "../../domain";
 
@@ -27,7 +28,10 @@ const router = Router();
  *       200:
  *         description: List of users.
  */
-router.get("/", userController.getAllUsers.bind(userController));
+router.get("/", 
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  userController.getAllUsers.bind(userController));
 
 /**
  * @swagger
@@ -83,6 +87,7 @@ router.get(
 router.put(
   "/:id",
   authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("User"),
   validateDtoMiddleware(UserRegisterDTO),
   userController.updateUser.bind(userController)

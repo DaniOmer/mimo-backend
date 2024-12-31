@@ -12,6 +12,7 @@ export class UserRepository extends MongooseRepository<IUser> {
       .findOne({ email })
       .populate("roles")
       .populate("permissions")
+      .select("-password")
       .exec();
     return user;
   }

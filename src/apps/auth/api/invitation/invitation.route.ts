@@ -4,6 +4,7 @@ import {
   authenticateMiddleware,
   validateDtoMiddleware,
   checkRoleMiddleware,
+  validateIdMiddleware,
 } from "../../../../librairies/middlewares";
 import { InvitationCreateDTO, UserCreateDTO } from "../../domain/invitation/invitation.dto"
 

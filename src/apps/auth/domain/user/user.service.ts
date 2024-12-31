@@ -24,13 +24,18 @@ export class UserService extends BaseService {
     });
   }
 
-  async getUserById(id: string): Promise<Response> {
+  async getUserById(id: string): Promise<IUser> {
     const user = await this.repository.getById(id);
     if (!user) {
       throw new BadRequestError({ message: "User not found", code: 404 });
     }
     const { password, ...userWithoutPassword } = user.toObject();
     return userWithoutPassword;
+  }
+
+  async getUserByEmail(email: string): Promise<IUser | null> {
+    const user = await this.repository.getByEmail(email);
+    return user;
   }
 
   async updateUserById(

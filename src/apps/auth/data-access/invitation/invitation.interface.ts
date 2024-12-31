@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Types,Document } from "mongoose";
 import { IUser } from "../user/user.interface";
 import { Timestamps } from "../../../../librairies/types/timestamps.interface";
 import { IToken } from "../token/token.interface";

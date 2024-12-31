@@ -1,27 +1,25 @@
 import { InvitationModel } from "./invitation.model";
 import { IInvitation } from "./invitation.interface";
 import { Types } from "mongoose";
+import { MongooseRepository } from "../../../../librairies/repositories/mongoose/mongoose.repository";
 
-export class InvitationRepository {
-  async create(invitationData: Partial<IInvitation>): Promise<IInvitation> {
-    const newInvitation = new InvitationModel(invitationData);
-    return await newInvitation.save();
-  }
+export class InvitationRepository  extends MongooseRepository<IInvitation>{
 
-  async findByEmail(email: string): Promise<IInvitation | null> {
-    return await InvitationModel.findOne({ email }).exec();
-  }
+    constructor() {
+        super(InvitationModel);
+    }
 
-  async findByToken(tokenId: Types.ObjectId | string): Promise<IInvitation | null> {
-    return await InvitationModel.findOne({ token: tokenId })
-      .populate("admin")
-      .populate("token")
-      .populate("role")
-      .exec();
-  }
+    async findByEmail(email: string): Promise<IInvitation | null> {
+      return await this.model.findOne({ email }).exec();
+    }
 
-  async deleteById(id: Types.ObjectId | string): Promise<void> {
-    await InvitationModel.findByIdAndDelete(id).exec();
-  }
+    async findByToken(tokenId: Types.ObjectId | string): Promise<IInvitation | null> {
+      return await this.model
+        .findOne({ token: tokenId })
+        .populate("admin")
+        .populate("token")
+        .populate("role")
+        .exec();
+    }
 
 }
