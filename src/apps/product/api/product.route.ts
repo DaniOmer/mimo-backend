@@ -297,13 +297,11 @@ router.get(
 
 router.get(
   "/category/:categoryId",
-  validateIdMiddleware("Category"),
   productController.getProductsByCategory.bind(productController)
 );
 
 router.get(
   "/feature/:featureId",
-  validateIdMiddleware("ProductFeature"),
   productController.getProductsByFeature.bind(productController)
 );
 
