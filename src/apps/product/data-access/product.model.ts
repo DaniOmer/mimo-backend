@@ -13,7 +13,7 @@ const ProductSchema = new Schema<IProduct>(
     description: { type: String, default: null },
     priceEtx: { type: Number, required: false },
     priceVat: { type: Number, required: false },
-    stripeId: { type: String, unique: true, required: false },
+    stripeId: { type: String, unique: true, required: false, sparse: true},
 
   },
   { timestamps: true, collection: "products", versionKey: false }
