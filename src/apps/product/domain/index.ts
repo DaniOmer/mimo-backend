@@ -13,6 +13,7 @@ export * from "./color/color.service";
 export * from "./color/color.dto";
 export * from "./productFeature/productFeature.service";
 export * from "./productFeature/productFeature.dto";
+export * from "./inventory/inventory.service";
 
 
 

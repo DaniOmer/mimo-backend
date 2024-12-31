@@ -1,6 +1,6 @@
 import { BaseService } from "../../../librairies/services";
 import { ProductRepository, IProduct } from "../data-access";
-import { CategoryService, ProductFeatureService, ProductImageService } from "./";
+import { CategoryService, ProductFeatureService, ProductImageService, ProductVariantService, InventoryService } from "./";
 import { UserService } from "../../auth/domain/user/user.service";
 import { Types } from "mongoose";
 import BadRequestError from "../../../config/error/bad.request.config";
@@ -12,6 +12,9 @@ export class ProductService extends BaseService {
   private featureService: ProductFeatureService;
   private imageService: ProductImageService;
   private userService: UserService;
+  private productVariantService: ProductVariantService;
+  private inventoryService: InventoryService;
+
 
   constructor() {
     super("Product");
@@ -20,42 +23,33 @@ export class ProductService extends BaseService {
     this.featureService = new ProductFeatureService();
     this.imageService = new ProductImageService();
     this.userService = new UserService();
+    this.productVariantService = new ProductVariantService();
+    this.inventoryService = new InventoryService();
+
   }
 
-  /**
-   * Crée un produit après validation des dépendances.
-   * @param data - Données du produit à créer
-   * @returns Produit créé
-   */
   async createProduct(data: Partial<IProduct>): Promise<IProduct> {
     await this.validateDependencies(data);
     return this.repository.create(data);
   }
 
-  /**
-   * Récupère un produit par ID avec ses relations.
-   * @param id - ID du produit
-   * @returns Produit avec relations
-   */
   async getProductById(id: string): Promise<IProduct> {
     const product = await this.repository.findByIdWithRelations(id);
     return this.validateDataExists(product, id);
   }
 
-  /**
-   * Récupère tous les produits avec leurs relations.
-   * @returns Liste des produits avec relations
-   */
+  async getProductsByCategory(categoryId: string): Promise<IProduct[]> {
+    return this.repository.findByCriteria({ categoryIds: categoryId });
+  }
+
+  async getProductsByFeature(featureId: string): Promise<IProduct[]> {
+    return this.repository.findByCriteria({ featureIds: featureId });
+  }
+
   async getAllProducts(): Promise<IProduct[]> {
     return this.repository.findAllWithRelations();
   }
 
-  /**
-   * Met à jour un produit par ID après validation des dépendances.
-   * @param id - ID du produit
-   * @param updates - Données à mettre à jour
-   * @returns Produit mis à jour
-   */
   async updateProductById(
     id: string,
     updates: Partial<IProduct>
@@ -181,10 +175,52 @@ export class ProductService extends BaseService {
   
     return this.validateDataExists(updatedProduct, productId);
   }
-  
-  
-  
 
+  async getProductWithVariants(id: string): Promise<any> {
+    const product = await this.repository.findByIdWithRelations(id);
+    if (!product) {
+      throw new BadRequestError({ message: "Product not found.", code: 404 });
+    }
+  
+    const variants = await this.productVariantService.getVariantsByProductId(id);
+    const inventories = await this.inventoryService.getInventoriesWithProductAndVariant();
+  
+    const variantDetails = variants.map((variant) => {
+      const inventory = inventories.find(
+        (inv) => inv.productVariant?.toString() === variant._id.toString()
+      );
+      return {
+        ...variant.toObject(),
+        quantity: inventory ? inventory.quantity - inventory.reservedQuantity : 0,
+      };
+    });
+  
+    return { product, variants: variantDetails };
+  }
+
+  async getAllProductsWithVariants(): Promise<any[]> {
+    const products = await this.repository.findAllWithRelations();
+    const variants = await this.productVariantService.getAllVariants();
+  
+    const inventoryData = await this.inventoryService.getInventoriesWithProductAndVariant();
+  
+    return products.map((product) => {
+      const productVariants = variants
+        .filter((variant) => variant.productId.toString() === product._id.toString())
+        .map((variant) => {
+          const inventory = inventoryData.find(
+            (inv) => inv.productVariant?.toString() === variant._id.toString()
+          );
+          return {
+            ...variant.toObject(),
+            quantity: inventory ? inventory.quantity - inventory.reservedQuantity : 0,
+          };
+        });
+  
+      return { product, variants: productVariants };
+    });
+  }
+  
   private async validateDependencies(data: Partial<IProduct>): Promise<void> {
     if (data.categoryIds && data.categoryIds.length > 0) {
       const categoryIdsFormated = data.categoryIds.map((id) => this.toObjectIdString(id));
@@ -234,10 +270,6 @@ export class ProductService extends BaseService {
     }
   }
 
-  /**
-   * Convertit un ID en chaîne de caractères.
-   * @param id - L'ID à convertir
-   */
   private toObjectIdString(id: string | Types.ObjectId): string {
     return typeof id === "string" ? id : id.toString();
   }

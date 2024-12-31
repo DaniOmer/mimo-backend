@@ -118,6 +118,44 @@ export class ProductController {
       next(error);
     }
   }
-  
-  
+
+  async getProductWithVariants(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const productWithVariants = await this.productService.getProductWithVariants(id);
+      ApiResponse.success(res, "Product with variants retrieved successfully", productWithVariants, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllProductsWithVariants(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const productsWithVariants = await this.productService.getAllProductsWithVariants();
+      ApiResponse.success(res, "All products with variants retrieved successfully", productsWithVariants, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getProductsByCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { categoryId } = req.params;
+      const products = await this.productService.getProductsByCategory(categoryId);
+      ApiResponse.success(res, "Products by category retrieved successfully", products, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getProductsByFeature (req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { featureId } = req.params;
+      const products = await this.productService.getProductsByFeature(featureId);
+      ApiResponse.success(res, "Products by feature retrieved successfully", products, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

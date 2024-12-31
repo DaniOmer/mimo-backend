@@ -112,34 +112,6 @@ router.get("/",
 router.get("/search", productController.searchProducts.bind(productController));
 
 
-/**
- * @swagger
- * /api/products/{id}:
- *   get:
- *     summary: Get a product by ID
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The product ID
- *     responses:
- *       200:
- *         description: Product data
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       404:
- *         description: Product not found
- */
-router.get(
-  "/:id",
-  validateIdMiddleware("Product"),
-  productController.getProductById.bind(productController)
-);
 
 /**
  * @swagger
@@ -312,6 +284,59 @@ router.delete(
   validateIdMiddleware("ProductImage"),
   productController.removeImageFromProduct.bind(productController)
 );
+
+router.get(
+  "/:id/variants",
+  validateIdMiddleware("Product"),
+  productController.getProductWithVariants.bind(productController)
+);
+
+router.get(
+  "/with-variants",
+  productController.getAllProductsWithVariants.bind(productController)
+);
+
+router.get(
+  "/category/:categoryId",
+  validateIdMiddleware("Category"),
+  productController.getProductsByCategory.bind(productController)
+);
+
+router.get(
+  "/feature/:featureId",
+  validateIdMiddleware("ProductFeature"),
+  productController.getProductsByFeature.bind(productController)
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The product ID
+ *     responses:
+ *       200:
+ *         description: Product data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Product not found
+ */
+router.get(
+  "/:id",
+  validateIdMiddleware("Product"),
+  productController.getProductById.bind(productController)
+);
+
 
 
 export default router;

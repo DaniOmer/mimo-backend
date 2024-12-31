@@ -48,6 +48,17 @@ export class ProductVariantService extends BaseService {
     return productVariant;
   }
 
+  async getVariantsByProductId(productId: string): Promise<IProductVariant[]> {
+    const variants = await this.repository.findByCriteria({ productId });
+    if (!variants || variants.length === 0) {
+      throw new BadRequestError({
+        message: "No variants found for the given product ID",
+        code: 404,
+      });
+    }
+    return variants;
+  }
+
   async getAllVariants(): Promise<IProductVariant[]> {
     return this.repository.getAllWithRelations();
   }
@@ -136,10 +147,6 @@ export class ProductVariantService extends BaseService {
     }
   }
 
-  /**
-   * Convertit un ID en chaîne de caractères.
-   * @param id - L'ID à convertir
-   */
   private toObjectIdString(id: string | Types.ObjectId): string {
     return typeof id === "string" ? id : id.toString();
   }
