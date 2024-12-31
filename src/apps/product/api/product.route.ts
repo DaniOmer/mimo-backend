@@ -4,7 +4,7 @@ import {
   validateDtoMiddleware,
   validateIdMiddleware,
 } from "../../../librairies/middlewares/";
-import { ProductCreateDTO } from "../domain/";
+import { ProductDTO } from "../domain/";
 
 const productController = new ProductController();
 const router = Router();
@@ -49,7 +49,7 @@ const router = Router();
  */
 router.post(
   "/",
-  validateDtoMiddleware(ProductCreateDTO),
+  validateDtoMiddleware(ProductDTO),
   productController.createProduct.bind(productController)
 );
 
@@ -141,7 +141,7 @@ router.get(
 router.put(
   "/:id",
   validateIdMiddleware("Product"),
-  validateDtoMiddleware(ProductCreateDTO),
+  validateDtoMiddleware(ProductDTO),
   productController.updateProduct.bind(productController)
 );
 

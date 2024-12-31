@@ -24,14 +24,8 @@ export class ProductVariantService extends BaseService {
     return productVariant;
   }
 
-  async getProductVariantById(id: string): Promise<IProductVariant> {
+  async getProductVariantById(id: string): Promise<IProductVariant | null> {
     const productVariant = await this.repository.getById(id);
-    if (!productVariant) {
-      throw new BadRequestError({
-        message: "Product variant not found",
-        code: 404,
-      });
-    }
     return productVariant;
   }
 }

@@ -13,12 +13,13 @@ import productRouter from "./apps/product/api/product.route";
 import permissionRouter from "./apps/auth/api/permission/permission.route";
 import roleRouter from "./apps/auth/api/role/role.route";
 import categoryRouter from "./apps/product/api/category/category.route";
-import categoryRoute from "./apps/product/api/category/category.route";
 import sizeRouter from "./apps/product/api/size/size.route";
 import colorRouter from "./apps/product/api/color/color.route";
 import paymentRouter from "./apps/payment/api/payment.route";
 import inventoryRouter from "./apps/product/api/inventory/inventory.route";
-
+import addressRouter from "./apps/address/api/address.route";
+import cartRouter from "./apps/order/cart/api/cart.route";
+import orderRouter from "./apps/order/order/api/order.route";
 
 async function startApp() {
   const app: Express = express();
@@ -46,11 +47,9 @@ async function startApp() {
     // Product routes
     app.use("/api/products", productRouter);
 
-
     // Inventory routes
     app.use("/api/products/inventory", inventoryRouter);
 
-  
     // category routes
     app.use("/api/categories", categoryRouter);
 
@@ -59,7 +58,6 @@ async function startApp() {
 
     // Color routes
     app.use("/api/colors", colorRouter);
-
 
     // User routes
     app.use("/api/users", userRouter);
@@ -71,7 +69,16 @@ async function startApp() {
     app.use("/api/roles", roleRouter);
 
     // Payment routes
-    app.use("/api/payment", paymentRouter);
+    app.use("/api/payments", paymentRouter);
+
+    // Cart routes
+    app.use("/api/carts", cartRouter);
+
+    // Order Routes
+    app.use("/api/orders", orderRouter);
+
+    // Address routes
+    app.use("/api/addresses", addressRouter);
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);

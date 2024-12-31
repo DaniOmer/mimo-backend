@@ -9,9 +9,13 @@ export class InventoryRepository extends MongooseRepository<IIventory> {
 
   async getInventoryByProductAndVariantId(
     product: string,
-    productVariant: string | undefined
-  ): Promise<IIventory[]> {
-    return this.model.find({ product, productVariant }).exec();
+    productVariant: string | null
+  ): Promise<IIventory | null> {
+    return this.model
+      .findOne({ product, productVariant })
+      .populate("product")
+      .populate("productVariant")
+      .exec();
   }
 
   async getLowQuantityProducts(thershold: number): Promise<IIventory[]> {
