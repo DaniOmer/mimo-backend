@@ -280,7 +280,6 @@ router.delete(
   authenticateMiddleware,
   checkRoleMiddleware(["admin"]),
   validateIdMiddleware("Product"),
-  validateIdMiddleware("ProductImage"),
   productController.removeImageFromProduct.bind(productController)
 );
 
