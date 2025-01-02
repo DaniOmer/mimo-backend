@@ -112,8 +112,9 @@ export class UserService extends BaseService {
 
     if (!isPasswordValid) {
       throw new BadRequestError({
-        logging: true,
+        message: "Invalid old password",
         context: { change_password: "Invalid old password" },
+        logging: true,
       });
     }
 

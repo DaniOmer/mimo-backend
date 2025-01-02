@@ -11,9 +11,9 @@ const router = Router();
 const controller = new AddressController();
 
 router.get(
-  "/type/:type",
+  "/me",
   authenticateMiddleware,
-  controller.getAllAddressesByTypeAndUserId.bind(controller)
+  controller.getAddressesByUser.bind(controller)
 );
 
 router.post(
