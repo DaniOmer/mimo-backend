@@ -5,7 +5,7 @@ import {
   authenticateMiddleware,
   validateDtoMiddleware,
 } from "../../../../librairies/middlewares";
-import { UserRegisterDTO } from "../../domain";
+import { UserUpdateDTO, PasswordUpdateDTO } from "../../domain";
 
 const userController = new UserController();
 const router = Router();
@@ -23,7 +23,7 @@ router.put(
   "/:id",
   authenticateMiddleware,
   validateIdMiddleware("User"),
-  validateDtoMiddleware(UserRegisterDTO),
+  validateDtoMiddleware(UserUpdateDTO),
   userController.updateUser.bind(userController)
 );
 
@@ -32,5 +32,12 @@ router.delete(
   authenticateMiddleware,
   validateIdMiddleware("User"),
   userController.deleteUserById.bind(userController)
+);
+
+router.put(
+  "/password/update",
+  authenticateMiddleware,
+  validateDtoMiddleware(PasswordUpdateDTO),
+  userController.updatePassword.bind(userController)
 );
 export default router;

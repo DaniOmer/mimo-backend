@@ -45,6 +45,7 @@ export default class TokenService extends BaseService {
     const existingToken = await this.tokenRepository.getByHash(hash);
     if (!existingToken || existingToken.type !== tokenType) {
       throw new BadRequestError({
+        message: "Invalid token or token type",
         logging: true,
         context: { reset_password_token: "Invalid JWT token" },
       });
@@ -55,6 +56,8 @@ export default class TokenService extends BaseService {
       existingToken.isDisabled
     ) {
       throw new BadRequestError({
+        code: 401,
+        message: "Token expired",
         logging: true,
         context: { reset_password_token: "Token expired" },
       });
@@ -69,6 +72,7 @@ export default class TokenService extends BaseService {
 
     if (!updatedToken) {
       throw new BadRequestError({
+        code: 500,
         logging: true,
         context: { validate_token: "Failed to update token" },
       });

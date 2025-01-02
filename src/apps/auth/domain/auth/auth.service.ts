@@ -80,6 +80,7 @@ export class AuthService extends BaseService {
         message: "Failed to confirm user email",
         context: { auth_email_confirmation: "Failed to confirm email" },
         logging: true,
+        code: 500,
       });
     }
     return updatedUser;

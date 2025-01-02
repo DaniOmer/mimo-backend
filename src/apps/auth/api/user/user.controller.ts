@@ -67,4 +67,25 @@ export class UserController extends BaseController {
       next(error);
     }
   }
+
+  async updatePassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const currentUser = req.user;
+      const data = req.body;
+      const updatedUser = await this.userService.changePassword(
+        data,
+        currentUser._id
+      );
+      this.logger.info(
+        `Password updated successfully for user: ${updatedUser.email}`
+      );
+      ApiResponse.success(res, "Password updated successfully", null);
+    } catch (error: any) {
+      next(error);
+    }
+  }
 }
