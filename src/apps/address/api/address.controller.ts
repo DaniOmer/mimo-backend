@@ -49,19 +49,17 @@ export class AddressController extends BaseController {
     }
   }
 
-  async getAllAddressesByTypeAndUserId(
+  async getAddressesByUser(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const type = req.params.type;
       const currentUser = req.user;
-      const addresses = await this.addressService.getAllAddressesByTypeForUser(
-        currentUser,
-        type
+      const addresses = await this.addressService.getAllAddressesByUserId(
+        currentUser.id
       );
-      ApiResponse.success(res, "Addresses fetched successfully", addresses);
+      ApiResponse.success(res, "Addresses retrieved successfully", addresses);
     } catch (error) {
       next(error);
     }

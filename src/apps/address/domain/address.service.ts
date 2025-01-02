@@ -18,7 +18,7 @@ export class AddressService extends BaseService {
     if (!address) {
       throw new BadRequestError({
         code: 404,
-        message: `Address with the given id not found`,
+        message: "Address with the given id not found",
       });
     }
     return address;
@@ -70,18 +70,8 @@ export class AddressService extends BaseService {
     return updatedAddress;
   }
 
-  async getAllAddressesByTypeForUser(
-    currentUser: UserDataToJWT,
-    addressType: string
-  ): Promise<IAddress[]> {
-    const userId = currentUser._id;
-    const addresses = await this.repository.getAllByTypeAndUserId(
-      addressType,
-      userId
-    );
-    if (!addresses) {
-      return [];
-    }
+  async getAllAddressesByUserId(userId: string): Promise<IAddress[]> {
+    const addresses = await this.repository.getAllAddressesByUserId(userId);
     return addresses;
   }
 }

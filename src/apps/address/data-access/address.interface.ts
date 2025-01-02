@@ -2,24 +2,18 @@ import { Document, ObjectId } from "mongoose";
 import { IUser } from "../../auth/data-access";
 import { Timestamps } from "../../../librairies/types/timestamps.interface";
 
-export enum AddressStatus {
-  Active = "active",
-  Inactive = "inactive",
-}
-export enum AddressType {
-  Billing = "billing",
-  Invoice = "shipping",
-}
-
 export interface IAddress extends Timestamps, Document {
   _id: string;
+  firstName: string;
+  lastName: string;
   streetNumber: number;
   street: string;
   city: string;
   state: string;
   postalCode: string;
   country: string;
-  type: AddressType;
-  status: AddressStatus;
+  isBilling: boolean;
+  isShipping: boolean;
+  isDefault: boolean;
   user: ObjectId | IUser;
 }
