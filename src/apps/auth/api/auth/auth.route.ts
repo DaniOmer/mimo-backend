@@ -9,7 +9,6 @@ import {
 import { AuthController } from "./auth.controller";
 import {
   validateDtoMiddleware,
-  authenticateMiddleware,
 } from "../../../../librairies/middlewares";
 
 const authController = new AuthController();

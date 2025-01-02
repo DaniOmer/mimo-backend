@@ -18,9 +18,13 @@ import colorRouter from "./apps/product/api/color/color.route";
 import paymentRouter from "./apps/payment/api/payment.route";
 import invitationRouter from "./apps/auth/api/invitation/invitation.route";
 import inventoryRouter from "./apps/product/api/inventory/inventory.route";
+import ProductFeatureRouter from "./apps/product/api/productFeature/productFeature.route";
+import ProductImageRouter from "./apps/product/api/productImage/productImage.route";
+import ProductVariantRouter from "./apps/product/api/productVariant/productVariant.route";
 import addressRouter from "./apps/address/api/address.route";
 import cartRouter from "./apps/order/cart/api/cart.route";
 import orderRouter from "./apps/order/order/api/order.route";
+
 
 async function startApp() {
   const app: Express = express();
@@ -81,8 +85,18 @@ async function startApp() {
     // Address routes
     app.use("/api/addresses", addressRouter);
 
+    // Product Feature routes
+    app.use("/api/product-features", ProductFeatureRouter);
+
+    // Product Image routes
+    app.use("/api/product-images", ProductImageRouter);
+
+    // Product Variant routes
+    app.use("/api/product-variants", ProductVariantRouter);
+
     //invitations routes
     app.use("/api/invitations", invitationRouter);
+
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);

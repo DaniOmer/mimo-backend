@@ -6,4 +6,8 @@ export class ProductFeatureRepository extends MongooseRepository<IProductFeature
   constructor() {
     super(ProductFeatureModel);
   }
+
+  async findByIds(featureIds: string[]): Promise<IProductFeature[]> {
+    return this.model.find({ _id: { $in: featureIds } }).exec();
+  }
 }

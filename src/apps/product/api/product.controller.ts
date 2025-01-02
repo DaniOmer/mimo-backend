@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ProductService } from "../domain/product.service";
+import { ProductService, ProductVariantService, InventoryService } from "../domain/";
 import { ApiResponse } from "../../../librairies/controllers/api.response";
 
 export class ProductController {
@@ -7,6 +7,11 @@ export class ProductController {
 
   constructor() {
     this.productService = new ProductService();
+    const productVariantService = new ProductVariantService();
+    const inventoryService = new InventoryService();
+
+    this.productService.setProductVariantService(productVariantService);
+    this.productService.setInventoryService(inventoryService);
   }
 
   async createProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -56,4 +61,106 @@ export class ProductController {
       next(error);
     }
   }
+
+  async toggleProductActivation(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { isActive } = req.body;
+      const updatedProduct = await this.productService.toggleProductActivation(id, isActive);
+      ApiResponse.success(res, "Product activation status updated successfully", updatedProduct, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async searchProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const filters = req.query;
+      const products = await this.productService.searchProducts(filters);
+      ApiResponse.success(res, "Products retrieved successfully", products, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async duplicateProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const duplicatedProduct = await this.productService.duplicateProduct(id);
+      ApiResponse.success(res, "Product duplicated successfully", duplicatedProduct, 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getProductsByStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { isActive } = req.query;
+      const products = await this.productService.getProductsByStatus(isActive === "true");
+      ApiResponse.success(res, "Products retrieved successfully", products, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async addImagesToProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { productId } = req.params;
+      const images = req.body.images; 
+      const updatedProduct = await this.productService.addImagesToProduct(productId, images);
+      ApiResponse.success(res, "Images added to product successfully", updatedProduct, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async removeImageFromProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { productId, imageId } = req.params;
+      const updatedProduct = await this.productService.removeImageFromProduct(productId, imageId);
+      ApiResponse.success(res, "Image removed from product successfully", updatedProduct, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getProductWithVariants(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const productWithVariants = await this.productService.getProductWithVariants(id);
+      ApiResponse.success(res, "Product with variants retrieved successfully", productWithVariants, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllProductsWithVariants(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const productsWithVariants = await this.productService.getAllProductsWithVariants();
+      ApiResponse.success(res, "All products with variants retrieved successfully", productsWithVariants, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getProductsByCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { categoryId } = req.params;
+      const products = await this.productService.getProductsByCategory(categoryId);
+      ApiResponse.success(res, "Products by category retrieved successfully", products, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getProductsByFeature (req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { featureId } = req.params;
+      const products = await this.productService.getProductsByFeature(featureId);
+      ApiResponse.success(res, "Products by feature retrieved successfully", products, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

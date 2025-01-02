@@ -4,7 +4,32 @@ import { MongooseRepository } from "../../../librairies/repositories/mongoose/mo
 
 export class ProductRepository extends MongooseRepository<IProduct> {
   constructor() {
-    super(ProductModel); 
+    super(ProductModel);
   }
 
+  async findByIdWithRelations(productId: string): Promise<IProduct | null> {
+    return this.model
+      .findById(productId)
+      .populate("images")
+      .populate("categoryIds")
+      .populate("featureIds")
+      .exec();
+  }
+
+  async findAllWithRelations(): Promise<IProduct[]> {
+    return this.model
+      .find()
+      .populate("images")
+      .populate("categoryIds")
+      .populate("featureIds")
+      .exec();
+  }
+
+  async findByCriteria(query: any): Promise<IProduct[]> {
+    return this.model.find(query).exec();
+  }
+
+  async findByStatus(isActive: boolean): Promise<IProduct[]> {
+    return this.model.find({ isActive }).exec();
+  }
 }
