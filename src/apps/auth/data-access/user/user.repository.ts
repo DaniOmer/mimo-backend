@@ -15,4 +15,12 @@ export class UserRepository extends MongooseRepository<IUser> {
       .exec();
     return user;
   }
+
+  async getUserById(id: string): Promise<IUser | null> {
+    return this.model
+      .findById(id)
+      .populate("roles")
+      .populate("permissions")
+      .exec();
+  }
 }

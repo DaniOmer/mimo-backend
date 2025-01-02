@@ -1,7 +1,10 @@
 import { IUser, UserRepository } from "../../data-access";
 import { BaseService } from "../../../../librairies/services";
 import BadRequestError from "../../../../config/error/bad.request.config";
-import { UserUpdateDTO } from "./user.dto";
+import { UserUpdateDTO, PasswordUpdateDTO } from "./user.dto";
+import { IRole, IPermission } from "../../data-access";
+import { UserPermission, UserRole } from "../auth/auth.basic";
+import { SecurityUtils } from "../../../../utils";
 
 export class UserService extends BaseService {
   private repository: UserRepository;
@@ -20,15 +23,24 @@ export class UserService extends BaseService {
   }
 
   async getUserById(id: string): Promise<Omit<IUser, "password">> {
-    const user = await this.repository.getById(id);
+    const user = await this.repository.getUserById(id);
     if (!user) {
       throw new BadRequestError({
         message: "User not found",
         code: 404,
       });
     }
-    const { password, ...userWithoutPassword } = user.toObject();
-    return userWithoutPassword;
+    const { password, ...userToDisplay } = user.toObject();
+    const rolesWDate = this.getRolesWithoutDate(userToDisplay.roles);
+    const permissionsWDate = this.getPermissionsWithoutDate(
+      userToDisplay.permissions
+    );
+
+    return {
+      ...userToDisplay,
+      roles: rolesWDate,
+      permissions: permissionsWDate,
+    };
   }
 
   async updateUserById(
@@ -59,5 +71,64 @@ export class UserService extends BaseService {
     }
 
     return deletedUser;
+  }
+
+  // THINK TO REFACTOR LATER (CF AUTH BASIC)
+  getRolesWithoutDate(roles: IRole[]): UserRole[] {
+    return roles.map((role: IRole) => {
+      return {
+        _id: role._id.toString(),
+        name: role.name,
+      };
+    });
+  }
+
+  // THINK TO REFACTOR LATER (CF AUTH BASIC)
+  getPermissionsWithoutDate(permissions: IPermission[]): UserPermission[] {
+    return permissions.map((permission: IPermission) => {
+      return {
+        _id: permission._id.toString(),
+        name: permission.name,
+      };
+    });
+  }
+
+  async changePassword(
+    data: PasswordUpdateDTO,
+    userId: string
+  ): Promise<IUser> {
+    const user = await this.repository.getById(userId);
+    if (!user) {
+      throw new BadRequestError({
+        logging: true,
+        context: { change_password: "User not found" },
+      });
+    }
+
+    const isPasswordValid = await SecurityUtils.comparePassword(
+      data.oldPassword,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      throw new BadRequestError({
+        logging: true,
+        context: { change_password: "Invalid old password" },
+      });
+    }
+
+    const hashedPassword = await SecurityUtils.hashPassword(data.newPassword);
+    const updatedUser = await this.repository.updateById(user._id, {
+      password: hashedPassword,
+    });
+
+    if (!updatedUser) {
+      throw new BadRequestError({
+        logging: true,
+        context: { change_password: "Failed to update password" },
+        code: 500,
+      });
+    }
+    return updatedUser;
   }
 }

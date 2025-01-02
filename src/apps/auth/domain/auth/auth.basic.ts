@@ -46,8 +46,8 @@ export class BasicAuthStrategy implements AuthStrategy {
       });
     }
 
-    const adminRole = await this.roleService.getRoleByName(RoleAvailable.ADMIN);
-    if (!adminRole) {
+    const userRole = await this.roleService.getRoleByName(RoleAvailable.USER);
+    if (!userRole) {
       throw new BadRequestError({
         message: `Role not found`,
         code: 400,
@@ -61,7 +61,7 @@ export class BasicAuthStrategy implements AuthStrategy {
       ...userData,
       authType: AuthType.Basic,
       password: hashedPassword,
-      roles: [adminRole],
+      roles: [userRole],
     });
 
     const userObject = newUser.toObject();
@@ -71,14 +71,7 @@ export class BasicAuthStrategy implements AuthStrategy {
 
   async authenticate(userData: UserLoginDTO): Promise<UserLoginResponse> {
     const user = await this.checkUserExistsAndValidate(userData);
-    if (!user) {
-      throw new BadRequestError({
-        message: "Invalid credentials",
-        code: 401,
-        logging: true,
-      });
-    }
-    const { _id, password, updatedAt, ...userToDisplay } = user?.toObject();
+    const { password, ...userToDisplay } = user.toObject();
     const rolesWDate = this.getRolesWithoutDate(userToDisplay.roles);
     const permissionsWDate = this.getPermissionsWithoutDate(
       userToDisplay.permissions
@@ -105,13 +98,11 @@ export class BasicAuthStrategy implements AuthStrategy {
       TokenType.Confirmation
     );
 
-    const emailValidationLink = `${AppConfig.client.url}/auth/email-validation/${token.hash}`;
+    const emailValidationLink = `${AppConfig.client.url}/auth/email-validation?token=${token.hash}`;
     return emailValidationLink;
   }
 
-  async checkUserExistsAndValidate(
-    userData: UserLoginDTO
-  ): Promise<IUser | null> {
+  async checkUserExistsAndValidate(userData: UserLoginDTO): Promise<IUser> {
     const user = await this.userRepository.getByEmail(userData.email);
     if (!user || user.isDisabled) {
       throw new BadRequestError({
