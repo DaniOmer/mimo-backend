@@ -31,9 +31,9 @@ export class AuthService extends BaseService {
 
   async register(userData: UserRegisterDTO) {
     const createUserResponse = await this.authStrategy.register(userData);
-    if (this.authStrategy.requestEmailValidation) {
+    if (this.authStrategy.getEmailValidationLink) {
       const emailConfirmationLink =
-        await this.authStrategy.requestEmailValidation(createUserResponse);
+        await this.authStrategy.getEmailValidationLink(createUserResponse);
 
       await this.emailNotifier.send({
         recipient: createUserResponse.email,

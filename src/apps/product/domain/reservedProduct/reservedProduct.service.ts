@@ -28,7 +28,10 @@ export class ReservedProductService extends BaseService {
     return reservedProduct;
   }
 
-  async addReservedProduct(data: any): Promise<IReservedProduct> {
+  async addReservedProduct(
+    // data: Omit<IReservedProduct, "_id">
+    data: any // CONSOLE MIND TO USE Omit<IReservedProduct, "_id"> LATER
+  ): Promise<IReservedProduct> {
     const reservedProduct = await this.repository.create(data);
     if (!reservedProduct) {
       throw new BadRequestError({
@@ -40,12 +43,10 @@ export class ReservedProductService extends BaseService {
   }
 
   async updateReservedProduct(
-    data: IReservedProduct
+    id: string,
+    data: Partial<IReservedProduct>
   ): Promise<IReservedProduct> {
-    const updatedReservedProduct = await this.repository.updateById(
-      data._id,
-      data
-    );
+    const updatedReservedProduct = await this.repository.updateById(id, data);
     if (!updatedReservedProduct) {
       throw new BadRequestError({
         message: "Reserved product not found",

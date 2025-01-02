@@ -49,8 +49,6 @@ export const AppConfig = {
     },
   },
   cart: {
-    product: {
-      expirationTime: process.env.CART_PRODUCT_EXPIRATION_TIME || "900",
-    },
+    expirationTime: process.env.CART_EXPIRATION_TIME || "900",
   },
 };

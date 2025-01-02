@@ -1,15 +1,33 @@
-import { IsNotEmpty, MaxLength, MinLength, IsString } from "class-validator";
+import {
+  IsNotEmpty,
+  MaxLength,
+  MinLength,
+  IsString,
+  IsNumber,
+  Min,
+  IsOptional,
+} from "class-validator";
 
-export class ProductCreateDTO {
+export class ProductDTO {
   @IsNotEmpty()
-  @IsString() 
+  @IsString()
   @MinLength(3)
   @MaxLength(255)
   readonly name!: string;
 
   @IsNotEmpty()
-  @IsString() 
+  @IsString()
   @MinLength(10)
   @MaxLength(1000)
   readonly description?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  readonly priceEtx!: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  readonly priceVat!: number;
 }
