@@ -16,6 +16,7 @@ import categoryRouter from "./apps/product/api/category/category.route";
 import sizeRouter from "./apps/product/api/size/size.route";
 import colorRouter from "./apps/product/api/color/color.route";
 import paymentRouter from "./apps/payment/api/payment.route";
+import invitationRouter from "./apps/auth/api/invitation/invitation.route";
 import inventoryRouter from "./apps/product/api/inventory/inventory.route";
 import addressRouter from "./apps/address/api/address.route";
 import cartRouter from "./apps/order/cart/api/cart.route";
@@ -79,6 +80,9 @@ async function startApp() {
 
     // Address routes
     app.use("/api/addresses", addressRouter);
+
+    //invitations routes
+    app.use("/api/invitations", invitationRouter);
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);

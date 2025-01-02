@@ -53,15 +53,15 @@ export class AuthService extends BaseService {
   }
 
   async confirmEmailRequest(hash: string): Promise<IUser> {
-    const tokenUser = await this.tokenService.validateTokenAndReturnUser(
+    const token = await this.tokenService.validateAndReturnToken(
       hash,
       TokenType.Confirmation
     );
 
     const user =
-      typeof tokenUser === "string"
-        ? await this.userRepository.getById(tokenUser)
-        : tokenUser;
+      typeof token.user === "string"
+        ? await this.userRepository.getById(token.user)
+        : token.user;
 
     if (!user) {
       throw new BadRequestError({
@@ -113,15 +113,15 @@ export class AuthService extends BaseService {
   }
 
   async confirmPasswordReset(data: ConfirmPasswordResetDTO): Promise<IUser> {
-    const tokenUser = await this.tokenService.validateTokenAndReturnUser(
+    const tokenUser = await this.tokenService.validateAndReturnToken(
       data.token,
       TokenType.PasswordReset
     );
 
     const user =
-      typeof tokenUser === "string"
-        ? await this.userRepository.getById(tokenUser)
-        : tokenUser;
+      typeof tokenUser.user === "string"
+        ? await this.userRepository.getById(tokenUser.user)
+        : tokenUser.user;
 
     if (!user) {
       throw new BadRequestError({
