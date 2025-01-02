@@ -131,4 +131,19 @@ export class UserService extends BaseService {
     }
     return updatedUser;
   }
+
+  async toggleUserStatus(userId: string, isDisabled: boolean): Promise<Omit<IUser, "password">> {
+    const updatedUser = await this.repository.updateById(userId, { isDisabled });
+  
+    if (!updatedUser) {
+      throw new BadRequestError({
+        message: "User not found",
+        code: 404,
+      });
+    }
+  
+    const { password, ...userWithoutPassword } = updatedUser.toObject();
+    return userWithoutPassword;
+  }
+  
 }

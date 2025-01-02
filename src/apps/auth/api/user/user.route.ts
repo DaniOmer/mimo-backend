@@ -40,4 +40,12 @@ router.put(
   validateDtoMiddleware(PasswordUpdateDTO),
   userController.updatePassword.bind(userController)
 );
+
+router.patch(
+  "/:id/status",
+  authenticateMiddleware,
+  validateIdMiddleware("User"),
+  userController.toggleUserStatus.bind(userController)
+);
+
 export default router;
