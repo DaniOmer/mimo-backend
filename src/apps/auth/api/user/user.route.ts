@@ -6,8 +6,8 @@ import {
   validateDtoMiddleware,
   checkRoleMiddleware,
 } from "../../../../librairies/middlewares";
-import { UserCreateDTO, UserRegisterDTO } from "../../domain";
 
+import { UserCreateDTO,UserUpdateDTO, PasswordUpdateDTO } from "../../domain";
 const userController = new UserController();
 const router = Router();
 
@@ -87,9 +87,8 @@ router.get(
 router.put(
   "/:id",
   authenticateMiddleware,
-  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("User"),
-  validateDtoMiddleware(UserRegisterDTO),
+  validateDtoMiddleware(UserUpdateDTO),
   userController.updateUser.bind(userController)
 );
 
@@ -115,9 +114,11 @@ router.put(
 router.delete(
   "/:id",
   authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("User"),
   userController.deleteUserById.bind(userController)
 );
+
 
 /**
  * @swagger
@@ -140,7 +141,16 @@ router.delete(
 router.post(
   "/createUserFromInvitation",
   validateDtoMiddleware(UserCreateDTO),
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   userController.createUserFromInvitation.bind(userController)
+);
+
+router.put(
+  "/password/update",
+  authenticateMiddleware,
+  validateDtoMiddleware(PasswordUpdateDTO),
+  userController.updatePassword.bind(userController)
 );
 
 export default router;

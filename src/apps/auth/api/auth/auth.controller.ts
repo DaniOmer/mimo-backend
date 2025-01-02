@@ -118,10 +118,4 @@ export class AuthController extends BaseController {
       next(error);
     }
   }
-
-  async updatePassword(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {}
 }

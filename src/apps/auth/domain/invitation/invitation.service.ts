@@ -1,15 +1,10 @@
 import { Types } from "mongoose";
 import { InvitationRepository } from "../../data-access/invitation/invitation.repository";
-import { IInvitation } from "../../data-access/invitation/invitation.interface";
-import { UserRepository } from "../../data-access/user/user.repository";
 import TokenService from "../../domain/token/token.service";
 import BadRequestError from "../../../../config/error/bad.request.config";
 import { AppConfig } from "../../../../config/app.config";
-import { SecurityUtils } from "../../../../utils/security.utils";
-import { AuthType, IUser } from "../../data-access/user/user.interface";
 import { TokenType } from "../../data-access/token/token.interface";
 import { BaseService } from "../../../../librairies/services";
-
 import { IRole } from "../../data-access";
 import { UserService } from "../user/user.service";
 
@@ -44,8 +39,8 @@ export class InvitationService extends BaseService {
         code: 400,
       });
     }
-   
-    const currentUser = await this.userService.getUserById(currentUserId);
+ 
+    const currentUser = await this.userService.getById(currentUserId);
     if (!currentUser) {
       throw new BadRequestError({ message: "User not found", code: 400 });
     }

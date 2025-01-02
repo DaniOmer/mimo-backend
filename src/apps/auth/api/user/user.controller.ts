@@ -27,7 +27,7 @@ export class UserController extends BaseController {
   async getUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const user = await this.userService.getUserById(id);
+      const user = await this.userService.getUserById(id, req.user);
       ApiResponse.success(res, "User retrieved successfully", user, 200);
     } catch (error) {
       next(error);
@@ -51,6 +51,27 @@ export class UserController extends BaseController {
       await this.userService.deleteUserById(id);
       ApiResponse.success(res, "User deleted successfully", null, 200);
     } catch (error) {
+      next(error);
+    }
+  }
+
+  async updatePassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const currentUser = req.user;
+      const data = req.body;
+      const updatedUser = await this.userService.changePassword(
+        data,
+        currentUser._id
+      );
+      this.logger.info(
+        `Password updated successfully for user: ${updatedUser.email}`
+      );
+      ApiResponse.success(res, "Password updated successfully", null);
+    } catch (error: any) {
       next(error);
     }
   }
