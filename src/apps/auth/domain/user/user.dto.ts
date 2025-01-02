@@ -9,22 +9,25 @@ import {
   IsOptional,
   Matches,
   IsString,
-  IsArray,
 } from "class-validator";
-
-import { AuthType } from "../../data-access";
 
 export class UserRegisterDTO {
   @IsNotEmpty()
-  @IsAlpha()
+  @IsString()
   @MinLength(2)
   @MaxLength(50)
+  @Matches(/^[A-Za-z\s]+$/, {
+    message: "firstName must contain only letters and spaces",
+  })
   readonly firstName!: string;
 
   @IsNotEmpty()
-  @IsAlpha()
+  @IsString()
   @MinLength(2)
   @MaxLength(50)
+  @Matches(/^[A-Za-z\s]+$/, {
+    message: "lastName must contain only letters and spaces",
+  })
   readonly lastName!: string;
 
   @IsNotEmpty()
@@ -33,7 +36,9 @@ export class UserRegisterDTO {
 
   @IsNotEmpty()
   @MinLength(12, { message: "Password must be at least 12 characters long" })
-  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}$/)
+  @Matches(
+    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
+  )
   readonly password!: string;
 
   @IsOptional()
@@ -53,7 +58,9 @@ export class UserLoginDTO {
 
   @IsNotEmpty()
   @MinLength(12, { message: "Password must be at least 12 characters long" })
-  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}$/)
+  @Matches(
+    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
+  )
   readonly password!: string;
 }
 
@@ -89,7 +96,9 @@ export class RequestPasswordResetDTO {
 export class ConfirmPasswordResetDTO {
   @IsNotEmpty()
   @MinLength(12, { message: "Password must be at least 12 characters long" })
-  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}$/)
+  @Matches(
+    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
+  )
   readonly password!: string;
 
   @IsNotEmpty()
@@ -101,4 +110,20 @@ export class ConfirmEmailDTO {
   @IsNotEmpty()
   @IsString()
   readonly token!: string;
+}
+
+export class PasswordUpdateDTO {
+  @IsNotEmpty()
+  @MinLength(12, { message: "Password must be at least 12 characters long" })
+  @Matches(
+    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
+  )
+  readonly oldPassword!: string;
+
+  @IsNotEmpty()
+  @MinLength(12, { message: "Password must be at least 12 characters long" })
+  @Matches(
+    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
+  )
+  readonly newPassword!: string;
 }

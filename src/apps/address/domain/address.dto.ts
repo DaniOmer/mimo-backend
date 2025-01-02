@@ -4,10 +4,18 @@ import {
   IsNumber,
   IsEnum,
   IsOptional,
+  IsBoolean,
 } from "class-validator";
-import { AddressType, AddressStatus } from "../data-access";
 
 export class AddressDTO {
+  @IsNotEmpty()
+  @IsString()
+  readonly firstName!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly lastName!: string;
+
   @IsNotEmpty()
   @IsNumber()
   readonly streetNumber!: number;
@@ -32,11 +40,15 @@ export class AddressDTO {
   @IsString()
   readonly country!: string;
 
-  @IsNotEmpty()
-  @IsEnum(AddressType)
-  readonly type!: AddressType;
+  @IsOptional()
+  @IsBoolean()
+  readonly isBilling!: boolean;
 
-  @IsNotEmpty()
-  @IsEnum(AddressStatus)
-  readonly status!: AddressStatus;
+  @IsOptional()
+  @IsBoolean()
+  readonly isShipping!: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  readonly isDefault!: boolean;
 }
