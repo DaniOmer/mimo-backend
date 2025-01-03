@@ -268,7 +268,7 @@ export class ProductService extends BaseService {
     }
 
     if (data.createdBy) {
-      const user = await this.userService.getUserById(this.toObjectIdString(data.createdBy));
+      const user = await this.userService.getById(this.toObjectIdString(data.createdBy));
       if (!user) {
         throw new BadRequestError({
           message: "The user who created this product does not exist.",
