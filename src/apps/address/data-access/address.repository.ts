@@ -8,7 +8,9 @@ export class AddressRepository extends MongooseRepository<IAddress> {
   }
 
   async getAllAddressesByUserId(userId: string): Promise<IAddress[]> {
-    const addresses = await this.model.find({ user: userId });
+    const addresses = await this.model
+      .find({ user: userId })
+      .sort({ createdAt: -1 });
     return addresses;
   }
 
