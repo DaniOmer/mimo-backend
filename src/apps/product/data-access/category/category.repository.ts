@@ -14,4 +14,8 @@ export class CategoryRepository extends MongooseRepository<ICategory> {
   async findByIdWithParent(categoryId: string): Promise<ICategory | null> {
     return this.model.findById(categoryId).populate("parentId").exec();
   }
+
+  async findByIds(categoryIds: string[]): Promise<ICategory[]> {
+    return this.model.find({ _id: { $in: categoryIds } }).exec();
+  }
 }

@@ -119,11 +119,12 @@ export class BasicAuthStrategy implements AuthStrategy {
         logging: true,
       });
     }
-
+    
     const isPasswordValid = await SecurityUtils.comparePassword(
       userData.password,
       user.password
     );
+    
 
     if (!isPasswordValid) {
       throw new BadRequestError({

@@ -7,21 +7,41 @@ export class ProductVariantRepository extends MongooseRepository<IProductVariant
     super(ProductVariantModel);
   }
 
+
   async getAllWithRelations(): Promise<IProductVariant[]> {
     return this.model
       .find()
-      .populate("product_id")
-      .populate("size_id")
-      .populate("color_id")
+      .populate("productId")
+      .populate("sizeId")
+      .populate("colorId")
       .exec();
   }
 
   async findByIdWithRelations(variantId: string): Promise<IProductVariant | null> {
     return this.model
       .findById(variantId)
-      .populate("product_id")
-      .populate("size_id")
-      .populate("color_id")
+      .populate("productId")
+      .populate("sizeId")
+      .populate("colorId")
+      .exec();
+  }
+
+
+  async findByCriteria(query: any): Promise<IProductVariant[]> {
+    return this.model
+      .find(query)
+      .populate("productId")
+      .populate("sizeId")
+      .populate("colorId")
+      .exec();
+  }
+
+  async findLimitedEditionVariants(): Promise<IProductVariant[]> {
+    return this.model
+      .find({ isLimitedEdition: true })
+      .populate("productId")
+      .populate("sizeId")
+      .populate("colorId")
       .exec();
   }
 }

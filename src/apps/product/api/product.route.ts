@@ -3,9 +3,10 @@ import { ProductController } from "./product.controller";
 import {
   validateDtoMiddleware,
   validateIdMiddleware,
+  authenticateMiddleware,
+  checkRoleMiddleware
 } from "../../../librairies/middlewares/";
-import { ProductDTO } from "../domain/";
-
+import { ProductDTO, ProductUpdateDTO } from "../domain/";
 const productController = new ProductController();
 const router = Router();
 
@@ -49,6 +50,8 @@ const router = Router();
  */
 router.post(
   "/",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateDtoMiddleware(ProductDTO),
   productController.createProduct.bind(productController)
 );
@@ -69,36 +72,45 @@ router.post(
  *               items:
  *                 $ref: '#/components/schemas/Product'
  */
-router.get("/", productController.getAllProducts.bind(productController));
+router.get("/",
+   productController.getAllProducts.bind(productController));
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/products/search:
  *   get:
- *     summary: Get a product by ID
+ *     summary: Search products by criteria
  *     tags: [Products]
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
+ *       - in: query
+ *         name: name
  *         schema:
  *           type: string
- *         description: The product ID
+ *         description: Product name
+ *       - in: query
+ *         name: categoryIds
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Category IDs
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Minimum price
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Maximum price
  *     responses:
  *       200:
- *         description: Product data
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       404:
- *         description: Product not found
+ *         description: Products retrieved successfully
  */
-router.get(
-  "/:id",
-  validateIdMiddleware("Product"),
-  productController.getProductById.bind(productController)
-);
+router.get("/search", productController.searchProducts.bind(productController));
+
+
 
 /**
  * @swagger
@@ -140,8 +152,10 @@ router.get(
  */
 router.put(
   "/:id",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("Product"),
-  validateDtoMiddleware(ProductDTO),
+  validateDtoMiddleware(ProductUpdateDTO),
   productController.updateProduct.bind(productController)
 );
 
@@ -166,8 +180,160 @@ router.put(
  */
 router.delete(
   "/:id",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
   validateIdMiddleware("Product"),
   productController.deleteProduct.bind(productController)
 );
 
+/**
+ * @swagger
+ * /api/products/{id}/activate:
+ *   patch:
+ *     summary: Activate or deactivate a product
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isActive:
+ *                 type: boolean
+ *                 description: Whether the product is active
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Product activation status updated
+ */
+router.patch(
+  "/:id/activate",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  validateIdMiddleware("Product"),
+  productController.toggleProductActivation.bind(productController)
+);
+
+
+/**
+ * @swagger
+ * /api/products/{id}/duplicate:
+ *   post:
+ *     summary: Duplicate a product
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The product ID
+ *     responses:
+ *       201:
+ *         description: Product duplicated successfully
+ */
+router.post(
+  "/:id/duplicate",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  validateIdMiddleware("Product"),
+  productController.duplicateProduct.bind(productController)
+);
+
+/**
+ * @swagger
+ * /api/products/status:
+ *   get:
+ *     summary: Get products by status
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: isActive
+ *         schema:
+ *           type: boolean
+ *         description: Whether the product is active
+ *         example: true
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully
+ */
+router.get("/status", authenticateMiddleware, productController.getProductsByStatus.bind(productController));
+
+router.post(
+  "/:productId/images",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  validateIdMiddleware("Product"),
+  productController.addImagesToProduct.bind(productController)
+);
+
+router.delete(
+  "/:productId/images/:imageId",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  validateIdMiddleware("Product"),
+  productController.removeImageFromProduct.bind(productController)
+);
+
+router.get(
+  "/:id/variants",
+  validateIdMiddleware("Product"),
+  productController.getProductWithVariants.bind(productController)
+);
+
+router.get(
+  "/with-variants",
+  productController.getAllProductsWithVariants.bind(productController)
+);
+
+router.get(
+  "/category/:categoryId",
+  productController.getProductsByCategory.bind(productController)
+);
+
+router.get(
+  "/feature/:featureId",
+  productController.getProductsByFeature.bind(productController)
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get a product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The product ID
+ *     responses:
+ *       200:
+ *         description: Product data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Product not found
+ */
+router.get(
+  "/:id",
+  validateIdMiddleware("Product"),
+  productController.getProductById.bind(productController)
+);
+
+
+
 export default router;
+

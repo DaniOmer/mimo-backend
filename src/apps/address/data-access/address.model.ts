@@ -1,8 +1,17 @@
 import { Schema, model } from "mongoose";
-import { IAddress, AddressStatus, AddressType } from "./address.interface";
+import { IAddress } from "./address.interface";
+import BadRequestError from "../../../config/error/bad.request.config";
 
 export const addressSchema = new Schema<IAddress>(
   {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
     streetNumber: {
       type: Number,
       required: true,
@@ -26,15 +35,17 @@ export const addressSchema = new Schema<IAddress>(
       type: String,
       required: true,
     },
-    status: {
-      type: String,
-      enum: Object.values(AddressStatus),
-      default: AddressStatus.Inactive,
+    isDefault: {
+      type: Boolean,
+      default: false,
     },
-    type: {
-      type: String,
-      enum: Object.values(AddressType),
-      default: AddressType.Invoice,
+    isBilling: {
+      type: Boolean,
+      default: false,
+    },
+    isShipping: {
+      type: Boolean,
+      default: false,
     },
     user: {
       type: Schema.Types.ObjectId,
@@ -47,5 +58,18 @@ export const addressSchema = new Schema<IAddress>(
     versionKey: false,
   }
 );
+
+addressSchema.pre("validate", function (next) {
+  if (!this.isBilling && !this.isShipping) {
+    return next(
+      new BadRequestError({
+        message: "At least one of 'isBilling' or 'isShipping' should be true.",
+        logging: true,
+        code: 400,
+      })
+    );
+  }
+  next();
+});
 
 export const AddressModel = model<IAddress>("Address", addressSchema);

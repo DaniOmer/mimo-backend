@@ -11,5 +11,5 @@ export interface IProductVariant extends Document, Timestamps {
   colorId: Types.ObjectId;
   material?: string;
   weight: number;
-  isLimitedEdition?: boolean;
+  isLimitedEdition?: boolean; 
 }

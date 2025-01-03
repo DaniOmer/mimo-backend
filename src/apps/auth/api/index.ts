@@ -13,3 +13,8 @@ export * from "./role/role.route";
 // Permission management
 export * from "./permission/permission.controller";
 export * from "./permission/permission.route";
+
+// Invitation management
+export * from "./invitation/invitation.controller";
+export * from "./invitation/invitation.route";
+

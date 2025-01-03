@@ -39,7 +39,7 @@ export class CategoryService extends BaseService {
       if (!parentCategory) {
         throw new BadRequestError({
           message: `Parent category not found for ID: ${updates.parentId}`,
-          context: { createdCategory : 'Invalid parent category ID'},
+          context: { createdCategory: "Invalid parent category ID" },
           code: 404,
         });
       }
@@ -51,5 +51,14 @@ export class CategoryService extends BaseService {
   async deleteCategoryById(id: string): Promise<ICategory> {
     const deletedCategory = await this.repository.deleteById(id);
     return this.validateDataExists(deletedCategory, id);
+  }
+
+  /**
+   * Recherche plusieurs catégories en fonction de leurs IDs.
+   * @param categoryIds - Tableau des IDs de catégories.
+   * @returns Liste des catégories correspondantes.
+   */
+  async findCategoriesByIds(categoryIds: string[]): Promise<ICategory[]> {
+    return this.repository.findByIds(categoryIds);
   }
 }
