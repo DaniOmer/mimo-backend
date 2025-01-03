@@ -24,64 +24,23 @@ export class AddressService extends BaseService {
     return address;
   }
 
-  // async createAddress(
-  //   address: AddressDTO,
-  //   currentUser: UserDataToJWT
-  // ): Promise<IAddress> {
-  //   const createdAddress = await this.repository.create({
-  //     user: currentUser.id,
-  //     ...address,
-  //   });
-
-  //   if (createdAddress.isDefault) {
-  //     const filters: Record<string, any> = { user: currentUser.id };
-
-  //     if (address.isBilling) filters.isBilling = true;
-  //     if (address.isShipping) filters.isShipping = true;
-
-  //     await this.repository.updateManyAddress(filters, { isDefault: false });
-  //   }
-  //   return createdAddress;
-  // }
-
   async createAddress(
-    address: AddressDTO,
+    addressData: AddressDTO,
     currentUser: UserDataToJWT
   ): Promise<IAddress> {
     const createdAddress = await this.repository.create({
       user: currentUser.id,
-      ...address,
+      ...addressData,
     });
 
     if (createdAddress.isDefault) {
-      const updateQueries = [];
-      if (address.isBilling) {
-        updateQueries.push(
-          this.repository.updateManyAddress(
-            {
-              user: currentUser.id,
-              isBilling: true,
-              _id: { $ne: createdAddress._id },
-            },
-            { isDefault: false }
-          )
-        );
-      }
-
-      if (address.isShipping) {
-        updateQueries.push(
-          this.repository.updateManyAddress(
-            {
-              user: currentUser.id,
-              isShipping: true,
-              _id: { $ne: createdAddress._id },
-            },
-            { isDefault: false }
-          )
-        );
-      }
-      const results = await Promise.all(updateQueries);
+      await this.updateDefaultFlags(
+        currentUser.id.toString(),
+        createdAddress,
+        addressData
+      );
     }
+
     return createdAddress;
   }
 
@@ -97,6 +56,7 @@ export class AddressService extends BaseService {
         message: `Address with the given id not found`,
       });
     }
+
     const addressOwner = existingAddress.user.toString();
     const hasAccess = SecurityUtils.isOwnerOrAdmin(addressOwner, currentUser);
     if (!hasAccess) {
@@ -117,11 +77,76 @@ export class AddressService extends BaseService {
         message: `Address with the given id not found`,
       });
     }
+
+    if (updatedAddress.isDefault) {
+      await this.updateDefaultFlags(
+        currentUser.id.toString(),
+        updatedAddress,
+        addressData
+      );
+    }
+
     return updatedAddress;
+  }
+
+  private async updateDefaultFlags(
+    userId: string,
+    address: IAddress,
+    addressData: AddressDTO
+  ): Promise<void> {
+    const updateQueries = [];
+
+    if (addressData.isBilling) {
+      updateQueries.push(
+        this.repository.updateManyAddress(
+          {
+            user: userId,
+            isBilling: true,
+            _id: { $ne: address._id },
+          },
+          { isDefault: false }
+        )
+      );
+    }
+
+    if (addressData.isShipping) {
+      updateQueries.push(
+        this.repository.updateManyAddress(
+          {
+            user: userId,
+            isShipping: true,
+            _id: { $ne: address._id },
+          },
+          { isDefault: false }
+        )
+      );
+    }
+
+    await Promise.all(updateQueries);
   }
 
   async getAllAddressesByUserId(userId: string): Promise<IAddress[]> {
     const addresses = await this.repository.getAllAddressesByUserId(userId);
     return addresses;
+  }
+
+  async deleteAddress(id: string, currentUser: UserDataToJWT): Promise<void> {
+    const existingAddress = await this.repository.getById(id);
+    if (!existingAddress) {
+      throw new BadRequestError({
+        message: "User address not found",
+        logging: true,
+      });
+    }
+    const addressOwner = existingAddress.user.toString();
+    const hasAccess = SecurityUtils.isOwnerOrAdmin(addressOwner, currentUser);
+    if (!hasAccess) {
+      throw new BadRequestError({
+        message: "Unauthorized to update this address",
+        logging: true,
+        code: 403,
+      });
+    }
+    await this.repository.deleteById(existingAddress._id);
   }
 }

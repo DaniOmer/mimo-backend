@@ -1,5 +1,6 @@
 import { BaseController } from "../../../librairies/controllers";
 import { ApiResponse } from "../../../librairies/controllers";
+import { AddressDTO } from "../domain";
 import { AddressService } from "../domain/address.service";
 import { Request, Response, NextFunction } from "express";
 
@@ -36,7 +37,7 @@ export class AddressController extends BaseController {
   ): Promise<void> {
     try {
       const addressId = req.params.id;
-      const addressData = req.body;
+      const addressData = this.dataToDtoInstance(req.body, AddressDTO);
       const currentUser = req.user;
       const updatedAddress = await this.addressService.updateAddress(
         addressId,
@@ -44,6 +45,21 @@ export class AddressController extends BaseController {
         currentUser
       );
       ApiResponse.success(res, "Address updated successfully", updatedAddress);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteAddress(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const addressId = req.params.id;
+      const currentUser = req.user;
+      await this.addressService.deleteAddress(addressId, currentUser);
+      ApiResponse.success(res, "Address deleted successfully", null);
     } catch (error) {
       next(error);
     }
