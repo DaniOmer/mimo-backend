@@ -24,6 +24,26 @@ export class AddressService extends BaseService {
     return address;
   }
 
+  // async createAddress(
+  //   address: AddressDTO,
+  //   currentUser: UserDataToJWT
+  // ): Promise<IAddress> {
+  //   const createdAddress = await this.repository.create({
+  //     user: currentUser.id,
+  //     ...address,
+  //   });
+
+  //   if (createdAddress.isDefault) {
+  //     const filters: Record<string, any> = { user: currentUser.id };
+
+  //     if (address.isBilling) filters.isBilling = true;
+  //     if (address.isShipping) filters.isShipping = true;
+
+  //     await this.repository.updateManyAddress(filters, { isDefault: false });
+  //   }
+  //   return createdAddress;
+  // }
+
   async createAddress(
     address: AddressDTO,
     currentUser: UserDataToJWT
@@ -32,6 +52,36 @@ export class AddressService extends BaseService {
       user: currentUser.id,
       ...address,
     });
+
+    if (createdAddress.isDefault) {
+      const updateQueries = [];
+      if (address.isBilling) {
+        updateQueries.push(
+          this.repository.updateManyAddress(
+            {
+              user: currentUser.id,
+              isBilling: true,
+              _id: { $ne: createdAddress._id },
+            },
+            { isDefault: false }
+          )
+        );
+      }
+
+      if (address.isShipping) {
+        updateQueries.push(
+          this.repository.updateManyAddress(
+            {
+              user: currentUser.id,
+              isShipping: true,
+              _id: { $ne: createdAddress._id },
+            },
+            { isDefault: false }
+          )
+        );
+      }
+      const results = await Promise.all(updateQueries);
+    }
     return createdAddress;
   }
 

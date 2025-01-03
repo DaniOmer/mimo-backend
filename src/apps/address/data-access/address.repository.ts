@@ -11,4 +11,11 @@ export class AddressRepository extends MongooseRepository<IAddress> {
     const addresses = await this.model.find({ user: userId });
     return addresses;
   }
+
+  async updateManyAddress(
+    filter: Record<string, any>,
+    update: Partial<IAddress>
+  ): Promise<void> {
+    await this.model.updateMany(filter, update).exec();
+  }
 }
