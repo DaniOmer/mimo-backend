@@ -1,4 +1,3 @@
-
 import { Document, Types } from "mongoose";
 import { Timestamps } from "../../../librairies/types/timestamps.interface";
 
@@ -15,4 +14,5 @@ export interface IProduct extends Document, Timestamps {
   createdBy: Types.ObjectId;
   updatedBy?: Types.ObjectId;
   stripeId?: string;
+  hasVariants: boolean;
 }

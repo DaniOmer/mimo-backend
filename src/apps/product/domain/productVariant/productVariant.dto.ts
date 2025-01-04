@@ -25,10 +25,12 @@ export class ProductVariantCreateDTO {
 
   @IsNotEmpty()
   @IsString()
+  @Expose()
   readonly productId!: string;
 
   @IsNotEmpty()
   @IsString()
+  @Expose()
   readonly sizeId!: string;
 
   @IsNotEmpty()
