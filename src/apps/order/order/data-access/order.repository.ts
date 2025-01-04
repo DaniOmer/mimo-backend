@@ -8,7 +8,10 @@ export class OrderRepository extends MongooseRepository<IOrder> {
   }
 
   async getOrdersByUserId(userId: string): Promise<IOrder[]> {
-    return await OrderModel.find({ user: userId }).exec();
+    return await OrderModel.find({ user: userId })
+      .populate("shippingAddress")
+      .populate("billingAddress")
+      .exec();
   }
 
   async getOrderByNumber(number: string): Promise<IOrder | null> {
