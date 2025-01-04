@@ -18,6 +18,7 @@ export interface IUser extends Timestamps, Document {
   roles: IRole[];
   permissions: IPermission[];
   isTermsOfSale: boolean;
+  isDefaultPreference: boolean;
   isVerified: boolean;
   isDisabled: boolean;
   authType: AuthType;

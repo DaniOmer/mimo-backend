@@ -12,6 +12,7 @@ const userSchema = new Schema<IUser>(
     roles: [{ type: Schema.Types.ObjectId, ref: "Role", required: true }],
     permissions: [{ type: Schema.Types.ObjectId, ref: "Permission" }],
     isTermsOfSale: { type: Boolean, default: false },
+    isDefaultPreference: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
     isDisabled: { type: Boolean, default: false },
     authType: { type: String, enum: Object.values(AuthType), required: true },

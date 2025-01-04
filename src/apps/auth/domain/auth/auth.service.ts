@@ -12,21 +12,25 @@ import {
   ConfirmPasswordResetDTO,
 } from "../user/user.dto";
 
+import { PreferenceService } from "../../../preference/domain/preference.service";
+
 export type UserCreateResponse = Omit<IUser, "id" | "password" | "updatedAt">;
 export type UserLoginResponse = UserCreateResponse & {
   token: string;
 };
 
 export class AuthService extends BaseService {
-  private authStrategy: AuthStrategy;
-  private userRepository: UserRepository;
-  private tokenService: TokenService;
+  readonly authStrategy: AuthStrategy;
+  readonly userRepository: UserRepository;
+  readonly tokenService: TokenService;
+  readonly preferenceService: PreferenceService;
 
   constructor(strategy: Strategy) {
     super("Auth");
     this.authStrategy = AuthStrategyFactory.create(strategy);
     this.userRepository = new UserRepository();
     this.tokenService = new TokenService();
+    this.preferenceService = new PreferenceService();
   }
 
   async register(userData: UserRegisterDTO) {
@@ -34,16 +38,9 @@ export class AuthService extends BaseService {
     if (this.authStrategy.getEmailValidationLink) {
       const emailConfirmationLink =
         await this.authStrategy.getEmailValidationLink(createUserResponse);
-
-      await this.emailNotifier.send({
-        recipient: createUserResponse.email,
-        subject: "Welcome to Mimo!",
-        templateName: "confirmation-email.html",
-        params: {
-          confirmation_link: emailConfirmationLink,
-        },
-      });
+      await this.sendWelcomeEmail(userData.email, emailConfirmationLink);
     }
+    await this.preferenceService.createDefaultPreference(createUserResponse);
     return createUserResponse;
   }
 
@@ -142,5 +139,16 @@ export class AuthService extends BaseService {
       });
     }
     return updatedUser;
+  }
+
+  async sendWelcomeEmail(email: string, confirmationLink: string) {
+    await this.emailNotifier.send({
+      recipient: email,
+      subject: "Welcome to Mimo!",
+      templateName: "confirmation-email.html",
+      params: {
+        confirmation_link: confirmationLink,
+      },
+    });
   }
 }

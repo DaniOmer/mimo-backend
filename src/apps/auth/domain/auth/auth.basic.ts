@@ -36,7 +36,7 @@ export class BasicAuthStrategy implements AuthStrategy {
     this.roleService = new RoleService();
   }
 
-  async register(userData: UserRegisterDTO): Promise<UserCreateResponse> {
+  async register(userData: UserRegisterDTO): Promise<IUser> {
     const existingUser = await this.userRepository.getByEmail(userData.email);
     if (existingUser) {
       throw new BadRequestError({
@@ -119,12 +119,11 @@ export class BasicAuthStrategy implements AuthStrategy {
         logging: true,
       });
     }
-    
+
     const isPasswordValid = await SecurityUtils.comparePassword(
       userData.password,
       user.password
     );
-    
 
     if (!isPasswordValid) {
       throw new BadRequestError({
