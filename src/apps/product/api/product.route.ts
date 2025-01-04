@@ -4,50 +4,12 @@ import {
   validateDtoMiddleware,
   validateIdMiddleware,
   authenticateMiddleware,
-  checkRoleMiddleware
+  checkRoleMiddleware,
 } from "../../../librairies/middlewares/";
 import { ProductDTO, ProductUpdateDTO } from "../domain/";
 const productController = new ProductController();
 const router = Router();
 
-/**
- * @swagger
- * tags:
- *   name: Products
- *   description: API for managing products
- */
-
-/**
- * @swagger
- * /api/products:
- *   post:
- *     summary: Create a new product
- *     tags: [Products]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 description: Name of the product
- *                 example: Artisan Bag
- *               description:
- *                 type: string
- *                 description: Description of the product
- *                 example: A handmade artisan bag.
- *     responses:
- *       201:
- *         description: Product created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       400:
- *         description: Validation error
- */
 router.post(
   "/",
   authenticateMiddleware,
@@ -56,100 +18,10 @@ router.post(
   productController.createProduct.bind(productController)
 );
 
-/**
- * @swagger
- * /api/products:
- *   get:
- *     summary: Get a list of all products
- *     tags: [Products]
- *     responses:
- *       200:
- *         description: List of products
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
- */
-router.get("/",
-   productController.getAllProducts.bind(productController));
+router.get("/", productController.getAllProducts.bind(productController));
 
-/**
- * @swagger
- * /api/products/search:
- *   get:
- *     summary: Search products by criteria
- *     tags: [Products]
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: Product name
- *       - in: query
- *         name: categoryIds
- *         schema:
- *           type: array
- *           items:
- *             type: string
- *         description: Category IDs
- *       - in: query
- *         name: minPrice
- *         schema:
- *           type: number
- *         description: Minimum price
- *       - in: query
- *         name: maxPrice
- *         schema:
- *           type: number
- *         description: Maximum price
- *     responses:
- *       200:
- *         description: Products retrieved successfully
- */
 router.get("/search", productController.searchProducts.bind(productController));
 
-
-
-/**
- * @swagger
- * /api/products/{id}:
- *   put:
- *     summary: Update a product by ID
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The product ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 description: Name of the product
- *                 example: Artisan Bag
- *               description:
- *                 type: string
- *                 description: Description of the product
- *                 example: A handmade artisan bag.
- *     responses:
- *       200:
- *         description: Product updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       404:
- *         description: Product not found
- */
 router.put(
   "/:id",
   authenticateMiddleware,
@@ -159,25 +31,6 @@ router.put(
   productController.updateProduct.bind(productController)
 );
 
-/**
- * @swagger
- * /api/products/{id}:
- *   delete:
- *     summary: Delete a product by ID
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The product ID
- *     responses:
- *       204:
- *         description: Product deleted successfully
- *       404:
- *         description: Product not found
- */
 router.delete(
   "/:id",
   authenticateMiddleware,
@@ -186,34 +39,6 @@ router.delete(
   productController.deleteProduct.bind(productController)
 );
 
-/**
- * @swagger
- * /api/products/{id}/activate:
- *   patch:
- *     summary: Activate or deactivate a product
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The product ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               isActive:
- *                 type: boolean
- *                 description: Whether the product is active
- *                 example: true
- *     responses:
- *       200:
- *         description: Product activation status updated
- */
 router.patch(
   "/:id/activate",
   authenticateMiddleware,
@@ -222,24 +47,6 @@ router.patch(
   productController.toggleProductActivation.bind(productController)
 );
 
-
-/**
- * @swagger
- * /api/products/{id}/duplicate:
- *   post:
- *     summary: Duplicate a product
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The product ID
- *     responses:
- *       201:
- *         description: Product duplicated successfully
- */
 router.post(
   "/:id/duplicate",
   authenticateMiddleware,
@@ -248,24 +55,11 @@ router.post(
   productController.duplicateProduct.bind(productController)
 );
 
-/**
- * @swagger
- * /api/products/status:
- *   get:
- *     summary: Get products by status
- *     tags: [Products]
- *     parameters:
- *       - in: query
- *         name: isActive
- *         schema:
- *           type: boolean
- *         description: Whether the product is active
- *         example: true
- *     responses:
- *       200:
- *         description: Products retrieved successfully
- */
-router.get("/status", authenticateMiddleware, productController.getProductsByStatus.bind(productController));
+router.get(
+  "/status",
+  authenticateMiddleware,
+  productController.getProductsByStatus.bind(productController)
+);
 
 router.post(
   "/:productId/images",
@@ -290,11 +84,6 @@ router.get(
 );
 
 router.get(
-  "/with-variants",
-  productController.getAllProductsWithVariants.bind(productController)
-);
-
-router.get(
   "/category/:categoryId",
   productController.getProductsByCategory.bind(productController)
 );
@@ -304,36 +93,10 @@ router.get(
   productController.getProductsByFeature.bind(productController)
 );
 
-/**
- * @swagger
- * /api/products/{id}:
- *   get:
- *     summary: Get a product by ID
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The product ID
- *     responses:
- *       200:
- *         description: Product data
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       404:
- *         description: Product not found
- */
 router.get(
   "/:id",
   validateIdMiddleware("Product"),
   productController.getProductById.bind(productController)
 );
 
-
-
 export default router;
-

@@ -257,38 +257,6 @@ export class ProductService extends BaseService {
     return { product, variants: variantDetails };
   }
 
-  async getAllProductsWithVariants(): Promise<any[]> {
-    if (!this.productVariantService || !this.inventoryService) {
-      throw new Error("Dependencies not initialized.");
-    }
-
-    const products = await this.repository.findAllWithRelations();
-    const variants = await this.productVariantService.getAllVariants();
-    const inventoryData =
-      await this.inventoryService.getInventoriesWithProductAndVariant();
-
-    return products.map((product) => {
-      const productVariants = variants
-        .filter((variant) => {
-          const product = variant.product as IProduct;
-          return product._id.toString() === product._id.toString();
-        })
-        .map((variant) => {
-          const inventory = inventoryData.find(
-            (inv) => inv.productVariant?.toString() === variant._id.toString()
-          );
-          return {
-            ...variant.toObject(),
-            quantity: inventory
-              ? inventory.quantity - inventory.reservedQuantity
-              : 0,
-          };
-        });
-
-      return { product, variants: productVariants };
-    });
-  }
-
   private async validateDependencies(data: Partial<IProduct>): Promise<void> {
     if (data.categoryIds && data.categoryIds.length > 0) {
       const categoryIdsFormated = data.categoryIds.map((id) =>

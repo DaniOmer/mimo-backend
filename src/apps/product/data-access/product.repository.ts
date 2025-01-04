@@ -1,7 +1,6 @@
 import { IProduct } from "./product.interface";
 import { ProductModel } from "./product.model";
 import { MongooseRepository } from "../../../librairies/repositories/mongoose/mongoose.repository";
-import mongoose from "mongoose";
 
 export class ProductRepository extends MongooseRepository<IProduct> {
   constructor() {
@@ -35,58 +34,92 @@ export class ProductRepository extends MongooseRepository<IProduct> {
   }
 
   async getProductsWithVariantsAndInventory(): Promise<IProduct[]> {
-    // Récupérer les produits avec leurs variantes et l'inventaire associé
     const products = await this.model.aggregate([
       {
         $match: { isActive: true },
       },
       {
         $lookup: {
-          from: "product_variants", // Joindre avec la collection des variantes
+          from: "product_variants",
           localField: "_id",
           foreignField: "product",
           as: "variants",
         },
       },
       {
-        $unwind: {
-          path: "$variants",
-          preserveNullAndEmptyArrays: true, // Gérer les produits sans variantes
-        },
-      },
-      {
         $lookup: {
-          from: "inventories", // Joindre avec la collection d'inventaires
-          localField: "variants._id", // Utiliser l'ID de la variante
-          foreignField: "productVariant",
-          as: "inventory",
+          from: "inventories",
+          let: { variantIds: "$variants._id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $in: ["$productVariant", "$$variantIds"] },
+              },
+            },
+          ],
+          as: "variantsInventories",
         },
       },
       {
-        $project: {
-          name: 1,
-          isActive: 1,
+        $addFields: {
           variants: {
-            _id: 1,
-            priceEtx: 1,
-            priceVat: 1,
-            sizeId: 1,
-            colorId: 1,
-            material: 1,
-            weight: 1,
-            inventory: {
-              quantity: 1,
-              reservedQuantity: 1,
+            $map: {
+              input: "$variants",
+              as: "variant",
+              in: {
+                $mergeObjects: [
+                  "$$variant",
+                  {
+                    inventory: {
+                      $filter: {
+                        input: "$variantsInventories",
+                        as: "inv",
+                        cond: {
+                          $eq: ["$$inv.productVariant", "$$variant._id"],
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
             },
           },
         },
       },
       {
-        $group: {
-          _id: "$_id",
-          name: { $first: "$name" },
-          isActive: { $first: "$isActive" },
-          variants: { $push: "$variants" },
+        $lookup: {
+          from: "inventories",
+          let: { productId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$product", "$$productId"] }],
+                },
+              },
+            },
+          ],
+          as: "inventory",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          isActive: 1,
+          images: 1,
+          categoryIds: 1,
+          featureIds: 1,
+          createdBy: 1,
+          updatedBy: 1,
+          stripeId: 1,
+          hasVariants: 1,
+          variants: {
+            $cond: [{ $eq: ["$hasVariants", true] }, "$variants", "$$REMOVE"],
+          },
+          inventory: {
+            $cond: [{ $eq: ["$hasVariants", false] }, "$inventory", "$$REMOVE"],
+          },
         },
       },
     ]);

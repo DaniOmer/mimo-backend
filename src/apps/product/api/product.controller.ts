@@ -250,25 +250,6 @@ export class ProductController {
     }
   }
 
-  async getAllProductsWithVariants(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const productsWithVariants =
-        await this.productService.getAllProductsWithVariants();
-      ApiResponse.success(
-        res,
-        "All products with variants retrieved successfully",
-        productsWithVariants,
-        200
-      );
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async getProductsByCategory(
     req: Request,
     res: Response,
