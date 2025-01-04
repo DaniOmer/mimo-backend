@@ -112,11 +112,11 @@ export class ProductUpdateDTO {
   @IsNumber()
   @Min(0)
   @Expose()
-  readonly priceEtx!: number;
+  readonly priceEtx?: number;
 
   @IsOptional()
   @IsNumber()
   @Min(0)
   @Expose()
-  readonly priceVat!: number;
+  readonly priceVat?: number;
 }

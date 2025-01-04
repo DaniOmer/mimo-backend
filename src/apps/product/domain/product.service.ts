@@ -6,8 +6,9 @@ import {
   ProductImageService,
   ProductVariantService,
   InventoryService,
+  ProductDTO,
+  ProductUpdateDTO,
 } from "./";
-import { UserService } from "../../auth/domain/user/user.service";
 import { Types } from "mongoose";
 import BadRequestError from "../../../config/error/bad.request.config";
 import { IProductImage } from "../data-access/productImage/productImage.interface";
@@ -17,7 +18,6 @@ export class ProductService extends BaseService {
   private categoryService: CategoryService;
   private featureService: ProductFeatureService;
   private imageService: ProductImageService;
-  private userService: UserService;
   private productVariantService: ProductVariantService | null = null;
   private inventoryService: InventoryService | null = null;
 
@@ -27,27 +27,9 @@ export class ProductService extends BaseService {
     this.categoryService = new CategoryService();
     this.featureService = new ProductFeatureService();
     this.imageService = new ProductImageService();
-    this.userService = new UserService();
   }
 
-  setProductVariantService(service: ProductVariantService) {
-    if (!service) {
-      throw new Error("ProductVariantService cannot be null.");
-    }
-    this.productVariantService = service;
-  }
-
-  setInventoryService(service: InventoryService) {
-    if (!service) {
-      throw new Error("InventoryService cannot be null.");
-    }
-    this.inventoryService = service;
-  }
-
-  async createProduct(
-    data: Omit<IProduct, "_id" | "createdBy" | "updatedBy">,
-    userId: string
-  ): Promise<IProduct> {
+  async createProduct(data: ProductDTO, userId: string): Promise<IProduct> {
     await this.validateDependencies(data);
     return this.repository.create({
       ...data,
@@ -74,10 +56,14 @@ export class ProductService extends BaseService {
 
   async updateProductById(
     id: string,
-    updates: Partial<IProduct>
+    updates: ProductUpdateDTO,
+    userId: string
   ): Promise<IProduct> {
     await this.validateDependencies(updates);
-    const updatedProduct = await this.repository.updateById(id, updates);
+    const updatedProduct = await this.repository.updateById(id, {
+      ...updates,
+      updatedBy: userId,
+    });
     return this.validateDataExists(updatedProduct, id);
   }
 

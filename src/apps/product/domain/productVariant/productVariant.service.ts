@@ -8,7 +8,7 @@ import {
   ColorService,
   ProductVariantUpdateDTO,
 } from "../../domain";
-import { Types } from "mongoose";
+
 import { ProductVariantCreateDTO } from "../../domain";
 
 export class ProductVariantService extends BaseService {
@@ -26,7 +26,8 @@ export class ProductVariantService extends BaseService {
   }
 
   async createProductVariant(
-    data: ProductVariantCreateDTO
+    data: ProductVariantCreateDTO,
+    userId: string
   ): Promise<IProductVariant> {
     const validatedData = await this.validateDependencies(data);
     const productVariant = await this.repository.create({
@@ -34,6 +35,7 @@ export class ProductVariantService extends BaseService {
       product: validatedData.product,
       size: validatedData.size,
       color: validatedData.color,
+      createdBy: userId,
     });
     if (!productVariant) {
       throw new BadRequestError({
@@ -45,7 +47,8 @@ export class ProductVariantService extends BaseService {
       productVariant.product.toString(),
       {
         isActive: true,
-      }
+      },
+      userId
     );
     return productVariant;
   }
@@ -79,10 +82,14 @@ export class ProductVariantService extends BaseService {
 
   async updateVariantById(
     id: string,
-    updates: ProductVariantUpdateDTO
+    updates: ProductVariantUpdateDTO,
+    currentUserId: string
   ): Promise<IProductVariant> {
     await this.validateDependencies(updates);
-    const updatedVariant = await this.repository.updateById(id, updates);
+    const updatedVariant = await this.repository.updateById(id, {
+      ...updates,
+      updatedBy: currentUserId,
+    });
     return this.validateDataExists(updatedVariant, id);
   }
 

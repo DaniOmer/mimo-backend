@@ -3,6 +3,7 @@ import { Timestamps } from "../../../../librairies/types/timestamps.interface";
 import { IColor } from "../color/color.interface";
 import { ISize } from "../size/size.interface";
 import { IProduct } from "../product.interface";
+import { IUser } from "../../../auth/data-access";
 
 export interface IProductVariant extends Document, Timestamps {
   _id: string;
@@ -15,4 +16,6 @@ export interface IProductVariant extends Document, Timestamps {
   material?: string;
   weight: number;
   isLimitedEdition?: boolean;
+  createdBy: string | IUser;
+  updatedBy: string | IUser;
 }

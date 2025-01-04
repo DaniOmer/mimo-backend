@@ -12,6 +12,8 @@ const ProductVariantSchema = new Schema<IProductVariant>(
     material: { type: String },
     weight: { type: Number, required: true },
     isLimitedEdition: { type: Boolean, default: false },
+    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    updatedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
   },
   { timestamps: true, collection: "product_variants", versionKey: false }
 );

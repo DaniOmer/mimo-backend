@@ -1,9 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import {
-  ProductService,
-  ProductVariantService,
-  InventoryService,
-} from "../domain/";
+import { ProductService } from "../domain/";
 import { ApiResponse } from "../../../librairies/controllers/api.response";
 
 export class ProductController {
@@ -11,11 +7,6 @@ export class ProductController {
 
   constructor() {
     this.productService = new ProductService();
-    const productVariantService = new ProductVariantService();
-    const inventoryService = new InventoryService();
-
-    this.productService.setProductVariantService(productVariantService);
-    this.productService.setInventoryService(inventoryService);
   }
 
   async createProduct(
@@ -72,11 +63,13 @@ export class ProductController {
     next: NextFunction
   ): Promise<void> {
     try {
+      const currentUserId = req.user._id;
       const productId = req.params.id;
       const updates = req.body;
       const updatedProduct = await this.productService.updateProductById(
         productId,
-        updates
+        updates,
+        currentUserId
       );
       ApiResponse.success(
         res,
