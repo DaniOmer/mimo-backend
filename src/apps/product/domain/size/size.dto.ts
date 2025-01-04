@@ -19,6 +19,7 @@ export class SizeCreateDTO {
   @IsString()
   @MaxLength(50)
   @MinLength(5)
+  @Expose()
   readonly dimensions!: string;
 
   @IsOptional()

@@ -35,7 +35,7 @@ export class ProductRepository extends MongooseRepository<IProduct> {
   }
 
   async getProductsWithVariantsAndInventory(): Promise<IProduct[]> {
-    // Récupérer le produit avec ses variantes et l'inventaire associé
+    // Récupérer les produits avec leurs variantes et l'inventaire associé
     const products = await this.model.aggregate([
       {
         $match: { isActive: true },
@@ -44,7 +44,7 @@ export class ProductRepository extends MongooseRepository<IProduct> {
         $lookup: {
           from: "product_variants", // Joindre avec la collection des variantes
           localField: "_id",
-          foreignField: "productId",
+          foreignField: "product",
           as: "variants",
         },
       },

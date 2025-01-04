@@ -269,10 +269,10 @@ export class ProductService extends BaseService {
 
     return products.map((product) => {
       const productVariants = variants
-        .filter(
-          (variant) =>
-            variant.productId._id.toString() === product._id.toString()
-        )
+        .filter((variant) => {
+          const product = variant.product as IProduct;
+          return product._id.toString() === product._id.toString();
+        })
         .map((variant) => {
           const inventory = inventoryData.find(
             (inv) => inv.productVariant?.toString() === variant._id.toString()

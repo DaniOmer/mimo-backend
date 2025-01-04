@@ -18,11 +18,6 @@ export class ProductVariantCreateDTO {
   @Expose()
   readonly priceVat!: number;
 
-  @IsOptional()
-  @IsString()
-  @Expose()
-  readonly stripeId?: string;
-
   @IsNotEmpty()
   @IsString()
   @Expose()
@@ -69,11 +64,6 @@ export class ProductVariantUpdateDTO {
   @IsNumber()
   @Expose()
   readonly quantity?: number;
-
-  @IsOptional()
-  @IsString()
-  @Expose()
-  readonly stripeId?: string;
 
   @IsOptional()
   @IsString()

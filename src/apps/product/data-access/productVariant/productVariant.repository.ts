@@ -7,41 +7,41 @@ export class ProductVariantRepository extends MongooseRepository<IProductVariant
     super(ProductVariantModel);
   }
 
-
   async getAllWithRelations(): Promise<IProductVariant[]> {
     return this.model
       .find()
-      .populate("productId")
-      .populate("sizeId")
-      .populate("colorId")
+      .populate("product")
+      .populate("size")
+      .populate("color")
       .exec();
   }
 
-  async findByIdWithRelations(variantId: string): Promise<IProductVariant | null> {
+  async findByIdWithRelations(
+    variantId: string
+  ): Promise<IProductVariant | null> {
     return this.model
       .findById(variantId)
-      .populate("productId")
-      .populate("sizeId")
-      .populate("colorId")
+      .populate("product")
+      .populate("size")
+      .populate("color")
       .exec();
   }
-
 
   async findByCriteria(query: any): Promise<IProductVariant[]> {
     return this.model
       .find(query)
-      .populate("productId")
-      .populate("sizeId")
-      .populate("colorId")
+      .populate("product")
+      .populate("size")
+      .populate("color")
       .exec();
   }
 
   async findLimitedEditionVariants(): Promise<IProductVariant[]> {
     return this.model
       .find({ isLimitedEdition: true })
-      .populate("productId")
-      .populate("sizeId")
-      .populate("colorId")
+      .populate("product")
+      .populate("size")
+      .populate("color")
       .exec();
   }
 }
