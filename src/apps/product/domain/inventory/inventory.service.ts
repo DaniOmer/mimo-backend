@@ -314,7 +314,18 @@ export class InventoryService extends BaseService {
     }
 
     let productVariant = null;
-    if (productVariantId) {
+    if (product.hasVariants && !productVariantId) {
+      throw new BadRequestError({
+        message: "Product has variants, please provide a product variant",
+        logging: true,
+      });
+    } else if (!product.hasVariants && productVariantId) {
+      throw new BadRequestError({
+        message:
+          "Product does not have variants, please do not provide a product variant",
+        logging: true,
+      });
+    } else if (productVariantId) {
       productVariant = await this.productVariantService.getProductVariantById(
         productVariantId
       );
