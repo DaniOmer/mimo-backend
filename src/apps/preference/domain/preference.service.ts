@@ -87,10 +87,7 @@ export class PreferenceService extends BaseService {
     return updatedPreference;
   }
 
-  async deletePreference(
-    id: string,
-    currentUser: UserDataToJWT
-  ): Promise<void> {
+  async deletePreference(id: string): Promise<void> {
     const preference = await this.repository.getById(id);
     if (!preference) {
       throw new BadRequestError({
@@ -99,7 +96,6 @@ export class PreferenceService extends BaseService {
       });
     }
 
-    this.checkPreferenceOwner(preference, currentUser);
     const deleteResult = await this.repository.deleteById(id);
     if (!deleteResult) {
       throw new BadRequestError({

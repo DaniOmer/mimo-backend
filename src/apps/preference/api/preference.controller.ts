@@ -36,4 +36,18 @@ export class PreferenceController extends BaseController {
       next(error);
     }
   }
+
+  async deleteUserPreference(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const preferenceId = req.params.id;
+      await this.preferenceService.deletePreference(preferenceId);
+      ApiResponse.success(res, "User preference deleted successfully", {}, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
