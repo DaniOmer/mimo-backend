@@ -129,7 +129,7 @@ export class OrderService extends BaseService {
     const ordersWithItems = await Promise.all(
       orders.map(async (order) => {
         const items = await this.orderItemService.getOrderItemsByOrderId(
-          order._id
+          order._id.toString()
         );
         return {
           ...order.toObject(),

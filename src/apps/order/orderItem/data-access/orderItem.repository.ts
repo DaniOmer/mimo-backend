@@ -18,7 +18,7 @@ export class OrderItemRepository extends MongooseRepository<IOrderItem> {
 
   async getItemsByOrderId(orderId: string): Promise<IOrderItem[]> {
     return await this.model
-      .find({ orderId })
+      .find({ order: orderId })
       .populate("product")
       .populate("productVariant")
       .exec();
