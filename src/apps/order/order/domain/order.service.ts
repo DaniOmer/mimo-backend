@@ -114,9 +114,24 @@ export class OrderService extends BaseService {
     return updatedOrder;
   }
 
-  async getOrdersByUserId(userId: string): Promise<IOrder[]> {
-    const allOrders = this.repository.getOrdersByUserId(userId);
-    return allOrders;
+  async getOrdersByUserId(
+    userId: string
+  ): Promise<(IOrder & { items: IOrderItem[] })[]> {
+    const orders = await this.repository.getOrdersByUserId(userId);
+
+    const ordersWithItems = await Promise.all(
+      orders.map(async (order) => {
+        const items = await this.orderItemService.getOrderItemsByOrderId(
+          order._id
+        );
+        return {
+          ...order.toObject(),
+          items,
+        };
+      })
+    );
+
+    return ordersWithItems;
   }
 
   private async preOrder(
