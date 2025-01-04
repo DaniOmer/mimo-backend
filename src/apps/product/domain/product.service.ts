@@ -44,9 +44,15 @@ export class ProductService extends BaseService {
     this.inventoryService = service;
   }
 
-  async createProduct(data: Partial<IProduct>): Promise<IProduct> {
+  async createProduct(
+    data: Omit<IProduct, "_id" | "createdBy" | "updatedBy">,
+    userId: string
+  ): Promise<IProduct> {
     await this.validateDependencies(data);
-    return this.repository.create(data);
+    return this.repository.create({
+      ...data,
+      createdBy: userId,
+    });
   }
 
   async getProductById(id: string): Promise<IProduct> {
@@ -63,7 +69,7 @@ export class ProductService extends BaseService {
   }
 
   async getAllProducts(): Promise<IProduct[]> {
-    return this.repository.findAllWithRelations();
+    return this.repository.getProductsWithVariantsAndInventory();
   }
 
   async updateProductById(
@@ -180,8 +186,8 @@ export class ProductService extends BaseService {
     const imageIds = createdImages.map((image) => image._id);
 
     product.images = product.images
-      ? [...product.images, ...imageIds.map((id) => new Types.ObjectId(id))]
-      : imageIds.map((id) => new Types.ObjectId(id));
+      ? [...product.images, ...imageIds.map((id) => id)]
+      : imageIds.map((id) => id);
 
     const updatedProduct = await this.repository.updateById(productId, {
       images: product.images,
@@ -311,19 +317,6 @@ export class ProductService extends BaseService {
         throw new BadRequestError({
           message: "One or more feature IDs are invalid.",
           context: { invalid_features: "Invalid feature IDs provided." },
-          code: 400,
-        });
-      }
-    }
-
-    if (data.createdBy) {
-      const user = await this.userService.getById(
-        this.toObjectIdString(data.createdBy)
-      );
-      if (!user) {
-        throw new BadRequestError({
-          message: "The user who created this product does not exist.",
-          context: { invalid_user: `No user found with ID: ${data.createdBy}` },
           code: 400,
         });
       }

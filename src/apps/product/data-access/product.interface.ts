@@ -1,5 +1,6 @@
 import { Document, Types } from "mongoose";
 import { Timestamps } from "../../../librairies/types/timestamps.interface";
+import { IUser } from "../../auth/data-access";
 
 export interface IProduct extends Document, Timestamps {
   _id: string;
@@ -8,11 +9,11 @@ export interface IProduct extends Document, Timestamps {
   priceEtx?: number;
   priceVat?: number;
   isActive: boolean;
-  images?: Types.ObjectId[];
-  categoryIds: Types.ObjectId[];
-  featureIds?: Types.ObjectId[];
-  createdBy: Types.ObjectId;
-  updatedBy?: Types.ObjectId;
+  images?: string[];
+  categoryIds: string[];
+  featureIds?: string[];
+  createdBy: string | IUser;
+  updatedBy?: string | IUser;
   stripeId?: string;
   hasVariants: boolean;
 }

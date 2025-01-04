@@ -43,6 +43,11 @@ export class ProductDTO {
   readonly isActive!: boolean;
 
   @IsOptional()
+  @IsBoolean()
+  @Expose()
+  readonly hasVariants?: boolean;
+
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @Expose()
@@ -59,11 +64,6 @@ export class ProductDTO {
   @IsString({ each: true })
   @Expose()
   readonly featureIds?: string[];
-
-  @IsNotEmpty()
-  @IsString()
-  @Expose()
-  readonly createdBy!: string;
 
   @IsOptional()
   @IsString()
@@ -107,11 +107,6 @@ export class ProductUpdateDTO {
   @IsString({ each: true })
   @Expose()
   readonly featureIds?: string[];
-
-  @IsOptional()
-  @IsString()
-  @Expose()
-  readonly updatedBy?: string;
 
   @IsOptional()
   @IsNumber()

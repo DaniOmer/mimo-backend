@@ -22,7 +22,7 @@ const ProductSchema = new Schema<IProduct>(
   { timestamps: true, collection: "products", versionKey: false }
 );
 
-ProductSchema.pre("validate", function (next) {
+ProductSchema.pre("save", function (next) {
   if (!this.hasVariants) {
     if (!this.priceEtx || !this.priceVat) {
       return next(
@@ -33,6 +33,8 @@ ProductSchema.pre("validate", function (next) {
         })
       );
     }
+  } else {
+    this.isActive = false;
   }
   next();
 });

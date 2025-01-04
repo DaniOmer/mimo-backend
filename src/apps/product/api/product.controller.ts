@@ -24,7 +24,11 @@ export class ProductController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const newProduct = await this.productService.createProduct(req.body);
+      const currentUser = req.user;
+      const newProduct = await this.productService.createProduct(
+        req.body,
+        currentUser
+      );
       ApiResponse.success(res, "Product created successfully", newProduct, 201);
     } catch (error) {
       next(error);
