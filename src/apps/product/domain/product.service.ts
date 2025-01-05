@@ -320,6 +320,7 @@ export class ProductService extends BaseService {
       const user = await this.userService.getById(
         this.toObjectIdString(data.createdBy)
       );
+
       if (!user) {
         throw new BadRequestError({
           message: "The user who created this product does not exist.",
