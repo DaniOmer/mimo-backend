@@ -12,6 +12,29 @@ export class PreferenceController extends BaseController {
     this.preferenceService = new PreferenceService();
   }
 
+  async getUserPreferences(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const currentUser = req.user;
+      const preferenceId = req.params.userId;
+      const preferences = await this.preferenceService.getPreferenceByUser(
+        preferenceId,
+        currentUser
+      );
+      ApiResponse.success(
+        res,
+        "User preferences fetched successfully",
+        preferences,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async updateUserPreference(
     req: Request,
     res: Response,
@@ -21,7 +44,7 @@ export class PreferenceController extends BaseController {
       const currentUser = req.user;
       const preferenceData = req.body;
       const preferenceId = req.params.id;
-      const updatedPreference = this.preferenceService.updatePreference(
+      const updatedPreference = await this.preferenceService.updatePreference(
         preferenceId,
         preferenceData,
         currentUser
