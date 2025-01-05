@@ -369,4 +369,20 @@ export class OrderService extends BaseService {
     }));
     return { salesByProduct };
   }
+
+  async getAverageCartValue(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    
+    if (orders.length === 0) {
+      return { averageEtx: 0, averageVat: 0 };
+    }
+  
+    const totalEtx = orders.reduce((total, order) => total + order.amountEtx, 0);
+    const totalVat = orders.reduce((total, order) => total + order.amountVat, 0);
+  
+    const averageEtx = totalEtx / orders.length;
+    const averageVat = totalVat / orders.length;
+  
+    return { averageEtx, averageVat };
+  }
 }

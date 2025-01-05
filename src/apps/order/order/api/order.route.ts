@@ -71,4 +71,11 @@ router.get(
   orderController.getSalesByProductAnalytics.bind(orderController)
 );
 
+router.get(
+  "/analytics/average-cart-value",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getAverageCartValueAnalytics.bind(orderController)
+);
+
 export default router;
