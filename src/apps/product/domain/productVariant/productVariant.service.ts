@@ -6,8 +6,10 @@ import {
   ProductService,
   SizeService,
   ColorService,
+  ProductVariantUpdateDTO,
 } from "../../domain";
-import { Types } from "mongoose";
+
+import { ProductVariantCreateDTO } from "../../domain";
 
 export class ProductVariantService extends BaseService {
   readonly repository: ProductVariantRepository;
@@ -24,16 +26,30 @@ export class ProductVariantService extends BaseService {
   }
 
   async createProductVariant(
-    data: Omit<IProductVariant, "_id">
+    data: ProductVariantCreateDTO,
+    userId: string
   ): Promise<IProductVariant> {
-    await this.validateDependencies(data);
-    const productVariant = await this.repository.create(data);
+    const validatedData = await this.validateDependencies(data);
+    const productVariant = await this.repository.create({
+      ...data,
+      product: validatedData.product,
+      size: validatedData.size,
+      color: validatedData.color,
+      createdBy: userId,
+    });
     if (!productVariant) {
       throw new BadRequestError({
         message: "Failed to create product variant",
         logging: true,
       });
     }
+    await this.productService.updateProductById(
+      productVariant.product.toString(),
+      {
+        isActive: true,
+      },
+      userId
+    );
     return productVariant;
   }
 
@@ -66,10 +82,14 @@ export class ProductVariantService extends BaseService {
 
   async updateVariantById(
     id: string,
-    updates: Partial<IProductVariant>
+    updates: ProductVariantUpdateDTO,
+    currentUserId: string
   ): Promise<IProductVariant> {
     await this.validateDependencies(updates);
-    const updatedVariant = await this.repository.updateById(id, updates);
+    const updatedVariant = await this.repository.updateById(id, {
+      ...updates,
+      updatedBy: currentUserId,
+    });
     return this.validateDataExists(updatedVariant, id);
   }
 
@@ -100,11 +120,9 @@ export class ProductVariantService extends BaseService {
     return this.repository.findByCriteria(query);
   }
 
-
   async getLimitedEditionVariants(): Promise<IProductVariant[]> {
     return this.repository.findLimitedEditionVariants();
   }
-
 
   async duplicateVariant(id: string): Promise<IProductVariant> {
     const variant = await this.repository.getById(id);
@@ -116,7 +134,16 @@ export class ProductVariantService extends BaseService {
       });
     }
 
-    const { productId, sizeId, colorId, priceEtx, priceVat, material, weight, isLimitedEdition } = variant.toObject();
+    const {
+      productId,
+      sizeId,
+      colorId,
+      priceEtx,
+      priceVat,
+      material,
+      weight,
+      isLimitedEdition,
+    } = variant.toObject();
 
     const duplicatedVariantData = {
       productId,
@@ -131,24 +158,25 @@ export class ProductVariantService extends BaseService {
     return this.repository.create(duplicatedVariantData);
   }
 
-  private async validateDependencies(data: Partial<IProductVariant>): Promise<void> {
+  private async validateDependencies(
+    data: ProductVariantCreateDTO | ProductVariantUpdateDTO
+  ): Promise<{ product: string; size: string; color: string }> {
     if (data.productId) {
-      const productId = this.toObjectIdString(data.productId);
-      await this.productService.getProductById(productId);
+      await this.productService.getProductById(data.productId.toString());
     }
 
     if (data.sizeId) {
-      const sizeId = this.toObjectIdString(data.sizeId);
-      await this.sizeService.getSizeById(sizeId);
+      await this.sizeService.getSizeById(data.sizeId.toString());
     }
 
     if (data.colorId) {
-      const colorId = this.toObjectIdString(data.colorId);
-      await this.colorService.getColorById(colorId);
+      await this.colorService.getColorById(data.colorId.toString());
     }
-  }
 
-  private toObjectIdString(id: string | Types.ObjectId): string {
-    return typeof id === "string" ? id : id.toString();
+    return {
+      product: data.productId || "",
+      size: data.sizeId || "",
+      color: data.colorId || "",
+    };
   }
 }

@@ -16,6 +16,13 @@ router.get(
   controller.getAddressesByUser.bind(controller)
 );
 
+router.get(
+  "/:id",
+  authenticateMiddleware,
+  validateIdMiddleware("Address"),
+  controller.getAddressById.bind(controller)
+);
+
 router.post(
   "/",
   authenticateMiddleware,

@@ -14,6 +14,8 @@ import {
 } from "class-validator";
 import { IRole } from "../../data-access";
 
+import { Expose } from "class-transformer";
+
 export class UserRegisterDTO {
   @IsNotEmpty()
   @IsString()
@@ -22,6 +24,7 @@ export class UserRegisterDTO {
   @Matches(/^[A-Za-z\s]+$/, {
     message: "firstName must contain only letters and spaces",
   })
+  @Expose()
   readonly firstName!: string;
 
   @IsNotEmpty()
@@ -31,10 +34,12 @@ export class UserRegisterDTO {
   @Matches(/^[A-Za-z\s]+$/, {
     message: "lastName must contain only letters and spaces",
   })
+  @Expose()
   readonly lastName!: string;
 
   @IsNotEmpty()
   @IsEmail()
+  @Expose()
   readonly email!: string;
 
   @IsNotEmpty()
@@ -42,21 +47,30 @@ export class UserRegisterDTO {
   @Matches(
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
   )
+  @Expose()
   readonly password!: string;
 
   @IsOptional()
   @IsUrl()
   @MaxLength(250)
+  @Expose()
   readonly avatar?: string;
 
   @IsOptional()
   @IsBoolean()
+  @Expose()
   readonly isTermsOfSale!: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Expose()
+  readonly isDefaultPreference!: boolean;
 }
 
 export class UserLoginDTO {
   @IsNotEmpty()
   @IsEmail()
+  @Expose()
   readonly email!: string;
 
   @IsNotEmpty()
@@ -64,6 +78,7 @@ export class UserLoginDTO {
   @Matches(
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
   )
+  @Expose()
   readonly password!: string;
 }
 
@@ -74,6 +89,7 @@ export class UserUpdateDTO {
   @IsAlpha()
   @MinLength(2)
   @MaxLength(50)
+  @Expose()
   readonly firstName!: string;
 
   @IsOptional()
@@ -81,16 +97,19 @@ export class UserUpdateDTO {
   @IsAlpha()
   @MinLength(2)
   @MaxLength(50)
+  @Expose()
   readonly lastName!: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsEmail()
+  @Expose()
   readonly email!: string;
 
   @IsOptional()
   @IsUrl()
   @MaxLength(250)
+  @Expose()
   readonly avatar?: string;
 
   @IsOptional()
@@ -102,6 +121,7 @@ export class UserUpdateDTO {
 export class RequestPasswordResetDTO {
   @IsNotEmpty()
   @IsEmail()
+  @Expose()
   readonly email!: string;
 }
 
@@ -111,16 +131,19 @@ export class ConfirmPasswordResetDTO {
   @Matches(
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
   )
+  @Expose()
   readonly password!: string;
 
   @IsNotEmpty()
   @IsString()
+  @Expose()
   readonly token!: string;
 }
 
 export class ConfirmEmailDTO {
   @IsNotEmpty()
   @IsString()
+  @Expose()
   readonly token!: string;
 }
 
@@ -130,6 +153,7 @@ export class PasswordUpdateDTO {
   @Matches(
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
   )
+  @Expose()
   readonly oldPassword!: string;
 
   @IsNotEmpty()
@@ -137,5 +161,6 @@ export class PasswordUpdateDTO {
   @Matches(
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^,:;&+*-]).{12,}$/
   )
+  @Expose()
   readonly newPassword!: string;
 }

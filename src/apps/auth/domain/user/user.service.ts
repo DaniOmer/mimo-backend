@@ -11,12 +11,10 @@ import RoleService from "../role/role.service";
 export class UserService extends BaseService {
   private repository: UserRepository;
   private roleService: RoleService;
-  private tokenService: TokenService;
 
   constructor() {
     super("User");
     this.repository = new UserRepository();
-    this.tokenService = new TokenService();
     this.roleService = new RoleService();
   }
 
@@ -75,11 +73,11 @@ export class UserService extends BaseService {
     updateData: UserUpdateDTO
   ): Promise<Omit<IUser, "password">> {
     const { roles, ...userData } = updateData;
-  
+
     const updatedData: Partial<IUser> = { ...userData };
-  
+
     if (roles && roles.length > 0) {
-      const allRoles = await this.roleService.getAllRoles(); 
+      const allRoles = await this.roleService.getAllRoles();
       const validRoles: IRole[] = roles.map((role) => {
         const matchedRole = allRoles.find((r) => r.name === role.name);
         if (!matchedRole) {
@@ -91,12 +89,12 @@ export class UserService extends BaseService {
         }
         return matchedRole;
       });
-  
-      updatedData.roles = validRoles; 
+
+      updatedData.roles = validRoles;
     }
 
     const updatedUser = await this.repository.updateById(id, updatedData);
-  
+
     if (!updatedUser) {
       throw new BadRequestError({
         message: "User not found",
@@ -112,13 +110,11 @@ export class UserService extends BaseService {
         code: 500,
       });
     }
-  
+
     // Retourner l'utilisateur sans mot de passe
     const { password, ...userWithoutPassword } = populatedUser.toObject();
     return userWithoutPassword;
   }
-  
-  
 
   async deleteUserById(id: string): Promise<Response> {
     const deletedUser = await this.repository.deleteById(id);
@@ -218,18 +214,22 @@ export class UserService extends BaseService {
     return updatedUser;
   }
 
-  async toggleUserStatus(userId: string, isDisabled: boolean): Promise<Omit<IUser, "password">> {
-    const updatedUser = await this.repository.updateById(userId, { isDisabled });
-  
+  async toggleUserStatus(
+    userId: string,
+    isDisabled: boolean
+  ): Promise<Omit<IUser, "password">> {
+    const updatedUser = await this.repository.updateById(userId, {
+      isDisabled,
+    });
+
     if (!updatedUser) {
       throw new BadRequestError({
         message: "User not found",
         code: 404,
       });
     }
-  
+
     const { password, ...userWithoutPassword } = updatedUser.toObject();
     return userWithoutPassword;
   }
-  
 }

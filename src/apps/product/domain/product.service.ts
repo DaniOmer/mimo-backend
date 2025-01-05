@@ -4,10 +4,9 @@ import {
   CategoryService,
   ProductFeatureService,
   ProductImageService,
-  ProductVariantService,
-  InventoryService,
+  ProductDTO,
+  ProductUpdateDTO,
 } from "./";
-import { UserService } from "../../auth/domain/user/user.service";
 import { Types } from "mongoose";
 import BadRequestError from "../../../config/error/bad.request.config";
 import { IProductImage } from "../data-access/productImage/productImage.interface";
@@ -17,9 +16,6 @@ export class ProductService extends BaseService {
   private categoryService: CategoryService;
   private featureService: ProductFeatureService;
   private imageService: ProductImageService;
-  private userService: UserService;
-  private productVariantService: ProductVariantService | null = null;
-  private inventoryService: InventoryService | null = null;
 
   constructor() {
     super("Product");
@@ -27,31 +23,28 @@ export class ProductService extends BaseService {
     this.categoryService = new CategoryService();
     this.featureService = new ProductFeatureService();
     this.imageService = new ProductImageService();
-    this.userService = new UserService();
   }
 
-  setProductVariantService(service: ProductVariantService) {
-    if (!service) {
-      throw new Error("ProductVariantService cannot be null.");
-    }
-    this.productVariantService = service;
-  }
-
-  setInventoryService(service: InventoryService) {
-    if (!service) {
-      throw new Error("InventoryService cannot be null.");
-    }
-    this.inventoryService = service;
-  }
-
-  async createProduct(data: Partial<IProduct>): Promise<IProduct> {
+  async createProduct(data: ProductDTO, userId: string): Promise<IProduct> {
     await this.validateDependencies(data);
-    return this.repository.create(data);
+    return this.repository.create({
+      ...data,
+      createdBy: userId,
+    });
   }
 
   async getProductById(id: string): Promise<IProduct> {
-    const product = await this.repository.findByIdWithRelations(id);
-    return this.validateDataExists(product, id);
+    const product = await this.repository.getProductWithVariantsAndInventory({
+      productId: id,
+    });
+    if (!product) {
+      throw new BadRequestError({
+        message: "Product not found.",
+        context: { productId: `No product found with ID: ${id}` },
+        code: 404,
+      });
+    }
+    return product as IProduct;
   }
 
   async getProductsByCategory(categoryId: string): Promise<IProduct[]> {
@@ -63,15 +56,23 @@ export class ProductService extends BaseService {
   }
 
   async getAllProducts(): Promise<IProduct[]> {
-    return this.repository.findAllWithRelations();
+    const products = await this.repository.getProductWithVariantsAndInventory();
+    if (!products) {
+      return [];
+    }
+    return Array.isArray(products) ? products : [products];
   }
 
   async updateProductById(
     id: string,
-    updates: Partial<IProduct>
+    updates: ProductUpdateDTO,
+    userId: string
   ): Promise<IProduct> {
     await this.validateDependencies(updates);
-    const updatedProduct = await this.repository.updateById(id, updates);
+    const updatedProduct = await this.repository.updateById(id, {
+      ...updates,
+      updatedBy: userId,
+    });
     return this.validateDataExists(updatedProduct, id);
   }
 
@@ -180,8 +181,8 @@ export class ProductService extends BaseService {
     const imageIds = createdImages.map((image) => image._id);
 
     product.images = product.images
-      ? [...product.images, ...imageIds.map((id) => new Types.ObjectId(id))]
-      : imageIds.map((id) => new Types.ObjectId(id));
+      ? [...product.images, ...imageIds.map((id) => id)]
+      : imageIds.map((id) => id);
 
     const updatedProduct = await this.repository.updateById(productId, {
       images: product.images,
@@ -220,69 +221,6 @@ export class ProductService extends BaseService {
     return this.validateDataExists(updatedProduct, productId);
   }
 
-  async getProductWithVariants(id: string): Promise<any> {
-    if (!this.productVariantService || !this.inventoryService) {
-      throw new Error("Dependencies not initialized.");
-    }
-
-    const product = await this.repository.findByIdWithRelations(id);
-    if (!product) {
-      throw new BadRequestError({ message: "Product not found.", code: 404 });
-    }
-
-    const variants = await this.productVariantService.getVariantsByProductId(
-      id
-    );
-    const inventories =
-      await this.inventoryService.getInventoriesWithProductAndVariant();
-
-    const variantDetails = variants.map((variant) => {
-      const inventory = inventories.find(
-        (inv) => inv.productVariant?.toString() === variant._id.toString()
-      );
-      return {
-        ...variant.toObject(),
-        quantity: inventory
-          ? inventory.quantity - inventory.reservedQuantity
-          : 0,
-      };
-    });
-
-    return { product, variants: variantDetails };
-  }
-
-  async getAllProductsWithVariants(): Promise<any[]> {
-    if (!this.productVariantService || !this.inventoryService) {
-      throw new Error("Dependencies not initialized.");
-    }
-
-    const products = await this.repository.findAllWithRelations();
-    const variants = await this.productVariantService.getAllVariants();
-    const inventoryData =
-      await this.inventoryService.getInventoriesWithProductAndVariant();
-
-    return products.map((product) => {
-      const productVariants = variants
-        .filter(
-          (variant) =>
-            variant.productId._id.toString() === product._id.toString()
-        )
-        .map((variant) => {
-          const inventory = inventoryData.find(
-            (inv) => inv.productVariant?.toString() === variant._id.toString()
-          );
-          return {
-            ...variant.toObject(),
-            quantity: inventory
-              ? inventory.quantity - inventory.reservedQuantity
-              : 0,
-          };
-        });
-
-      return { product, variants: productVariants };
-    });
-  }
-
   private async validateDependencies(data: Partial<IProduct>): Promise<void> {
     if (data.categoryIds && data.categoryIds.length > 0) {
       const categoryIdsFormated = data.categoryIds.map((id) =>
@@ -311,20 +249,6 @@ export class ProductService extends BaseService {
         throw new BadRequestError({
           message: "One or more feature IDs are invalid.",
           context: { invalid_features: "Invalid feature IDs provided." },
-          code: 400,
-        });
-      }
-    }
-
-    if (data.createdBy) {
-      const user = await this.userService.getById(
-        this.toObjectIdString(data.createdBy)
-      );
-
-      if (!user) {
-        throw new BadRequestError({
-          message: "The user who created this product does not exist.",
-          context: { invalid_user: `No user found with ID: ${data.createdBy}` },
           code: 400,
         });
       }

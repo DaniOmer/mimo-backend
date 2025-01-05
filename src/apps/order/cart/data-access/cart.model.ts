@@ -9,7 +9,7 @@ const cartSchema = new Schema<ICart>(
       required: true,
       unique: true,
     },
-    expireAt: { type: Date, required: true },
+    expireAt: { type: Date, default: Date.now() },
   },
   {
     timestamps: true,

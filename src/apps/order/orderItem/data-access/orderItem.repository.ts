@@ -13,10 +13,14 @@ export class OrderItemRepository extends MongooseRepository<IOrderItem> {
     orderItemsList: Partial<IOrderItem>[],
     session?: mongoose.ClientSession
   ): Promise<IOrderItem[]> {
-    return await OrderItemModel.insertMany(orderItemsList, { session });
+    return await this.model.insertMany(orderItemsList, { session });
   }
 
   async getItemsByOrderId(orderId: string): Promise<IOrderItem[]> {
-    return await OrderItemModel.find({ orderId }).exec();
+    return await this.model
+      .find({ order: orderId })
+      .populate("product")
+      .populate("productVariant")
+      .exec();
   }
 }

@@ -40,14 +40,20 @@ export class CartItemService extends BaseService {
     productVariant: IProductVariant | null,
     quantity: number
   ): Promise<ICartItem> {
-    const priceEtx = productVariant?.priceEtx || product.priceEtx;
-    const priceVat = productVariant?.priceVat || product.priceVat;
+    const priceEtx = product.hasVariants
+      ? productVariant?.priceEtx
+      : product.priceEtx;
+    const priceVat = product.hasVariants
+      ? productVariant?.priceVat
+      : product.priceVat;
+
     if (!priceEtx || !priceVat) {
       throw new BadRequestError({
         message: "Product price not available",
         logging: true,
       });
     }
+
     const cartItem = await this.repository.create({
       product: product._id,
       productVariant: productVariant?._id || undefined,

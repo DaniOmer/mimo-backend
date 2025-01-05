@@ -6,12 +6,14 @@ const ProductVariantSchema = new Schema<IProductVariant>(
     priceEtx: { type: Number, required: true },
     priceVat: { type: Number, required: true },
     stripeId: { type: String, unique: true, sparse: true },
-    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-    sizeId: { type: Schema.Types.ObjectId, ref: "Size", required: true },
-    colorId: { type: Schema.Types.ObjectId, ref: "Color", required: true },
+    product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    size: { type: Schema.Types.ObjectId, ref: "Size", required: true },
+    color: { type: Schema.Types.ObjectId, ref: "Color", required: true },
     material: { type: String },
     weight: { type: Number, required: true },
     isLimitedEdition: { type: Boolean, default: false },
+    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    updatedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
   },
   { timestamps: true, collection: "product_variants", versionKey: false }
 );

@@ -1,9 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import {
-  ProductService,
-  ProductVariantService,
-  InventoryService,
-} from "../domain/";
+import { ProductService } from "../domain/";
 import { ApiResponse } from "../../../librairies/controllers/api.response";
 
 export class ProductController {
@@ -11,11 +7,6 @@ export class ProductController {
 
   constructor() {
     this.productService = new ProductService();
-    const productVariantService = new ProductVariantService();
-    const inventoryService = new InventoryService();
-
-    this.productService.setProductVariantService(productVariantService);
-    this.productService.setInventoryService(inventoryService);
   }
 
   async createProduct(
@@ -24,7 +15,11 @@ export class ProductController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const newProduct = await this.productService.createProduct(req.body);
+      const currentUser = req.user;
+      const newProduct = await this.productService.createProduct(
+        req.body,
+        currentUser
+      );
       ApiResponse.success(res, "Product created successfully", newProduct, 201);
     } catch (error) {
       next(error);
@@ -68,11 +63,13 @@ export class ProductController {
     next: NextFunction
   ): Promise<void> {
     try {
+      const currentUserId = req.user._id;
       const productId = req.params.id;
       const updates = req.body;
       const updatedProduct = await this.productService.updateProductById(
         productId,
-        updates
+        updates,
+        currentUserId
       );
       ApiResponse.success(
         res,
@@ -219,45 +216,6 @@ export class ProductController {
         res,
         "Image removed from product successfully",
         updatedProduct,
-        200
-      );
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getProductWithVariants(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { id } = req.params;
-      const productWithVariants =
-        await this.productService.getProductWithVariants(id);
-      ApiResponse.success(
-        res,
-        "Product with variants retrieved successfully",
-        productWithVariants,
-        200
-      );
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getAllProductsWithVariants(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const productsWithVariants =
-        await this.productService.getAllProductsWithVariants();
-      ApiResponse.success(
-        res,
-        "All products with variants retrieved successfully",
-        productsWithVariants,
         200
       );
     } catch (error) {

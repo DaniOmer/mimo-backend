@@ -53,8 +53,18 @@ export class InventoryService extends BaseService {
         code: 404,
       });
     }
+    if (product.hasVariants) {
+      if (!data.productVariant) {
+        throw new BadRequestError({
+          message: "Product has variants and product variant is not provided",
+          context: {
+            add_product_variant_inventory:
+              "Product has variants and product variant is not provided",
+          },
+          code: 400,
+        });
+      }
 
-    if (data.productVariant) {
       const productVariant =
         await this.productVariantService.getProductVariantById(
           data.productVariant.toString()
@@ -70,7 +80,8 @@ export class InventoryService extends BaseService {
         });
       }
 
-      if (productVariant.productId.toString() !== data.product.toString()) {
+      const productVariantProduct = productVariant.product as IProduct;
+      if (productVariantProduct._id.toString() !== data.product.toString()) {
         throw new BadRequestError({
           message: "Product variant does not belong to the specified product",
           context: {
@@ -80,7 +91,18 @@ export class InventoryService extends BaseService {
           code: 400,
         });
       }
+    } else {
+      if (data.productVariant) {
+        throw new BadRequestError({
+          message: "Product should not have variants",
+          context: {
+            add_product_inventory: "Product does not have variants",
+          },
+          code: 400,
+        });
+      }
     }
+
     const inventory = await this.repository.create(data);
     return inventory;
   }
@@ -292,7 +314,18 @@ export class InventoryService extends BaseService {
     }
 
     let productVariant = null;
-    if (productVariantId) {
+    if (product.hasVariants && !productVariantId) {
+      throw new BadRequestError({
+        message: "Product has variants, please provide a product variant",
+        logging: true,
+      });
+    } else if (!product.hasVariants && productVariantId) {
+      throw new BadRequestError({
+        message:
+          "Product does not have variants, please do not provide a product variant",
+        logging: true,
+      });
+    } else if (productVariantId) {
       productVariant = await this.productVariantService.getProductVariantById(
         productVariantId
       );
@@ -303,7 +336,8 @@ export class InventoryService extends BaseService {
         });
       }
 
-      if (product._id.toString() !== productVariant.productId.toString()) {
+      const productVariantProduct = productVariant.product as IProduct;
+      if (product._id.toString() !== productVariantProduct._id.toString()) {
         throw new BadRequestError({
           message: "Product variant does not belong to the product",
           logging: true,

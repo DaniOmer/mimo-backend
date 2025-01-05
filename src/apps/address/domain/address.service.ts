@@ -13,14 +13,29 @@ export class AddressService extends BaseService {
     this.repository = new AddressRepository();
   }
 
-  async getAddressById(id: string): Promise<IAddress> {
+  async getAddressById(
+    id: string,
+    currentUser: UserDataToJWT
+  ): Promise<IAddress> {
     const address = await this.repository.getById(id);
+
     if (!address) {
       throw new BadRequestError({
         code: 404,
         message: "Address with the given id not found",
       });
     }
+
+    const addressOwner = address.user.toString();
+    const hasAccess = SecurityUtils.isOwnerOrAdmin(addressOwner, currentUser);
+    if (!hasAccess) {
+      throw new BadRequestError({
+        message: "Unauthorized to update this address",
+        logging: true,
+        code: 403,
+      });
+    }
+
     return address;
   }
 
@@ -49,21 +64,11 @@ export class AddressService extends BaseService {
     addressData: AddressDTO,
     currentUser: UserDataToJWT
   ): Promise<IAddress> {
-    const existingAddress = await this.getAddressById(id);
+    const existingAddress = await this.getAddressById(id, currentUser);
     if (!existingAddress) {
       throw new BadRequestError({
         code: 404,
         message: `Address with the given id not found`,
-      });
-    }
-
-    const addressOwner = existingAddress.user.toString();
-    const hasAccess = SecurityUtils.isOwnerOrAdmin(addressOwner, currentUser);
-    if (!hasAccess) {
-      throw new BadRequestError({
-        message: "Unauthorized to update this address",
-        logging: true,
-        code: 403,
       });
     }
 

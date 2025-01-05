@@ -59,7 +59,10 @@ export class OrderService extends BaseService {
     return { ...createdOrder.toObject(), items };
   }
 
-  async getOrderById(id: string, currentUser: UserDataToJWT): Promise<IOrder> {
+  async getOrderById(
+    id: string,
+    currentUser: UserDataToJWT
+  ): Promise<IOrder & { items: IOrderItem[] }> {
     const order = await this.repository.getById(id);
     if (!order) {
       throw new BadRequestError({
@@ -76,7 +79,11 @@ export class OrderService extends BaseService {
         code: 403,
       });
     }
-    return order;
+    const items = await this.orderItemService.getOrderItemsByOrderId(order._id);
+    return {
+      ...order.toObject(),
+      items,
+    };
   }
 
   async updateOrderById(
@@ -114,9 +121,24 @@ export class OrderService extends BaseService {
     return updatedOrder;
   }
 
-  async getOrdersByUserId(userId: string): Promise<IOrder[]> {
-    const allOrders = this.repository.getOrdersByUserId(userId);
-    return allOrders;
+  async getOrdersByUserId(
+    userId: string
+  ): Promise<(IOrder & { items: IOrderItem[] })[]> {
+    const orders = await this.repository.getOrdersByUserId(userId);
+
+    const ordersWithItems = await Promise.all(
+      orders.map(async (order) => {
+        const items = await this.orderItemService.getOrderItemsByOrderId(
+          order._id.toString()
+        );
+        return {
+          ...order.toObject(),
+          items,
+        };
+      })
+    );
+
+    return ordersWithItems;
   }
 
   private async preOrder(
@@ -143,7 +165,8 @@ export class OrderService extends BaseService {
     const { shippingAddress, billingAddress } =
       await this.validateOrderAddresses(
         data.billingAddressId,
-        data.shippingAddressId
+        data.shippingAddressId,
+        currentUser
       );
 
     const orderNumber = this.generateOrderNumber();
@@ -176,11 +199,12 @@ export class OrderService extends BaseService {
 
   private async validateOrderAddresses(
     billingAddressId: string,
-    shippingAddressId: string
+    shippingAddressId: string,
+    currentUser: UserDataToJWT
   ): Promise<{ shippingAddress: IAddress; billingAddress: IAddress }> {
     const [shippingAddress, billingAddress] = await Promise.all([
-      await this.addressService.getAddressById(shippingAddressId),
-      await this.addressService.getAddressById(billingAddressId),
+      await this.addressService.getAddressById(shippingAddressId, currentUser),
+      await this.addressService.getAddressById(billingAddressId, currentUser),
     ]);
 
     if (!shippingAddress || !billingAddress) {
@@ -254,7 +278,7 @@ export class OrderService extends BaseService {
   async getOrderByNumber(
     orderNumber: string,
     currentUser: UserDataToJWT
-  ): Promise<IOrder> {
+  ): Promise<IOrder & { items: IOrderItem[] }> {
     const order = await this.repository.getOrderByNumber(orderNumber);
     if (!order) {
       throw new BadRequestError({
@@ -271,6 +295,10 @@ export class OrderService extends BaseService {
         code: 403,
       });
     }
-    return order;
+    const items = await this.orderItemService.getOrderItemsByOrderId(order._id);
+    return {
+      ...order.toObject(),
+      items,
+    };
   }
 }
