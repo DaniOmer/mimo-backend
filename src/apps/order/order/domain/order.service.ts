@@ -15,7 +15,8 @@ import { ProductVariantService } from "../../../product/domain";
 import { InventoryService } from "../../../product/domain/inventory/inventory.service";
 import { IOrderItem } from "../../orderItem/data-access";
 import { OrderItemService } from "../../orderItem/domain";
-import { IProduct, IProductVariant } from "../../../product/data-access";
+import { CategoryRepository, IProduct, IProductVariant, ProductRepository } from "../../../product/data-access";
+import { UserRepository } from "../../../auth/data-access";
 
 export class OrderService extends BaseService {
   readonly repository: OrderRepository;
@@ -25,6 +26,9 @@ export class OrderService extends BaseService {
   readonly productVariantService: ProductVariantService;
   readonly inventoryService: InventoryService;
   readonly orderItemService: OrderItemService;
+  readonly userRepository: UserRepository;
+  readonly productRepository: ProductRepository;
+  readonly categoryRepository: CategoryRepository;
 
   constructor() {
     super("Order");
@@ -35,6 +39,9 @@ export class OrderService extends BaseService {
     this.productVariantService = new ProductVariantService();
     this.inventoryService = new InventoryService();
     this.orderItemService = new OrderItemService();
+    this.userRepository = new UserRepository();
+    this.productRepository = new ProductRepository();
+    this.categoryRepository = new CategoryRepository();
   }
 
   async createOrderFromCart(
@@ -300,5 +307,12 @@ export class OrderService extends BaseService {
       ...order.toObject(),
       items,
     };
+  }
+
+  async getRevenueAnalytics(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const revenueEtx = orders.reduce((total, order) => total + order.amountEtx, 0);
+    const revenueVat = orders.reduce((total, order) => total + order.amountVat, 0);
+    return { revenueEtx, revenueVat };
   }
 }

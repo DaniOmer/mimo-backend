@@ -4,6 +4,7 @@ import {
   validateDtoMiddleware,
   validateIdMiddleware,
   authenticateMiddleware,
+  checkRoleMiddleware
 } from "../../../../librairies/middlewares/";
 import { OrderCreateFromCartDTO } from "../domain/order.dto";
 
@@ -47,6 +48,13 @@ router.put(
   authenticateMiddleware,
   validateIdMiddleware("Order"),
   orderController.updateOrder.bind(orderController)
+);
+
+router.get(
+  "/analytics/revenue",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getRevenueAnalytics.bind(orderController)
 );
 
 export default router;
