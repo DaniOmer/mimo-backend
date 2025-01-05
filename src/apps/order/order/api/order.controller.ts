@@ -124,4 +124,38 @@ export class OrderController {
       next(error);
     }
   }
+
+  async getSalesByCategoryAnalytics(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { startDate, endDate } = req.query;
+      const start = new Date(startDate as string);
+      const end = new Date(endDate as string);
+
+      const analytics = await this.orderService.getSalesByCategoryAnalytics(start, end);
+      ApiResponse.success(res, "Sales by category analytics retrieved successfully", analytics, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSalesByProductAnalytics(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { startDate, endDate } = req.query;
+      const start = new Date(startDate as string);
+      const end = new Date(endDate as string);
+  
+      const analytics = await this.orderService.getSalesByProductAnalytics(start, end);
+      ApiResponse.success(res, "Sales by product analytics retrieved successfully", analytics, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

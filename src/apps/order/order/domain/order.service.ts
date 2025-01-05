@@ -315,4 +315,58 @@ export class OrderService extends BaseService {
     const revenueVat = orders.reduce((total, order) => total + order.amountVat, 0);
     return { revenueEtx, revenueVat };
   }
+
+  async getSalesByCategoryAnalytics(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const products = await this.productRepository.getAll();
+    const categories = await this.categoryRepository.getAll();
+
+    const salesByCategory = await Promise.all(categories.map(async category => {
+      const categoryProducts = products.filter(product => product.categoryIds.includes(category._id));
+      const categorySales = await orders.reduce(async (totalPromise, order) => {
+        const { totalEtx, totalVat } = await totalPromise;
+        const orderItems = await this.orderItemService.getOrderItemsByOrderId(order._id);
+        const categoryOrderItems = orderItems.filter(item => {
+          const productId = typeof item.product === 'string' ? item.product : item.product._id.toString();
+          return categoryProducts.some(product => {
+            return product._id.toString() === productId;
+          });
+        });
+        const orderTotalEtx = categoryOrderItems.reduce((sum, item) => sum + item.priceEtx * item.quantity, 0);
+        const orderTotalVat = categoryOrderItems.reduce((sum, item) => sum + item.priceVat * item.quantity, 0);
+
+        return {
+          totalEtx: totalEtx + orderTotalEtx,
+          totalVat: totalVat + orderTotalVat
+        };
+      }, Promise.resolve({ totalEtx: 0, totalVat: 0 }));
+      return { category: category.name, totalEtx: categorySales.totalEtx, totalVat: categorySales.totalVat };
+    }));
+    return { salesByCategory };
+  }
+
+  async getSalesByProductAnalytics(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const products = await this.productRepository.getAll();
+  
+    const salesByProduct = await Promise.all(products.map(async product => {
+      const productSales = await orders.reduce(async (totalPromise, order) => {
+        const { totalEtx, totalVat } = await totalPromise;
+        const orderItems = await this.orderItemService.getOrderItemsByOrderId(order._id);
+        const productOrderItems = orderItems.filter(item => {
+          const productId = typeof item.product === 'string' ? item.product : item.product._id.toString();
+          return product._id.toString() === productId;
+        });
+        const orderTotalEtx = productOrderItems.reduce((sum, item) => sum + item.priceEtx * item.quantity, 0);
+        const orderTotalVat = productOrderItems.reduce((sum, item) => sum + item.priceVat * item.quantity, 0);
+  
+        return {
+          totalEtx: totalEtx + orderTotalEtx,
+          totalVat: totalVat + orderTotalVat
+        };
+      }, Promise.resolve({ totalEtx: 0, totalVat: 0 }));
+      return { product: product.name, totalEtx: productSales.totalEtx, totalVat: productSales.totalVat };
+    }));
+    return { salesByProduct };
+  }
 }

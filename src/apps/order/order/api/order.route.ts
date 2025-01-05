@@ -57,4 +57,18 @@ router.get(
   orderController.getRevenueAnalytics.bind(orderController)
 );
 
+router.get(
+  "/analytics/sales-by-category",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getSalesByCategoryAnalytics.bind(orderController)
+);
+
+router.get(
+  "/analytics/sales-by-product",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getSalesByProductAnalytics.bind(orderController)
+);
+
 export default router;
