@@ -13,7 +13,7 @@ export class MongooseRepository<T extends Document> implements IRepository<T> {
   }
 
   async getAll(): Promise<T[]> {
-    return this.model.find().exec();
+    return this.model.find().sort({ createdAt: -1 }).exec();
   }
 
   async create(item: Partial<T>, session?: mongoose.ClientSession): Promise<T> {

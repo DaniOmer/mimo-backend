@@ -31,4 +31,11 @@ router.put(
   controller.updateAddress.bind(controller)
 );
 
+router.delete(
+  "/:id",
+  authenticateMiddleware,
+  validateIdMiddleware("Address"),
+  controller.deleteAddress.bind(controller)
+);
+
 export default router;
