@@ -165,7 +165,8 @@ export class OrderService extends BaseService {
     const { shippingAddress, billingAddress } =
       await this.validateOrderAddresses(
         data.billingAddressId,
-        data.shippingAddressId
+        data.shippingAddressId,
+        currentUser
       );
 
     const orderNumber = this.generateOrderNumber();
@@ -198,11 +199,12 @@ export class OrderService extends BaseService {
 
   private async validateOrderAddresses(
     billingAddressId: string,
-    shippingAddressId: string
+    shippingAddressId: string,
+    currentUser: UserDataToJWT
   ): Promise<{ shippingAddress: IAddress; billingAddress: IAddress }> {
     const [shippingAddress, billingAddress] = await Promise.all([
-      await this.addressService.getAddressById(shippingAddressId),
-      await this.addressService.getAddressById(billingAddressId),
+      await this.addressService.getAddressById(shippingAddressId, currentUser),
+      await this.addressService.getAddressById(billingAddressId, currentUser),
     ]);
 
     if (!shippingAddress || !billingAddress) {
