@@ -80,7 +80,6 @@ export class UserController extends BaseController {
   async createUserFromInvitation(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { tokenHash, password, isTermsOfSale } = req.body;
-
       const newUser = await this.userService.createUserFromInvitation(
         tokenHash,
         password,

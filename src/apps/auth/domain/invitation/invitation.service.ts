@@ -45,7 +45,7 @@ export class InvitationService extends BaseService {
       throw new BadRequestError({ message: "User not found", code: 400 });
     }
   
-    const token = await this.tokenService.createToken(currentUser, TokenType.Confirmation);
+    const token = await this.tokenService.createToken(currentUser, TokenType.Invitation);
  
      await this.invitationRepository.create({
       firstName,
@@ -83,10 +83,9 @@ export class InvitationService extends BaseService {
    
     const token = await this.tokenService.validateAndReturnToken(
       tokenHash,
-      TokenType.Confirmation
+      TokenType.Invitation
     );
 
-  
     const validInvitation = await this.invitationRepository.findByToken(token._id);
     if (!validInvitation) {
       throw new BadRequestError({
