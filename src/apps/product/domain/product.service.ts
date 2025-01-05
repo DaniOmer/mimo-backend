@@ -4,8 +4,6 @@ import {
   CategoryService,
   ProductFeatureService,
   ProductImageService,
-  ProductVariantService,
-  InventoryService,
   ProductDTO,
   ProductUpdateDTO,
 } from "./";
@@ -18,8 +16,6 @@ export class ProductService extends BaseService {
   private categoryService: CategoryService;
   private featureService: ProductFeatureService;
   private imageService: ProductImageService;
-  private productVariantService: ProductVariantService | null = null;
-  private inventoryService: InventoryService | null = null;
 
   constructor() {
     super("Product");
@@ -223,37 +219,6 @@ export class ProductService extends BaseService {
     });
 
     return this.validateDataExists(updatedProduct, productId);
-  }
-
-  async getProductWithVariants(id: string): Promise<any> {
-    if (!this.productVariantService || !this.inventoryService) {
-      throw new Error("Dependencies not initialized.");
-    }
-
-    const product = await this.repository.findByIdWithRelations(id);
-    if (!product) {
-      throw new BadRequestError({ message: "Product not found.", code: 404 });
-    }
-
-    const variants = await this.productVariantService.getVariantsByProductId(
-      id
-    );
-    const inventories =
-      await this.inventoryService.getInventoriesWithProductAndVariant();
-
-    const variantDetails = variants.map((variant) => {
-      const inventory = inventories.find(
-        (inv) => inv.productVariant?.toString() === variant._id.toString()
-      );
-      return {
-        ...variant.toObject(),
-        quantity: inventory
-          ? inventory.quantity - inventory.reservedQuantity
-          : 0,
-      };
-    });
-
-    return { product, variants: variantDetails };
   }
 
   private async validateDependencies(data: Partial<IProduct>): Promise<void> {

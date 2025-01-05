@@ -78,12 +78,6 @@ router.delete(
 );
 
 router.get(
-  "/:id/variants",
-  validateIdMiddleware("Product"),
-  productController.getProductWithVariants.bind(productController)
-);
-
-router.get(
   "/category/:categoryId",
   productController.getProductsByCategory.bind(productController)
 );
