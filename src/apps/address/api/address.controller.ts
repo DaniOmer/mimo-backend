@@ -80,4 +80,22 @@ export class AddressController extends BaseController {
       next(error);
     }
   }
+
+  async getAddressById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const addressId = req.params.id;
+      const currentUser = req.user;
+      const address = await this.addressService.getAddressById(
+        addressId,
+        currentUser
+      );
+      ApiResponse.success(res, "Address retrieved successfully", address);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

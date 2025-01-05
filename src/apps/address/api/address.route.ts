@@ -11,6 +11,13 @@ const router = Router();
 const controller = new AddressController();
 
 router.get(
+  "/:id",
+  authenticateMiddleware,
+  validateIdMiddleware("Address"),
+  controller.getAddressById.bind(controller)
+);
+
+router.get(
   "/me",
   authenticateMiddleware,
   controller.getAddressesByUser.bind(controller)

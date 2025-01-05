@@ -1,6 +1,12 @@
+import mongoose from "mongoose";
 import { IProduct } from "./product.interface";
 import { ProductModel } from "./product.model";
 import { MongooseRepository } from "../../../librairies/repositories/mongoose/mongoose.repository";
+
+interface ProductFilterOptions {
+  productId?: string;
+  isActive?: boolean;
+}
 
 export class ProductRepository extends MongooseRepository<IProduct> {
   constructor() {
@@ -16,15 +22,6 @@ export class ProductRepository extends MongooseRepository<IProduct> {
       .exec();
   }
 
-  async findAllWithRelations(): Promise<IProduct[]> {
-    return this.model
-      .find()
-      .populate("images")
-      .populate("categoryIds")
-      .populate("featureIds")
-      .exec();
-  }
-
   async findByCriteria(query: any): Promise<IProduct[]> {
     return this.model.find(query).exec();
   }
@@ -33,11 +30,13 @@ export class ProductRepository extends MongooseRepository<IProduct> {
     return this.model.find({ isActive }).exec();
   }
 
-  async getProductsWithVariantsAndInventory(): Promise<IProduct[]> {
+  async getProductWithVariantsAndInventory(
+    options: ProductFilterOptions = {}
+  ): Promise<IProduct | IProduct[] | null> {
+    const matchStage = this.buildMatchStage(options);
+
     const products = await this.model.aggregate([
-      {
-        $match: { isActive: true },
-      },
+      { $match: matchStage },
       {
         $lookup: {
           from: "product_variants",
@@ -124,6 +123,23 @@ export class ProductRepository extends MongooseRepository<IProduct> {
       },
     ]);
 
-    return products;
+    return options.productId ? products[0] : products;
+  }
+
+  private buildMatchStage(options: ProductFilterOptions): any {
+    const matchStage: any = {};
+
+    if (options.productId) {
+      matchStage._id = new mongoose.Types.ObjectId(options.productId);
+    }
+
+    if (options.isActive !== undefined) {
+      matchStage.isActive = options.isActive;
+    }
+
+    if (!options.productId && options.isActive === undefined) {
+      matchStage.isActive = true;
+    }
+    return matchStage;
   }
 }

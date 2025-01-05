@@ -38,8 +38,17 @@ export class ProductService extends BaseService {
   }
 
   async getProductById(id: string): Promise<IProduct> {
-    const product = await this.repository.findByIdWithRelations(id);
-    return this.validateDataExists(product, id);
+    const product = await this.repository.getProductWithVariantsAndInventory({
+      productId: id,
+    });
+    if (!product) {
+      throw new BadRequestError({
+        message: "Product not found.",
+        context: { productId: `No product found with ID: ${id}` },
+        code: 404,
+      });
+    }
+    return product as IProduct;
   }
 
   async getProductsByCategory(categoryId: string): Promise<IProduct[]> {
@@ -51,7 +60,11 @@ export class ProductService extends BaseService {
   }
 
   async getAllProducts(): Promise<IProduct[]> {
-    return this.repository.getProductsWithVariantsAndInventory();
+    const products = await this.repository.getProductWithVariantsAndInventory();
+    if (!products) {
+      return [];
+    }
+    return Array.isArray(products) ? products : [products];
   }
 
   async updateProductById(
