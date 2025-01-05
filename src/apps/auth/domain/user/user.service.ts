@@ -1,7 +1,6 @@
 import { AuthType, IUser, UserRepository } from "../../data-access";
 import { BaseService } from "../../../../librairies/services";
 import BadRequestError from "../../../../config/error/bad.request.config";
-import TokenService from "../token/token.service";
 import { InvitationService } from "../invitation/invitation.service";
 import { UserUpdateDTO, PasswordUpdateDTO } from "./user.dto";
 import { IRole, IPermission } from "../../data-access";
@@ -10,12 +9,10 @@ import { SecurityUtils, UserDataToJWT } from "../../../../utils";
 
 export class UserService extends BaseService {
   private repository: UserRepository;
-  private tokenService: TokenService;
 
   constructor() {
     super("User");
     this.repository = new UserRepository();
-    this.tokenService = new TokenService();
   }
 
   async getAllUsers(): Promise<Response[]> {
@@ -25,21 +22,24 @@ export class UserService extends BaseService {
       return userWithoutPassword;
     });
   }
-  
-  async getById(id:string): Promise<IUser> {
+
+  async getById(id: string): Promise<IUser> {
     const user = await this.repository.getById(id);
-    if(!user){
-      throw new BadRequestError({message: "User not found", code: 404});
+    if (!user) {
+      throw new BadRequestError({ message: "User not found", code: 404 });
     }
     return user;
   }
 
-  async getUserById(id: string, currentUser:UserDataToJWT): Promise<Omit<IUser, "password">> {
-    const user = await this.repository.getUserById(id);
-    if (!user) {
-      throw new BadRequestError({ message: "User not found", code: 404 });
-    }
-    const hasAccess = SecurityUtils.isOwnerOrAdmin(user._id.toString(), currentUser);
+  async getUserById(
+    id: string,
+    currentUser: UserDataToJWT
+  ): Promise<Omit<IUser, "password">> {
+    const user = await this.getById(id);
+    const hasAccess = SecurityUtils.isOwnerOrAdmin(
+      user._id.toString(),
+      currentUser
+    );
     if (!hasAccess) {
       throw new BadRequestError({
         message: "Unauthorized to get this user",
@@ -92,14 +92,8 @@ export class UserService extends BaseService {
     isTermsOfSale: boolean,
     invitationService: InvitationService
   ): Promise<Omit<IUser, "password">> {
-  
-    const {
-      firstName,
-      lastName,
-      email,
-      role,
-      invitationId,
-    } = await invitationService.validateInvitation(tokenHash);
+    const { firstName, lastName, email, role, invitationId } =
+      await invitationService.validateInvitation(tokenHash);
 
     const hashedPassword = await SecurityUtils.hashPassword(password);
 

@@ -20,7 +20,7 @@ export const validateDtoMiddleware = (dtoClass: any) => {
       );
       return;
     }
-    // req.body = dtoInstance;
+    req.body = dtoInstance;
     next();
   };
 };

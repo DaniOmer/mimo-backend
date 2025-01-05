@@ -13,7 +13,7 @@ export const addressSchema = new Schema<IAddress>(
       required: true,
     },
     streetNumber: {
-      type: Number,
+      type: String,
       required: true,
     },
     street: {
