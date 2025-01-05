@@ -10,6 +10,7 @@ const UserPreferencesSchema = new Schema<IUserPreference>(
       push: { type: Boolean, default: false },
     },
     marketingConsent: { type: Boolean, default: false },
+    cookiesConsent: { type: Boolean, default: false },
     personalizedAds: { type: Boolean, default: false },
     language: { type: String, default: "en" },
     currency: { type: String, default: "USD" },

@@ -47,6 +47,7 @@ export class PreferenceService extends BaseService {
         push: defaultValue,
       },
       marketingConsent: defaultValue,
+      cookiesConsent: false,
       personalizedAds: defaultValue,
       language: "fr",
       currency: "EUR",

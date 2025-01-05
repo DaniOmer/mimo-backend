@@ -10,6 +10,7 @@ export interface IUserPreference extends Document, Timestamps {
     push: boolean;
   };
   marketingConsent: boolean;
+  cookiesConsent: boolean;
   personalizedAds: boolean;
   language: string;
   currency: string;
