@@ -23,4 +23,12 @@ export class UserRepository extends MongooseRepository<IUser> {
       .populate("permissions")
       .exec();
   }
+
+  async getAllUsersWithDependencies(): Promise<IUser[]> {
+    return this.model
+      .find({})
+      .populate("roles")
+      .populate("permissions")
+      .exec();
+  }
 }

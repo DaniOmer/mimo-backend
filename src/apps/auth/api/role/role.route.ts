@@ -18,4 +18,12 @@ router.post(
   roleController.createRole.bind(roleController)
 );
 
+router.get(
+  "/",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  roleController.getAllRoles.bind(roleController)
+);
+
+
 export default router;

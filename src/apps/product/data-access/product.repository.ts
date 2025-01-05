@@ -23,7 +23,12 @@ export class ProductRepository extends MongooseRepository<IProduct> {
   }
 
   async findByCriteria(query: any): Promise<IProduct[]> {
-    return this.model.find(query).exec();
+    return this.model
+      .find(query)
+      .populate("categoryIds")
+      .populate("featureIds")
+      .populate("images")
+      .exec();
   }
 
   async findByStatus(isActive: boolean): Promise<IProduct[]> {

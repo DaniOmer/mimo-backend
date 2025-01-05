@@ -94,4 +94,20 @@ export class UserController extends BaseController {
     }
   }
 
+
+  async toggleUserStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { isDisabled } = req.body; // Booléen attendu dans le corps de la requête
+      const updatedUser = await this.userService.toggleUserStatus(id, isDisabled);
+      ApiResponse.success(res, "User status updated successfully", updatedUser, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
 }

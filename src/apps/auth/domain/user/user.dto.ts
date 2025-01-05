@@ -9,7 +9,10 @@ import {
   IsOptional,
   Matches,
   IsString,
+  IsArray,
+  ValidateNested,
 } from "class-validator";
+import { IRole } from "../../data-access";
 
 import { Expose } from "class-transformer";
 
@@ -80,6 +83,8 @@ export class UserLoginDTO {
 }
 
 export class UserUpdateDTO {
+
+  @IsOptional()
   @IsNotEmpty()
   @IsAlpha()
   @MinLength(2)
@@ -87,6 +92,7 @@ export class UserUpdateDTO {
   @Expose()
   readonly firstName!: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsAlpha()
   @MinLength(2)
@@ -94,6 +100,7 @@ export class UserUpdateDTO {
   @Expose()
   readonly lastName!: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsEmail()
   @Expose()
@@ -104,6 +111,11 @@ export class UserUpdateDTO {
   @MaxLength(250)
   @Expose()
   readonly avatar?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  readonly roles?: IRole[];
 }
 
 export class RequestPasswordResetDTO {
