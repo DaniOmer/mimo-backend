@@ -175,4 +175,21 @@ export class OrderController {
       next(error);
     }
   }
+
+  async getNewCustomersAnalytics(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { startDate, endDate } = req.query;
+      const start = new Date(startDate as string);
+      const end = new Date(endDate as string);
+  
+      const analytics = await this.orderService.getNewCustomersAnalytics(start, end);
+      ApiResponse.success(res, "New customers analytics retrieved successfully", analytics, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

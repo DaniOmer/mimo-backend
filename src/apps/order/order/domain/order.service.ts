@@ -385,4 +385,35 @@ export class OrderService extends BaseService {
   
     return { averageEtx, averageVat };
   }
+
+  async getNewCustomersAnalytics(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+
+    const userIds = orders.map(order => {
+      if (typeof order.user !== 'string') {
+        return order.user._id.toString();
+      } else {
+        return order.user;
+      }
+    });    
+  
+    const users = await this.userRepository.getAll();
+
+    const newCustomers = users.filter(user => {
+      const userOrders = orders.filter(order => {
+        const userIdFromOrder = typeof order.user === 'string' ? order.user : order.user._id.toString();
+        return userIdFromOrder === user._id.toString();
+      });
+
+      if (userOrders.length === 0) {
+        return false;
+      }
+  
+      const firstOrder = userOrders.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0];
+
+      return firstOrder && firstOrder.createdAt >= startDate && firstOrder.createdAt <= endDate;
+    }).length;
+  
+    return { newCustomers };
+  }
 }
