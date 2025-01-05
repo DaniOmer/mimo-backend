@@ -9,7 +9,10 @@ import {
   IsOptional,
   Matches,
   IsString,
+  IsArray,
+  ValidateNested,
 } from "class-validator";
+import { IRole } from "../../data-access";
 
 export class UserRegisterDTO {
   @IsNotEmpty()
@@ -65,18 +68,22 @@ export class UserLoginDTO {
 }
 
 export class UserUpdateDTO {
+
+  @IsOptional()
   @IsNotEmpty()
   @IsAlpha()
   @MinLength(2)
   @MaxLength(50)
   readonly firstName!: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsAlpha()
   @MinLength(2)
   @MaxLength(50)
   readonly lastName!: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsEmail()
   readonly email!: string;
@@ -85,6 +92,11 @@ export class UserUpdateDTO {
   @IsUrl()
   @MaxLength(250)
   readonly avatar?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  readonly roles?: IRole[];
 }
 
 export class RequestPasswordResetDTO {

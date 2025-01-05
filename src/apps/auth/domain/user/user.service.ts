@@ -6,17 +6,22 @@ import { UserUpdateDTO, PasswordUpdateDTO } from "./user.dto";
 import { IRole, IPermission } from "../../data-access";
 import { UserPermission, UserRole } from "../auth/auth.basic";
 import { SecurityUtils, UserDataToJWT } from "../../../../utils";
+import RoleService from "../role/role.service";
 
 export class UserService extends BaseService {
   private repository: UserRepository;
+  private roleService: RoleService;
+  private tokenService: TokenService;
 
   constructor() {
     super("User");
     this.repository = new UserRepository();
+    this.tokenService = new TokenService();
+    this.roleService = new RoleService();
   }
 
   async getAllUsers(): Promise<Response[]> {
-    const users = await this.repository.getAll();
+    const users = await this.repository.getAllUsersWithDependencies();
     return users.map((user) => {
       const { password, ...userWithoutPassword } = user.toObject();
       return userWithoutPassword;
@@ -69,13 +74,51 @@ export class UserService extends BaseService {
     id: string,
     updateData: UserUpdateDTO
   ): Promise<Omit<IUser, "password">> {
-    const updatedUser = await this.repository.updateById(id, updateData);
-    if (!updatedUser) {
-      throw new BadRequestError({ message: "User not found", code: 404 });
+    const { roles, ...userData } = updateData;
+  
+    const updatedData: Partial<IUser> = { ...userData };
+  
+    if (roles && roles.length > 0) {
+      const allRoles = await this.roleService.getAllRoles(); 
+      const validRoles: IRole[] = roles.map((role) => {
+        const matchedRole = allRoles.find((r) => r.name === role.name);
+        if (!matchedRole) {
+          throw new BadRequestError({
+            message: `Invalid role: ${role.name}`,
+            code: 400,
+            context: { role_validation: `Role '${role.name}' does not exist` },
+          });
+        }
+        return matchedRole;
+      });
+  
+      updatedData.roles = validRoles; 
     }
-    const { password, ...userWithoutPassword } = updatedUser.toObject();
+
+    const updatedUser = await this.repository.updateById(id, updatedData);
+  
+    if (!updatedUser) {
+      throw new BadRequestError({
+        message: "User not found",
+        code: 404,
+      });
+    }
+
+    const populatedUser = await this.repository.getUserById(updatedUser._id);
+
+    if (!populatedUser) {
+      throw new BadRequestError({
+        message: "Failed to populate user roles and permissions",
+        code: 500,
+      });
+    }
+  
+    // Retourner l'utilisateur sans mot de passe
+    const { password, ...userWithoutPassword } = populatedUser.toObject();
     return userWithoutPassword;
   }
+  
+  
 
   async deleteUserById(id: string): Promise<Response> {
     const deletedUser = await this.repository.deleteById(id);
@@ -174,4 +217,19 @@ export class UserService extends BaseService {
     }
     return updatedUser;
   }
+
+  async toggleUserStatus(userId: string, isDisabled: boolean): Promise<Omit<IUser, "password">> {
+    const updatedUser = await this.repository.updateById(userId, { isDisabled });
+  
+    if (!updatedUser) {
+      throw new BadRequestError({
+        message: "User not found",
+        code: 404,
+      });
+    }
+  
+    const { password, ...userWithoutPassword } = updatedUser.toObject();
+    return userWithoutPassword;
+  }
+  
 }
