@@ -40,6 +40,22 @@ export class OrderRepository extends MongooseRepository<IOrder> {
       .populate("billingAddress");
   }
 
+  async getOrdersBetweenDates(startDate: Date, endDate: Date): Promise<IOrder[]> {
+    return await OrderModel.find({
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    })
+    .populate({
+      path: "user",
+      select: "-password",
+    })
+    .populate("shippingAddress")
+    .populate("billingAddress")
+    .exec();
+  }
+
   async getAllOrdersWithPopulation(): Promise<IOrder[]> {
     return await this.model
       .find({})

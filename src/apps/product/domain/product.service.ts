@@ -6,6 +6,7 @@ import {
   ProductImageService,
   ProductDTO,
   ProductUpdateDTO,
+  ProductFilterDto,
   ProductVariantService,
   ProductVariantCreateDTO,
   ProductVariantUpdateDTOWithId,
@@ -18,10 +19,10 @@ import {  GeneralUtils } from "../../../utils";
 
 
 export class ProductService extends BaseService {
-  private repository: ProductRepository;
-  private categoryService: CategoryService;
-  private featureService: ProductFeatureService;
-  private imageService: ProductImageService;
+  readonly repository: ProductRepository;
+  readonly categoryService: CategoryService;
+  readonly featureService: ProductFeatureService;
+  readonly imageService: ProductImageService;
   private productVariantService?: ProductVariantService;
 
   constructor( ) {
@@ -187,11 +188,11 @@ export class ProductService extends BaseService {
   }
 
   async getProductsByCategory(categoryId: string): Promise<IProduct[]> {
-    return this.repository.findByCriteria({ categoryIds: categoryId });
+    return await this.repository.findByCriteria({ categoryIds: categoryId });
   }
 
   async getProductsByFeature(featureId: string): Promise<IProduct[]> {
-    return this.repository.findByCriteria({ featureIds: featureId });
+    return await this.repository.findByCriteria({ featureIds: featureId });
   }
 
   async getAllProducts(): Promise<IProduct[]> {
@@ -241,23 +242,14 @@ export class ProductService extends BaseService {
     return this.validateDataExists(updatedProduct, id);
   }
 
-  async searchProducts(filters: {
-    name?: string;
-    categoryIds?: string[];
-    minPrice?: number;
-    maxPrice?: number;
-  }): Promise<IProduct[]> {
-    const query: any = {};
-
-    if (filters.name) query.name = { $regex: filters.name, $options: "i" };
-    if (filters.categoryIds) query.categoryIds = { $in: filters.categoryIds };
-    if (filters.minPrice || filters.maxPrice) {
-      query.priceEtx = {};
-      if (filters.minPrice) query.priceEtx.$gte = filters.minPrice;
-      if (filters.maxPrice) query.priceEtx.$lte = filters.maxPrice;
+  async searchProducts(filters: ProductFilterDto): Promise<IProduct[]> {
+    const products = await this.repository.getProductWithVariantsAndInventory(
+      filters
+    );
+    if (!products) {
+      return [];
     }
-
-    return this.repository.findByCriteria(query);
+    return Array.isArray(products) ? products : [products];
   }
 
   async duplicateProduct(id: string): Promise<IProduct> {
@@ -292,11 +284,11 @@ export class ProductService extends BaseService {
       featureIds,
       createdBy,
     };
-    return this.repository.create(duplicatedProduct);
+    return await this.repository.create(duplicatedProduct);
   }
 
   async getProductsByStatus(isActive: boolean): Promise<IProduct[]> {
-    return this.repository.findByStatus(isActive);
+    return await this.repository.findByStatus(isActive);
   }
 
   async addImagesToProduct(
@@ -362,6 +354,11 @@ export class ProductService extends BaseService {
     });
 
     return this.validateDataExists(updatedProduct, productId);
+  }
+
+  async getProductFilters(): Promise<any> {
+    const filters = await this.categoryService.getFilters();
+    return filters;
   }
 
   private async validateDependencies(data: Partial<IProduct>): Promise<void> {

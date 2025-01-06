@@ -8,6 +8,7 @@ import {
   IsNumber,
   Min,
   IsOptional,
+  IsMongoId,
   IsObject,
   ValidateNested,
 } from "class-validator";
@@ -125,30 +126,46 @@ export class ProductUpdateDTO {
   // readonly priceVat?: number;
 }
 
-// export class CreateProductWithVariantsDTO {
-//   @IsNotEmpty()
-//   @IsObject()
-//   @ValidateNested()
-//   @Type(() => ProductDTO)
-//   readonly product!: ProductDTO;
+export class ProductFilterDto {
+  @IsOptional()
+  @IsMongoId()
+  @Expose()
+  productId?: string;
 
-//   @IsNotEmpty()
-//   @IsArray()
-//   @ValidateNested({ each: true })
-//   @Type(() => ProductVariantCreateDTO)
-//   readonly variants!: ProductVariantCreateDTO[];
-// }
+  @IsOptional()
+  @IsBoolean()
+  @Expose()
+  isActive?: boolean;
 
-// export class UpdateProductWithVariantsDTO {
-//   @IsNotEmpty()
-//   @IsObject()
-//   @ValidateNested()
-//   @Type(() => ProductUpdateDTO)
-//   readonly product!: ProductUpdateDTO;
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  @Expose()
+  categoryIds?: string[];
 
-//   @IsNotEmpty()
-//   @IsArray()
-//   @ValidateNested({ each: true })
-//   @Type(() => ProductVariantUpdateDTOWithId)
-//   readonly variants!: ProductVariantUpdateDTOWithId[];
-// }
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  @Expose()
+  featureIds?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  @Expose()
+  min_price?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Expose()
+  max_price?: number;
+
+  @IsOptional()
+  @IsString()
+  @Expose()
+  size?: string;
+
+  @IsOptional()
+  @IsString()
+  @Expose()
+  color?: string;
+}

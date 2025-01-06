@@ -156,7 +156,7 @@ export class ProductController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const filters = req.query;
+      const filters = req.body;
       const products = await this.productService.searchProducts(filters);
       ApiResponse.success(
         res,
@@ -289,6 +289,24 @@ export class ProductController {
         res,
         "Products by feature retrieved successfully",
         products,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getProductFilters(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const productFilters = await this.productService.getProductFilters();
+      ApiResponse.success(
+        res,
+        "Product filters retrieved successfully",
+        productFilters,
         200
       );
     } catch (error) {

@@ -15,7 +15,8 @@ import { ProductVariantService } from "../../../product/domain";
 import { InventoryService } from "../../../product/domain/inventory/inventory.service";
 import { IOrderItem } from "../../orderItem/data-access";
 import { OrderItemService } from "../../orderItem/domain";
-import { IProduct, IProductVariant } from "../../../product/data-access";
+import { CategoryRepository, IProduct, IProductVariant, ProductRepository } from "../../../product/data-access";
+import { UserRepository } from "../../../auth/data-access";
 
 export class OrderService extends BaseService {
   readonly repository: OrderRepository;
@@ -25,6 +26,9 @@ export class OrderService extends BaseService {
   readonly productVariantService: ProductVariantService;
   readonly inventoryService: InventoryService;
   readonly orderItemService: OrderItemService;
+  readonly userRepository: UserRepository;
+  readonly productRepository: ProductRepository;
+  readonly categoryRepository: CategoryRepository;
 
   constructor() {
     super("Order");
@@ -35,6 +39,9 @@ export class OrderService extends BaseService {
     this.productVariantService = new ProductVariantService();
     this.inventoryService = new InventoryService();
     this.orderItemService = new OrderItemService();
+    this.userRepository = new UserRepository();
+    this.productRepository = new ProductRepository();
+    this.categoryRepository = new CategoryRepository();
   }
 
   async createOrderFromCart(
@@ -303,6 +310,114 @@ export class OrderService extends BaseService {
       ...order.toObject(),
       items,
     };
+  }
+
+  async getRevenueAnalytics(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const revenueEtx = orders.reduce((total, order) => total + order.amountEtx, 0);
+    const revenueVat = orders.reduce((total, order) => total + order.amountVat, 0);
+    return { revenueEtx, revenueVat };
+  }
+
+  async getSalesByCategoryAnalytics(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const products = await this.productRepository.getAll();
+    const categories = await this.categoryRepository.getAll();
+
+    const salesByCategory = await Promise.all(categories.map(async category => {
+      const categoryProducts = products.filter(product => product.categoryIds.includes(category._id));
+      const categorySales = await orders.reduce(async (totalPromise, order) => {
+        const { totalEtx, totalVat } = await totalPromise;
+        const orderItems = await this.orderItemService.getOrderItemsByOrderId(order._id);
+        const categoryOrderItems = orderItems.filter(item => {
+          const productId = typeof item.product === 'string' ? item.product : item.product._id.toString();
+          return categoryProducts.some(product => {
+            return product._id.toString() === productId;
+          });
+        });
+        const orderTotalEtx = categoryOrderItems.reduce((sum, item) => sum + item.priceEtx * item.quantity, 0);
+        const orderTotalVat = categoryOrderItems.reduce((sum, item) => sum + item.priceVat * item.quantity, 0);
+
+        return {
+          totalEtx: totalEtx + orderTotalEtx,
+          totalVat: totalVat + orderTotalVat
+        };
+      }, Promise.resolve({ totalEtx: 0, totalVat: 0 }));
+      return { category: category.name, totalEtx: categorySales.totalEtx, totalVat: categorySales.totalVat };
+    }));
+    return { salesByCategory };
+  }
+
+  async getSalesByProductAnalytics(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const products = await this.productRepository.getAll();
+  
+    const salesByProduct = await Promise.all(products.map(async product => {
+      const productSales = await orders.reduce(async (totalPromise, order) => {
+        const { totalEtx, totalVat } = await totalPromise;
+        const orderItems = await this.orderItemService.getOrderItemsByOrderId(order._id);
+        const productOrderItems = orderItems.filter(item => {
+          const productId = typeof item.product === 'string' ? item.product : item.product._id.toString();
+          return product._id.toString() === productId;
+        });
+        const orderTotalEtx = productOrderItems.reduce((sum, item) => sum + item.priceEtx * item.quantity, 0);
+        const orderTotalVat = productOrderItems.reduce((sum, item) => sum + item.priceVat * item.quantity, 0);
+  
+        return {
+          totalEtx: totalEtx + orderTotalEtx,
+          totalVat: totalVat + orderTotalVat
+        };
+      }, Promise.resolve({ totalEtx: 0, totalVat: 0 }));
+      return { product: product.name, totalEtx: productSales.totalEtx, totalVat: productSales.totalVat };
+    }));
+    return { salesByProduct };
+  }
+
+  async getAverageCartValue(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    
+    if (orders.length === 0) {
+      return { averageEtx: 0, averageVat: 0 };
+    }
+  
+    const totalEtx = orders.reduce((total, order) => total + order.amountEtx, 0);
+    const totalVat = orders.reduce((total, order) => total + order.amountVat, 0);
+  
+    const averageEtx = totalEtx / orders.length;
+    const averageVat = totalVat / orders.length;
+  
+    return { averageEtx, averageVat };
+  }
+
+  async getNewCustomersAnalytics(startDate: Date, endDate: Date): Promise<any> {
+    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+
+    const userIds = orders.map(order => {
+      if (typeof order.user !== 'string') {
+        return order.user._id.toString();
+      } else {
+        return order.user;
+      }
+    });    
+  
+    const users = await this.userRepository.getAll();
+
+    const newCustomers = users.filter(user => {
+      const userOrders = orders.filter(order => {
+        const userIdFromOrder = typeof order.user === 'string' ? order.user : order.user._id.toString();
+        return userIdFromOrder === user._id.toString();
+      });
+
+      if (userOrders.length === 0) {
+        return false;
+      }
+  
+      const firstOrder = userOrders.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0];
+
+      return firstOrder && firstOrder.createdAt >= startDate && firstOrder.createdAt <= endDate;
+    }).length;
+  
+    return { newCustomers };
   }
 
   async getAllOrders(): Promise<IOrder[]> {

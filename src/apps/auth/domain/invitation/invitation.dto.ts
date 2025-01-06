@@ -39,4 +39,9 @@ export class UserCreateDTO {
   @IsBoolean()
   @Expose()
   isTermsOfSale!: boolean;
+
+  @IsNotEmpty()
+  @IsString()
+  @Expose()
+  tokenHash!: string;
 }
