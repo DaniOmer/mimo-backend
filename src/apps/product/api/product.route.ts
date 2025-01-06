@@ -6,7 +6,7 @@ import {
   authenticateMiddleware,
   checkRoleMiddleware,
 } from "../../../librairies/middlewares/";
-import { ProductDTO, ProductUpdateDTO } from "../domain/";
+import { ProductDTO, ProductFilterDto, ProductUpdateDTO } from "../domain/";
 const productController = new ProductController();
 const router = Router();
 
@@ -20,7 +20,11 @@ router.post(
 
 router.get("/", productController.getAllProducts.bind(productController));
 
-router.get("/search", productController.searchProducts.bind(productController));
+router.post(
+  "/search",
+  validateDtoMiddleware(ProductFilterDto),
+  productController.searchProducts.bind(productController)
+);
 
 router.put(
   "/:id",
@@ -85,6 +89,11 @@ router.get(
 router.get(
   "/feature/:featureId",
   productController.getProductsByFeature.bind(productController)
+);
+
+router.get(
+  "/filters",
+  productController.getProductFilters.bind(productController)
 );
 
 router.get(
