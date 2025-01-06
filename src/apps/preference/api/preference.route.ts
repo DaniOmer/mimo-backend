@@ -9,6 +9,12 @@ import {
 const router = Router();
 const controller = new PreferenceController();
 
+router.get(
+  "/:userId",
+  authenticateMiddleware,
+  controller.getUserPreferences.bind(controller)
+);
+
 router.put(
   "/:id",
   authenticateMiddleware,

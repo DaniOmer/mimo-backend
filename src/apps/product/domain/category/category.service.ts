@@ -3,6 +3,24 @@ import { CategoryRepository } from "../../data-access/category/category.reposito
 import { ICategory } from "../../data-access/category/category.interface";
 import BadRequestError from "../../../../config/error/bad.request.config";
 
+interface FilterOption {
+  value: string;
+  label: string;
+  checked: boolean;
+}
+
+interface Filter {
+  id: string;
+  name: string;
+  options: FilterOption[];
+}
+
+interface FilterResponse {
+  _id: string;
+  name: string;
+  type: string;
+}
+
 export class CategoryService extends BaseService {
   private repository: CategoryRepository;
 
@@ -13,7 +31,9 @@ export class CategoryService extends BaseService {
 
   async createCategory(data: Partial<ICategory>): Promise<ICategory> {
     if (data.parentId) {
-      const parentCategory = await this.repository.getById(data.parentId.toString());
+      const parentCategory = await this.repository.getById(
+        data.parentId.toString()
+      );
       if (!parentCategory) {
         throw new BadRequestError({
           message: `Parent category not found for ID: ${data.parentId}`,
@@ -33,9 +53,14 @@ export class CategoryService extends BaseService {
     return this.repository.getAllWithParent();
   }
 
-  async updateCategoryById(id: string, updates: Partial<ICategory>): Promise<ICategory> {
+  async updateCategoryById(
+    id: string,
+    updates: Partial<ICategory>
+  ): Promise<ICategory> {
     if (updates.parentId) {
-      const parentCategory = await this.repository.getById(updates.parentId.toString());
+      const parentCategory = await this.repository.getById(
+        updates.parentId.toString()
+      );
       if (!parentCategory) {
         throw new BadRequestError({
           message: `Parent category not found for ID: ${updates.parentId}`,
@@ -60,5 +85,32 @@ export class CategoryService extends BaseService {
    */
   async findCategoriesByIds(categoryIds: string[]): Promise<ICategory[]> {
     return this.repository.findByIds(categoryIds);
+  }
+
+  async getFilters(): Promise<any> {
+    const filters: FilterResponse[] = await this.repository.getFilters();
+
+    const groupedFilters = filters.reduce(
+      (acc: { [key: string]: Filter }, filter) => {
+        if (!acc[filter.type]) {
+          acc[filter.type] = {
+            id: filter.type,
+            name: filter.type.charAt(0).toUpperCase() + filter.type.slice(1),
+            options: [],
+          };
+        }
+
+        acc[filter.type].options.push({
+          value: filter._id,
+          label: filter.name,
+          checked: false,
+        });
+
+        return acc;
+      },
+      {}
+    );
+
+    return Object.values(groupedFilters);
   }
 }

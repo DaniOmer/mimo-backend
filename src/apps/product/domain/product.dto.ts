@@ -8,6 +8,7 @@ import {
   IsNumber,
   Min,
   IsOptional,
+  IsMongoId,
 } from "class-validator";
 import { Expose } from "class-transformer";
 
@@ -119,4 +120,48 @@ export class ProductUpdateDTO {
   @Min(0)
   @Expose()
   readonly priceVat?: number;
+}
+
+export class ProductFilterDto {
+  @IsOptional()
+  @IsMongoId()
+  @Expose()
+  productId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @Expose()
+  isActive?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  @Expose()
+  categoryIds?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  @Expose()
+  featureIds?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  @Expose()
+  min_price?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Expose()
+  max_price?: number;
+
+  @IsOptional()
+  @IsString()
+  @Expose()
+  size?: string;
+
+  @IsOptional()
+  @IsString()
+  @Expose()
+  color?: string;
 }

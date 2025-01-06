@@ -24,7 +24,7 @@ import ProductVariantRouter from "./apps/product/api/productVariant/productVaria
 import addressRouter from "./apps/address/api/address.route";
 import cartRouter from "./apps/order/cart/api/cart.route";
 import orderRouter from "./apps/order/order/api/order.route";
-
+import preferenceRouter from "./apps/preference/api/preference.route";
 
 async function startApp() {
   const app: Express = express();
@@ -97,6 +97,8 @@ async function startApp() {
     //invitations routes
     app.use("/api/invitations", invitationRouter);
 
+    // Preference routes
+    app.use("/api/preferences", preferenceRouter);
 
     // Error handling middleware
     app.use(errorHandlerMiddleware as express.ErrorRequestHandler);
