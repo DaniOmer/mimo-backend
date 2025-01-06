@@ -280,6 +280,7 @@ export class OrderService extends BaseService {
     currentUser: UserDataToJWT
   ): Promise<IOrder & { items: IOrderItem[] }> {
     const order = await this.repository.getOrderByNumber(orderNumber);
+
     if (!order) {
       throw new BadRequestError({
         message: `Order with the given number not found`,
@@ -287,7 +288,9 @@ export class OrderService extends BaseService {
       });
     }
     const orderOwner = order.user.toString();
+    console.log("orderOwner", orderOwner);
     const hasAccess = SecurityUtils.isOwnerOrAdmin(orderOwner, currentUser);
+    console.log("hasAccess", hasAccess);
     if (!hasAccess) {
       throw new BadRequestError({
         message: "Unauthorized request",
@@ -301,4 +304,29 @@ export class OrderService extends BaseService {
       items,
     };
   }
+
+  async getAllOrders(): Promise<IOrder[]> {
+    return await this.repository.getAllOrdersWithPopulation();
+  }
+
+  async updateOrderStatus(orderId: string, status: OrderStatus): Promise<IOrder> {
+    const validStatuses = Object.values(OrderStatus);
+    if (!validStatuses.includes(status)) {
+      throw new BadRequestError({
+        message: `Invalid order status: ${status}`,
+        logging: true,
+      });
+    }
+
+    const updatedOrder = await this.repository.updateById(orderId, { status });
+    if (!updatedOrder) {
+      throw new BadRequestError({
+        message: `Failed to update order status`,
+        logging: true,
+        code: 500,
+      });
+    }
+    return updatedOrder;
+  }
+
 }

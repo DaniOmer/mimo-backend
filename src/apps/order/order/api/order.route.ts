@@ -4,6 +4,7 @@ import {
   validateDtoMiddleware,
   validateIdMiddleware,
   authenticateMiddleware,
+  checkRoleMiddleware,
 } from "../../../../librairies/middlewares/";
 import { OrderCreateFromCartDTO } from "../domain/order.dto";
 
@@ -48,5 +49,23 @@ router.put(
   validateIdMiddleware("Order"),
   orderController.updateOrder.bind(orderController)
 );
+
+
+router.get(
+  "/",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getAllOrders.bind(orderController)
+);
+
+router.patch(
+  "/:id/status",
+  authenticateMiddleware,
+  validateIdMiddleware("Order"),
+  checkRoleMiddleware(["admin"]),
+  orderController.updateOrderStatus.bind(orderController)
+);
+
+
 
 export default router;

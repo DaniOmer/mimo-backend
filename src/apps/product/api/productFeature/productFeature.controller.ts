@@ -57,4 +57,14 @@ export class ProductFeatureController {
       next(error);
     }
   }
+
+  async deleteMultiple(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { featureIds } = req.body;
+      await this.service.deleteMultipleFeatures(featureIds);
+      ApiResponse.success(res, "Features deleted successfully", null, 204);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

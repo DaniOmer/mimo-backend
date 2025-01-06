@@ -6,7 +6,7 @@ import {
   authenticateMiddleware,
   checkRoleMiddleware,
 } from "../../../librairies/middlewares/";
-import { ProductDTO, ProductUpdateDTO } from "../domain/";
+import { ProductDTO, ProductUpdateDTO, ProductVariantCreateDTO, ProductVariantUpdateDTOWithId } from "../domain/";
 const productController = new ProductController();
 const router = Router();
 
@@ -92,5 +92,21 @@ router.get(
   validateIdMiddleware("Product"),
   productController.getProductById.bind(productController)
 );
+
+router.put(
+  "/:id/with-variants",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  validateIdMiddleware("Product"),
+  productController.updateProductWithVariants.bind(productController)
+);
+
+router.post(
+  "/with-variants",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  productController.createProductWithVariants.bind(productController)
+);
+
 
 export default router;

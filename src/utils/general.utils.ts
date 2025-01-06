@@ -7,4 +7,15 @@ export class GeneralUtils {
     const uniquePart = crypto.randomBytes(4).toString("hex").toUpperCase();
     return `${prefix}-${datePart}-${uniquePart}`;
   }
+
+  static calculatePriceWithTax(priceHT: number, tvaRate: number = 20): number {
+    if (priceHT < 0) {
+      throw new Error("Price HT must be a positive value.");
+    }
+
+    const tvaMultiplier = 1 + tvaRate / 100;
+    return parseFloat((priceHT * tvaMultiplier).toFixed(2));
+  }
 }
+
+

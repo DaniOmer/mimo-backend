@@ -13,10 +13,11 @@ export class ProductVariantCreateDTO {
   @Expose()
   readonly priceEtx!: number;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Expose()
-  readonly priceVat!: number;
+  readonly priceVat?: number;
 
   @IsNotEmpty()
   @IsString()
@@ -38,10 +39,11 @@ export class ProductVariantCreateDTO {
   @Expose()
   readonly material?: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Expose()
-  readonly weight!: number;
+  readonly weight?: number;
 
   @IsOptional()
   @IsBoolean()
@@ -94,4 +96,10 @@ export class ProductVariantUpdateDTO {
   @IsBoolean()
   @Expose()
   readonly isLimitedEdition?: boolean;
+}
+
+export class ProductVariantUpdateDTOWithId extends ProductVariantCreateDTO {
+  @IsOptional()
+  @IsString()
+  readonly _id?: string;
 }

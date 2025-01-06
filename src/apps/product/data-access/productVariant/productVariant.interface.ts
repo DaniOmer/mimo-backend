@@ -14,7 +14,7 @@ export interface IProductVariant extends Document, Timestamps {
   size: string | ISize;
   color: string | IColor;
   material?: string;
-  weight: number;
+  weight?: number;
   isLimitedEdition?: boolean;
   createdBy: string | IUser;
   updatedBy: string | IUser;

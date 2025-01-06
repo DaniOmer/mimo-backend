@@ -153,6 +153,19 @@ router.put(
   userController.updatePassword.bind(userController)
 );
 
+router.delete(
+  "/multiple/delete",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  userController.deleteMultipleUsers.bind(userController)
+);
+
+router.patch(
+  "/multiple/status",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  userController.disableMultipleUsers.bind(userController)
+);
 
 router.patch(
   "/:id/status",
@@ -160,5 +173,7 @@ router.patch(
   validateIdMiddleware("User"),
   userController.toggleUserStatus.bind(userController)
 );
+
+
 
 export default router;

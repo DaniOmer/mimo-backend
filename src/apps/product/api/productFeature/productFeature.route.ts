@@ -45,6 +45,13 @@ router.put(
 );
 
 router.delete(
+  "/multiple",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  productFeatureController.deleteMultiple.bind(productFeatureController)
+);
+
+router.delete(
   "/:id",
   authenticateMiddleware,
   checkRoleMiddleware(["admin"]),

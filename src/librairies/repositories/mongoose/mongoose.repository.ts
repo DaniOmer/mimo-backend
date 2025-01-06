@@ -28,4 +28,8 @@ export class MongooseRepository<T extends Document> implements IRepository<T> {
   async deleteById(id: string): Promise<T | null> {
     return this.model.findByIdAndDelete(id).exec();
   }
+
+  async deleteMany(filter: object): Promise<{ deletedCount?: number }> {
+    return this.model.deleteMany(filter).exec();
+  }
 }

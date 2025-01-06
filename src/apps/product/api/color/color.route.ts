@@ -144,6 +144,13 @@ router.put(
   colorController.updateColorById.bind(colorController)
 );
 
+router.delete(
+  "/multiple",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  colorController.deleteMultipleColors.bind(colorController)
+);
+
 /**
  * @swagger
  * /api/colors/{id}:

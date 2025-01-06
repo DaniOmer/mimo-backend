@@ -32,4 +32,11 @@ export class ColorService extends BaseService {
     const deletedColor = await this.repository.deleteById(id);
     return this.validateDataExists(deletedColor, id);
   }
+
+  async deleteMultipleColors(ids: string[]): Promise<void> {
+    const result = await this.repository.deleteMany({ _id: { $in: ids } });
+    if (result.deletedCount !== ids.length) {
+      throw new Error(`Some colors could not be deleted.`);
+    }
+  }
 }

@@ -8,8 +8,11 @@ import {
   IsNumber,
   Min,
   IsOptional,
+  IsObject,
+  ValidateNested,
 } from "class-validator";
-import { Expose } from "class-transformer";
+import { Expose, Type } from "class-transformer";
+import { ProductVariantCreateDTO, ProductVariantUpdateDTOWithId } from "./productVariant/productVariant.dto";
 
 export class ProductDTO {
   @IsNotEmpty()
@@ -32,11 +35,12 @@ export class ProductDTO {
   @Expose()
   readonly priceEtx?: number;
 
-  @IsOptional()
-  @IsNumber()
-  @Expose()
-  readonly priceVat?: number;
+  // @IsOptional()
+  // @IsNumber()
+  // @Expose()
+  // readonly priceVat?: number;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsBoolean()
   @Expose()
@@ -114,9 +118,37 @@ export class ProductUpdateDTO {
   @Expose()
   readonly priceEtx?: number;
 
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Expose()
-  readonly priceVat?: number;
+  // @IsOptional()
+  // @IsNumber()
+  // @Min(0)
+  // @Expose()
+  // readonly priceVat?: number;
 }
+
+// export class CreateProductWithVariantsDTO {
+//   @IsNotEmpty()
+//   @IsObject()
+//   @ValidateNested()
+//   @Type(() => ProductDTO)
+//   readonly product!: ProductDTO;
+
+//   @IsNotEmpty()
+//   @IsArray()
+//   @ValidateNested({ each: true })
+//   @Type(() => ProductVariantCreateDTO)
+//   readonly variants!: ProductVariantCreateDTO[];
+// }
+
+// export class UpdateProductWithVariantsDTO {
+//   @IsNotEmpty()
+//   @IsObject()
+//   @ValidateNested()
+//   @Type(() => ProductUpdateDTO)
+//   readonly product!: ProductUpdateDTO;
+
+//   @IsNotEmpty()
+//   @IsArray()
+//   @ValidateNested({ each: true })
+//   @Type(() => ProductVariantUpdateDTOWithId)
+//   readonly variants!: ProductVariantUpdateDTOWithId[];
+// }

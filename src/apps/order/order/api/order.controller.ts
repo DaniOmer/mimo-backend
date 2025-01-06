@@ -107,4 +107,26 @@ export class OrderController {
       next(error);
     }
   }
+
+  async getAllOrders(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const orders = await this.orderService.getAllOrders();
+      ApiResponse.success(res, "Orders retrieved successfully", orders, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateOrderStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const orderId = req.params.id;
+      const { status } = req.body;
+
+      const updatedOrder = await this.orderService.updateOrderStatus(orderId, status);
+      ApiResponse.success(res, "Order status updated successfully", updatedOrder, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

@@ -73,7 +73,6 @@ export class UserService extends BaseService {
     updateData: UserUpdateDTO
   ): Promise<Omit<IUser, "password">> {
     const { roles, ...userData } = updateData;
-
     const updatedData: Partial<IUser> = { ...userData };
 
     if (roles && roles.length > 0) {
@@ -89,6 +88,7 @@ export class UserService extends BaseService {
         }
         return matchedRole;
       });
+      console.log("validRoles", validRoles);
 
       updatedData.roles = validRoles;
     }
@@ -232,4 +232,32 @@ export class UserService extends BaseService {
     const { password, ...userWithoutPassword } = updatedUser.toObject();
     return userWithoutPassword;
   }
+
+
+  async deleteMultipleUsers(ids: string[]): Promise<string[]> {
+    const deletedUsers = await Promise.all(
+      ids.map(async (id) => {
+        const user = await this.repository.deleteById(id);
+        if (!user) {
+          throw new BadRequestError({ message: `User with ID ${id} not found`, code: 404 });
+        }
+        return id;
+      })
+    );
+    return deletedUsers;
+  }
+  
+  async disableMultipleUsers(ids: string[], isDisabled: boolean): Promise<IUser[]> {
+    const updatedUsers = await Promise.all(
+      ids.map(async (id) => {
+        const updatedUser = await this.repository.updateById(id, { isDisabled });
+        if (!updatedUser) {
+          throw new BadRequestError({ message: `User with ID ${id} not found`, code: 404 });
+        }
+        return updatedUser.toObject();
+      })
+    );
+    return updatedUsers;
+  }
+  
 }

@@ -53,4 +53,14 @@ export class CategoryController {
       next(error);
     }
   }
+
+  async deleteMultipleCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { categoryIds } = req.body;
+      await this.service.deleteMultipleCategories(categoryIds);
+      ApiResponse.success(res, "Categories deleted successfully", null, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
