@@ -4,6 +4,7 @@ import {
   validateDtoMiddleware,
   validateIdMiddleware,
   authenticateMiddleware,
+  checkRoleMiddleware
 } from "../../../../librairies/middlewares/";
 import { OrderCreateFromCartDTO } from "../domain/order.dto";
 
@@ -47,6 +48,41 @@ router.put(
   authenticateMiddleware,
   validateIdMiddleware("Order"),
   orderController.updateOrder.bind(orderController)
+);
+
+router.get(
+  "/analytics/revenue",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getRevenueAnalytics.bind(orderController)
+);
+
+router.get(
+  "/analytics/sales-by-category",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getSalesByCategoryAnalytics.bind(orderController)
+);
+
+router.get(
+  "/analytics/sales-by-product",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getSalesByProductAnalytics.bind(orderController)
+);
+
+router.get(
+  "/analytics/average-cart-value",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getAverageCartValueAnalytics.bind(orderController)
+);
+
+router.get(
+  "/analytics/new-customers",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getNewCustomersAnalytics.bind(orderController)
 );
 
 export default router;
