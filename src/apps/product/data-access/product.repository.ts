@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { IProduct } from "./product.interface";
 import { ProductModel } from "./product.model";
 import { MongooseRepository } from "../../../librairies/repositories/mongoose/mongoose.repository";
+import BadRequestError from "../../../config/error/bad.request.config";
 
 interface ProductFilterOptions {
   productId?: string;
@@ -45,8 +46,8 @@ export class ProductRepository extends MongooseRepository<IProduct> {
     options: ProductFilterOptions = {}
   ): Promise<IProduct | IProduct[] | null> {
     const matchStage = this.buildMatchStage(options);
-    console.log(options.categoryIds);
 
+    console.log("matchStage", matchStage);
     if (options.size || options.color) {
       matchStage.hasVariants = true;
     }
@@ -190,38 +191,11 @@ export class ProductRepository extends MongooseRepository<IProduct> {
           hasVariants: { $gt: [{ $size: "$variants" }, 0] },
         },
       },
-      // {
-      //   $match: {
-      //     $or: [
-      //       {
-      //         hasVariants: false,
-      //         priceVat: {
-      //           ...(options.min_price !== undefined
-      //             ? { $gte: options.min_price }
-      //             : {}),
-      //           ...(options.max_price !== undefined
-      //             ? { $lte: options.max_price }
-      //             : {}),
-      //         },
-      //       },
-      //       {
-      //         hasVariants: true,
-      //         "variants.priceVat": {
-      //           ...(options.min_price !== undefined
-      //             ? { $gte: options.min_price }
-      //             : {}),
-      //           ...(options.max_price !== undefined
-      //             ? { $lte: options.max_price }
-      //             : {}),
-      //         },
-      //       },
-      //     ],
-      //   },
-      // },
       {
         $project: {
           _id: 1,
           name: 1,
+          description: 1,
           priceEtx: 1,
           priceVat: 1,
           isActive: 1,
@@ -249,20 +223,48 @@ export class ProductRepository extends MongooseRepository<IProduct> {
     const matchStage: any = {};
 
     if (options.productId) {
-      matchStage._id = new mongoose.Types.ObjectId(options.productId);
+      if (mongoose.Types.ObjectId.isValid(options.productId)) {
+        matchStage._id = new mongoose.Types.ObjectId(options.productId);
+      } else {
+        throw new BadRequestError({
+          message: "Invalid productId",
+          context: { product_build_stage: options.productId },
+        });
+      }
     }
 
     if (options.isActive !== undefined) {
       matchStage.isActive = options.isActive;
     }
 
-    if (options.categoryIds) {
-      matchStage.categoryIds = { $in: options.categoryIds };
+    if (options.categoryIds && options.categoryIds.length > 0) {
+      matchStage.categoryIds = {
+        $in: options.categoryIds.map((id) => {
+          if (mongoose.Types.ObjectId.isValid(id)) {
+            return new mongoose.Types.ObjectId(id);
+          } else {
+            throw new BadRequestError({
+              message: "Invalid categories",
+              context: { product_build_stage: options.productId },
+            });
+          }
+        }),
+      };
     }
-    console.log(matchStage);
 
-    if (options.featureIds) {
-      matchStage.featureIds = { $in: options.featureIds };
+    if (options.featureIds && options.featureIds.length > 0) {
+      matchStage.featureIds = {
+        $in: options.featureIds.map((id) => {
+          if (mongoose.Types.ObjectId.isValid(id)) {
+            return new mongoose.Types.ObjectId(id);
+          } else {
+            throw new BadRequestError({
+              message: "Invalid features",
+              context: { product_build_stage: options.productId },
+            });
+          }
+        }),
+      };
     }
 
     return matchStage;

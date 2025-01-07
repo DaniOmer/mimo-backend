@@ -11,7 +11,14 @@ export class CartItemService extends BaseService {
     this.repository = new CartItemRepository();
   }
 
-  async getCartItem(
+  async getCartItemById(cartId: string): Promise<ICartItem | null> {
+    const cartItem = await this.repository.getCartItemById(cartId);
+
+    if (!cartItem) return null;
+    return cartItem;
+  }
+
+  async getByCartProductAndVariant(
     cartId: string,
     productId: string,
     productVariantId: string | null
@@ -21,8 +28,9 @@ export class CartItemService extends BaseService {
       productId,
       productVariantId
     );
-
-    if (!cartItem) return null;
+    if (!cartItem) {
+      return null;
+    }
     return cartItem;
   }
 
@@ -87,7 +95,7 @@ export class CartItemService extends BaseService {
 
   async updateItemQuantity(item: ICartItem, quantity: number): Promise<void> {
     if (quantity <= 0) {
-      await this.deleteCartItem(item);
+      await this.deleteCartItem(item._id.toString());
       return;
     }
     item.quantity = quantity;
@@ -106,8 +114,8 @@ export class CartItemService extends BaseService {
     }
   }
 
-  async deleteCartItem(item: ICartItem): Promise<void> {
-    const deletedItem = await this.repository.deleteById(item._id.toString());
+  async deleteCartItem(id: string): Promise<void> {
+    const deletedItem = await this.repository.deleteById(id);
     if (!deletedItem) {
       throw new BadRequestError({
         message: "Failed to delete cart item",

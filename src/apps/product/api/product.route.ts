@@ -20,6 +20,11 @@ router.post(
 
 router.get("/", productController.getAllProducts.bind(productController));
 
+router.get(
+  "/active",
+  productController.getActiveProducts.bind(productController)
+);
+
 router.post(
   "/search",
   validateDtoMiddleware(ProductFilterDto),

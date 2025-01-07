@@ -21,6 +21,15 @@ export class CartItemRepository extends MongooseRepository<ICartItem> {
       .exec();
   }
 
+  async getCartItemById(id: string): Promise<ICartItem | null> {
+    return await this.model
+      .findById(id)
+      .populate("cart")
+      .populate("product")
+      .populate("productVariant")
+      .exec();
+  }
+
   async getCartItemsByCart(cart: string): Promise<ICartItem[]> {
     return await this.model
       .find({ cart })

@@ -14,7 +14,6 @@ import { PaymentCurrencyType } from "../../../config/store";
 
 export class PaymentMethodDTO {
   @IsNotEmpty()
-  @IsMongoId()
   @Expose()
   readonly customer!: string;
 
@@ -68,7 +67,6 @@ export class CardPaymentIntentDTO {
   currency!: PaymentCurrencyType;
 
   @IsNotEmpty()
-  @IsMongoId()
   @Expose()
   readonly paymentMethod!: string;
 }

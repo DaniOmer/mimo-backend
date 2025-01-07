@@ -75,6 +75,24 @@ export class ProductController {
     }
   }
 
+  async getActiveProducts(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const products = await this.productService.getActiveProducts();
+      ApiResponse.success(
+        res,
+        "Active products retrieved successfully",
+        products,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getProductById(
     req: Request,
     res: Response,

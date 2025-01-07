@@ -16,7 +16,7 @@ export class CartItemCreateDTO {
   @IsOptional()
   @IsMongoId()
   @Expose()
-  readonly productVariantId!: string;
+  readonly productVariantId?: string;
 
   @IsNotEmpty()
   @IsPositive()
@@ -26,21 +26,6 @@ export class CartItemCreateDTO {
 }
 
 export class CartItemUpdateDTO {
-  @IsNotEmpty()
-  @IsMongoId()
-  @Expose()
-  readonly cartId!: string;
-
-  @IsNotEmpty()
-  @IsMongoId()
-  @Expose()
-  readonly productId!: string;
-
-  @IsOptional()
-  @IsMongoId()
-  @Expose()
-  readonly productVariantId!: string;
-
   @IsNotEmpty()
   @IsPositive()
   @IsNumber()
