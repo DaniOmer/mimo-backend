@@ -11,6 +11,20 @@ export class InvoiceController extends BaseController {
     this.invoiceService = new InvoiceService();
 
   }
+  async createInvoice(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const data = req.body;
+    try {
+      const invoice = await this.invoiceService.createInvoice(data);
+      ApiResponse.success(res, "Invoice created successfully", invoice, 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 
   async getAllInvoices(
     req: Request,
