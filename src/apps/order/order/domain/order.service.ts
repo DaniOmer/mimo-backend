@@ -93,6 +93,10 @@ export class OrderService extends BaseService {
     };
   }
 
+  async getById(id: string): Promise<IOrder | null> {
+    return await this.repository.getById(id);
+  }
+
   async updateOrderById(
     id: string,
     updates: OrderUpdateDTO,

@@ -7,6 +7,7 @@ const paymentSchema = new Schema<IPayment>(
     paymentMethod: { type: Schema.Types.ObjectId, ref: "PaymentMethod" },
     amount: { type: Number, required: true },
     currency: { type: String, required: true },
+    order: { type: Schema.Types.ObjectId, ref: "Order" },
     status: {
       type: String,
       enum: PaymentStatus,
