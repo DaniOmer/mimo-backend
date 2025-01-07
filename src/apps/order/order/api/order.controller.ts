@@ -214,4 +214,16 @@ export class OrderController {
     }
   }
 
+  async createOrderForUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { userId } = req.params;
+      const adminUser = req.user;
+      const data = req.body;
+      const newOrder = await this.orderService.createOrderForUser(data, userId, adminUser);
+      ApiResponse.success(res, "Order created for user by admin", newOrder, 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

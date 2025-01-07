@@ -5,9 +5,13 @@ import {
   IsPositive,
   IsOptional,
   IsEnum,
+  IsArray,
+  ValidateNested,
+  IsString,
+  ArrayMinSize,
 } from "class-validator";
 import { OrderStatus } from "../data-access";
-import { Expose } from "class-transformer";
+import { Expose, Type } from "class-transformer";
 
 export class OrderItemDTO {
   @IsNotEmpty()
@@ -64,4 +68,18 @@ export class OrderUpdateDTO {
   @IsMongoId()
   @Expose()
   billingAddressId!: string;
+}
+
+export class AdminCreateOrderItemDTO {
+  @IsString()
+  productId!: string;
+  @IsNumber()
+  quantity!: number;
+
+}
+
+export class AdminCreateOrderDTO {
+  @IsArray({ message: "items doit être un tableau." })
+  @ArrayMinSize(1, { message: "Au moins un article est requis." })
+  items!: AdminCreateOrderItemDTO[];
 }
