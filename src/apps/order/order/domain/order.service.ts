@@ -295,9 +295,7 @@ export class OrderService extends BaseService {
       });
     }
     const orderOwner = order.user.toString();
-    console.log("orderOwner", orderOwner);
     const hasAccess = SecurityUtils.isOwnerOrAdmin(orderOwner, currentUser);
-    console.log("hasAccess", hasAccess);
     if (!hasAccess) {
       throw new BadRequestError({
         message: "Unauthorized request",
