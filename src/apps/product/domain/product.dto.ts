@@ -156,12 +156,14 @@ export class ProductFilterDto {
   max_price?: number;
 
   @IsOptional()
-  @IsString()
+  @IsArray()
+  @IsMongoId({ each: true })
   @Expose()
-  size?: string;
+  sizes?: string[];
 
   @IsOptional()
-  @IsString()
+  @IsArray()
+  @IsMongoId({ each: true })
   @Expose()
-  color?: string;
+  colors?: string[];
 }

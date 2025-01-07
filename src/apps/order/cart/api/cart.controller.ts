@@ -46,9 +46,14 @@ export class CartController extends BaseController {
     next: NextFunction
   ): Promise<void> {
     try {
+      const cartItemId = req.params.id;
       const currentUser = req.user;
       const data = req.body;
-      await this.cartService.updateCartItemQuantity(data, currentUser);
+      await this.cartService.updateCartItemQuantity(
+        cartItemId,
+        data,
+        currentUser
+      );
       ApiResponse.success(
         res,
         "Cart item quantity updated successfully",
@@ -70,6 +75,26 @@ export class CartController extends BaseController {
       const { cartId } = req.body;
       await this.cartService.clearCartForCancel(cartId, currentUser);
       ApiResponse.success(res, "Cart cleared successfully", null, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async removeItemFromCart(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const cartItemId = req.params.id;
+      const currentUser = req.user;
+      await this.cartService.removeItemFromCart(cartItemId, currentUser);
+      ApiResponse.success(
+        res,
+        "Item removed from cart successfully",
+        null,
+        200
+      );
     } catch (error) {
       next(error);
     }

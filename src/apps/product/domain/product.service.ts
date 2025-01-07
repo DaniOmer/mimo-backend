@@ -49,7 +49,13 @@ export class ProductService extends BaseService {
   }
 
   async getProductsByCategory(categoryId: string): Promise<IProduct[]> {
-    return await this.repository.findByCriteria({ categoryIds: categoryId });
+    const products = await this.repository.getProductWithVariantsAndInventory({
+      categoryIds: [categoryId],
+    });
+    if (!products) {
+      return [];
+    }
+    return Array.isArray(products) ? products : [products];
   }
 
   async getProductsByFeature(featureId: string): Promise<IProduct[]> {
@@ -58,6 +64,16 @@ export class ProductService extends BaseService {
 
   async getAllProducts(): Promise<IProduct[]> {
     const products = await this.repository.getProductWithVariantsAndInventory();
+    if (!products) {
+      return [];
+    }
+    return Array.isArray(products) ? products : [products];
+  }
+
+  async getActiveProducts(): Promise<IProduct[]> {
+    const products = await this.repository.getProductWithVariantsAndInventory({
+      isActive: true,
+    });
     if (!products) {
       return [];
     }

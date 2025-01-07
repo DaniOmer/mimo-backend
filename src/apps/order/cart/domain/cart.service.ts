@@ -79,11 +79,12 @@ export class CartService extends BaseService {
     currentUser: UserDataToJWT
   ): Promise<IcartResponse> {
     const existingCart = await this.getCartByUser(currentUser._id);
-    const existingCartItem = await this.cartItemService.getCartItem(
-      existingCart._id,
-      data.productId,
-      data.productVariantId
-    );
+    const existingCartItem =
+      await this.cartItemService.getByCartProductAndVariant(
+        existingCart._id,
+        data.productId,
+        data.productVariantId || null
+      );
 
     if (existingCartItem) {
       throw new BadRequestError({
@@ -121,13 +122,12 @@ export class CartService extends BaseService {
   }
 
   async updateCartItemQuantity(
+    cartItemId: string,
     data: CartItemUpdateDTO,
     currentUser: UserDataToJWT
   ): Promise<ICart & { items: ICartItem[] }> {
-    const existingCartItem = await this.cartItemService.getCartItem(
-      data.cartId,
-      data.productId,
-      data.productVariantId
+    const existingCartItem = await this.cartItemService.getCartItemById(
+      cartItemId
     );
     if (!existingCartItem) {
       throw new BadRequestError({
@@ -137,18 +137,21 @@ export class CartService extends BaseService {
     }
 
     const cart = existingCartItem.cart as ICart;
+    const existingProduct = existingCartItem.product as IProduct;
+    const existingProductVariant =
+      existingCartItem.productVariant as IProductVariant | null;
+
     this.checkCartOwner(cart, currentUser);
 
-    const { product, productVariant } =
-      await this.inventoryService.validateProductAndVariant(
-        data.productId.toString(),
-        data.productVariantId ? data.productVariantId.toString() : null
-      );
+    await this.inventoryService.validateProductAndVariant(
+      existingProduct._id.toString(),
+      existingProductVariant ? existingProductVariant._id.toString() : null
+    );
 
     // RESERVE STOCK RELATED TO NEW QUANTITY AFTER UPDATE
     await this.reserveStockForCart(
       data.quantity,
-      { product, productVariant },
+      { product: existingProduct, productVariant: existingProductVariant },
       currentUser
     );
     await this.cartItemService.updateItemQuantity(
@@ -293,5 +296,22 @@ export class CartService extends BaseService {
     }
 
     return expirationTime * 1000;
+  }
+
+  async removeItemFromCart(
+    cartItemId: string,
+    currentUser: UserDataToJWT
+  ): Promise<void> {
+    const cartItem = await this.cartItemService.getCartItemById(cartItemId);
+    if (!cartItem) {
+      throw new BadRequestError({
+        message: "Failed to find cart item with given id",
+        logging: true,
+      });
+    }
+    const cart = cartItem.cart as ICart;
+    this.checkCartOwner(cart, currentUser);
+    await this.cartItemService.deleteCartItem(cartItemId);
+    await this.setCartExpiration(cart, CartExpirationType.DEFAULT);
   }
 }

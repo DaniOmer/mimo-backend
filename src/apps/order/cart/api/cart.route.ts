@@ -29,6 +29,12 @@ router.put(
   cartController.updateCartItemQuantity.bind(cartController)
 );
 
+router.delete(
+  "/item/:id",
+  authenticateMiddleware,
+  cartController.removeItemFromCart.bind(cartController)
+);
+
 router.post(
   "/clear",
   authenticateMiddleware,
