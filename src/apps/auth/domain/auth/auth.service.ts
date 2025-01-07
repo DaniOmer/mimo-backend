@@ -106,6 +106,7 @@ export class AuthService extends BaseService {
       TokenType.PasswordReset
     );
     const resetPasswordLink = `${AppConfig.client.url}/auth/reset-password?token=${forgotPasswordToken.hash}`;
+    await this.sendPasswordResetEmail(email, resetPasswordLink);
     return resetPasswordLink;
   }
 
@@ -151,4 +152,16 @@ export class AuthService extends BaseService {
       },
     });
   }
+
+  async sendPasswordResetEmail(email: string, resetLink: string) {
+    await this.emailNotifier.send({
+      recipient: email,
+      subject: "Réinitialisation de votre mot de passe",
+      templateName: "password-reset-email.html",
+      params: {
+        reset_link: resetLink,
+      },
+    });
+  }
+  
 }
