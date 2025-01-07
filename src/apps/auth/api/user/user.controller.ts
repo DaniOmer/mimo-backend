@@ -108,5 +108,26 @@ export class UserController extends BaseController {
       next(error);
     }
   }
+
+  async deleteMultipleUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { ids } = req.body; 
+      const deletedUserIds = await this.userService.deleteMultipleUsers(ids);
+      ApiResponse.success(res, "Users deleted successfully", deletedUserIds, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  async disableMultipleUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { ids, isDisabled } = req.body; 
+      const updatedUsers = await this.userService.disableMultipleUsers(ids, isDisabled);
+      ApiResponse.success(res, "Users status updated successfully", updatedUsers, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
   
 }

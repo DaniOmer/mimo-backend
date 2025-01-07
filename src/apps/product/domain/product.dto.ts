@@ -9,8 +9,11 @@ import {
   Min,
   IsOptional,
   IsMongoId,
+  IsObject,
+  ValidateNested,
 } from "class-validator";
-import { Expose } from "class-transformer";
+import { Expose, Type } from "class-transformer";
+import { ProductVariantCreateDTO, ProductVariantUpdateDTOWithId } from "./productVariant/productVariant.dto";
 
 export class ProductDTO {
   @IsNotEmpty()
@@ -33,11 +36,12 @@ export class ProductDTO {
   @Expose()
   readonly priceEtx?: number;
 
-  @IsOptional()
-  @IsNumber()
-  @Expose()
-  readonly priceVat?: number;
+  // @IsOptional()
+  // @IsNumber()
+  // @Expose()
+  // readonly priceVat?: number;
 
+  @IsOptional()
   @IsNotEmpty()
   @IsBoolean()
   @Expose()
@@ -115,11 +119,11 @@ export class ProductUpdateDTO {
   @Expose()
   readonly priceEtx?: number;
 
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Expose()
-  readonly priceVat?: number;
+  // @IsOptional()
+  // @IsNumber()
+  // @Min(0)
+  // @Expose()
+  // readonly priceVat?: number;
 }
 
 export class ProductFilterDto {

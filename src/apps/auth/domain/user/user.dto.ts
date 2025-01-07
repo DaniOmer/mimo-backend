@@ -115,6 +115,7 @@ export class UserUpdateDTO {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
+  @Expose()
   readonly roles?: IRole[];
 }
 

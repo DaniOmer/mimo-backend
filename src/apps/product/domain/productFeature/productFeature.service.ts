@@ -39,4 +39,11 @@ export class ProductFeatureService extends BaseService {
   async findFeaturesByIds(featureIds: string[]): Promise<IProductFeature[]> {
     return this.repository.findByIds(featureIds);
   }
+
+  async deleteMultipleFeatures(ids: string[]): Promise<void> {
+    const result = await this.repository.deleteMany({ _id: { $in: ids } });
+    if (result.deletedCount !== ids.length) {
+      throw new Error(`Some features could not be deleted.`);
+    }
+  }
 }

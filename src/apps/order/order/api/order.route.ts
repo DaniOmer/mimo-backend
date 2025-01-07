@@ -4,9 +4,9 @@ import {
   validateDtoMiddleware,
   validateIdMiddleware,
   authenticateMiddleware,
-  checkRoleMiddleware
+  checkRoleMiddleware,
 } from "../../../../librairies/middlewares/";
-import { OrderCreateFromCartDTO } from "../domain/order.dto";
+import { AdminCreateOrderDTO, OrderCreateFromCartDTO } from "../domain/order.dto";
 
 const router = Router();
 const orderController = new OrderController();
@@ -84,5 +84,31 @@ router.get(
   checkRoleMiddleware(["admin"]),
   orderController.getNewCustomersAnalytics.bind(orderController)
 );
+
+
+router.get(
+  "/",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  orderController.getAllOrders.bind(orderController)
+);
+
+router.patch(
+  "/:id/status",
+  authenticateMiddleware,
+  validateIdMiddleware("Order"),
+  checkRoleMiddleware(["admin"]),
+  orderController.updateOrderStatus.bind(orderController)
+);
+
+
+router.post(
+  "/admin/users/:userId/order",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  // validateDtoMiddleware(AdminCreateOrderDTO),
+  orderController.createOrderForUser.bind(orderController)
+);
+
 
 export default router;

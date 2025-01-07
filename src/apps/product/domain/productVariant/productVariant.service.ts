@@ -8,6 +8,8 @@ import {
   ColorService,
   ProductVariantUpdateDTO,
 } from "../../domain";
+import {  GeneralUtils } from "../../../../utils";
+
 
 import { ProductVariantCreateDTO } from "../../domain";
 
@@ -30,8 +32,11 @@ export class ProductVariantService extends BaseService {
     userId: string
   ): Promise<IProductVariant> {
     const validatedData = await this.validateDependencies(data);
+
+    const priceVat = data.priceEtx ? GeneralUtils.calculatePriceWithTax(data.priceEtx) : 0;
     const productVariant = await this.repository.create({
       ...data,
+      priceVat,
       product: validatedData.product,
       size: validatedData.size,
       color: validatedData.color,
@@ -86,8 +91,11 @@ export class ProductVariantService extends BaseService {
     currentUserId: string
   ): Promise<IProductVariant> {
     await this.validateDependencies(updates);
+
+    const priceVat = updates.priceEtx ? GeneralUtils.calculatePriceWithTax(updates.priceEtx) : 0;
     const updatedVariant = await this.repository.updateById(id, {
       ...updates,
+      priceVat,
       updatedBy: currentUserId,
     });
     return this.validateDataExists(updatedVariant, id);

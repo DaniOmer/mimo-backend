@@ -1,12 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-import { ProductService } from "../domain/";
+import { ProductService, ProductVariantService } from "../domain/";
 import { ApiResponse } from "../../../librairies/controllers/api.response";
 
 export class ProductController {
   private productService: ProductService;
+  private productVariantService: ProductVariantService;
+
 
   constructor() {
     this.productService = new ProductService();
+    this.productVariantService = new ProductVariantService();
+
+    this.productService.setProductVariantService(this.productVariantService);
   }
 
   async createProduct(
@@ -21,6 +26,32 @@ export class ProductController {
         currentUser
       );
       ApiResponse.success(res, "Product created successfully", newProduct, 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createProductWithVariants(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const currentUser = req.user._id;
+      const { product, variants } = req.body;
+
+      const newProduct = await this.productService.createProductWithVariants(
+        product,
+        variants,
+        currentUser
+      );
+
+      ApiResponse.success(
+        res,
+        "Product with variants created successfully",
+        newProduct,
+        201
+      );
     } catch (error) {
       next(error);
     }
@@ -282,4 +313,33 @@ export class ProductController {
       next(error);
     }
   }
+
+  async updateProductWithVariants(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { id: productId } = req.params;
+      const { product, variants } = req.body;
+      const currentUserId = req.user._id;
+  
+      const updatedProduct = await this.productService.updateProductWithVariants(
+        productId,
+        product,
+        variants,
+        currentUserId
+      );
+  
+      ApiResponse.success(
+        res,
+        "Product and its variants updated successfully",
+        updatedProduct,
+        200
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+  
 }

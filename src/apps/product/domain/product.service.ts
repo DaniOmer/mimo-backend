@@ -7,18 +7,25 @@ import {
   ProductDTO,
   ProductUpdateDTO,
   ProductFilterDto,
+  ProductVariantService,
+  ProductVariantCreateDTO,
+  ProductVariantUpdateDTOWithId,
 } from "./";
 import { Types } from "mongoose";
 import BadRequestError from "../../../config/error/bad.request.config";
 import { IProductImage } from "../data-access/productImage/productImage.interface";
+import {  GeneralUtils } from "../../../utils";
+
+
 
 export class ProductService extends BaseService {
   readonly repository: ProductRepository;
   readonly categoryService: CategoryService;
   readonly featureService: ProductFeatureService;
   readonly imageService: ProductImageService;
+  private productVariantService?: ProductVariantService;
 
-  constructor() {
+  constructor( ) {
     super("Product");
     this.repository = new ProductRepository();
     this.categoryService = new CategoryService();
@@ -26,14 +33,146 @@ export class ProductService extends BaseService {
     this.imageService = new ProductImageService();
   }
 
+  setProductVariantService(service: ProductVariantService) {
+    this.productVariantService = service;
+  }
+
   async createProduct(data: ProductDTO, userId: string): Promise<IProduct> {
     await this.validateDependencies(data);
+
+    const priceVat = data.priceEtx
+      ? GeneralUtils.calculatePriceWithTax(data.priceEtx)
+      : undefined;
+
     return this.repository.create({
       ...data,
+      priceVat, 
       createdBy: userId,
     });
   }
 
+  async createProductWithVariants(
+    productData: ProductDTO,
+    variantsData: ProductVariantCreateDTO[],
+    userId: string
+  ): Promise<IProduct> {
+    await this.validateDependencies(productData);
+  
+    if (!this.productVariantService) {
+      throw new Error("ProductVariantService not set in ProductService");
+    }
+  
+    const priceVat = productData.priceEtx
+      ? GeneralUtils.calculatePriceWithTax(productData.priceEtx)
+      : undefined;
+  
+    const product = await this.repository.create({
+      ...productData,
+      priceVat,
+      isActive: true,
+      createdBy: userId,
+    });
+  
+    if (!product) {
+      throw new BadRequestError({
+        message: "Failed to create product",
+        logging: true,
+      });
+    }
+  
+    await Promise.all(
+      variantsData.map((variant) => {
+        const variantPriceVat = GeneralUtils.calculatePriceWithTax(
+          variant.priceEtx
+        );
+  
+        return this.productVariantService!.createProductVariant(
+          {
+            ...variant,
+            priceVat: variantPriceVat,
+            productId: product._id.toString(),
+          },
+          userId
+        );
+      })
+    );
+  
+    const completeProduct = await this.getProductById(product._id.toString());
+    return completeProduct;
+  }
+
+  async updateProductWithVariants(
+    productId: string,
+    productData: ProductUpdateDTO,
+    variantsData: ProductVariantUpdateDTOWithId[],
+    userId: string
+  ): Promise<IProduct> {
+    await this.validateDependencies(productData);
+  
+    if (!this.productVariantService) {
+      throw new Error("ProductVariantService not set in ProductService");
+    }
+  
+    const priceVat = productData.priceEtx
+      ? GeneralUtils.calculatePriceWithTax(productData.priceEtx)
+      : undefined;
+  
+    const updatedProduct = await this.repository.updateById(productId, {
+      ...productData,
+      priceVat,
+      updatedBy: userId,
+    });
+  
+    if (!updatedProduct) {
+      throw new BadRequestError({
+        message: "Failed to update product",
+        logging: true,
+      });
+    }
+  
+    if (updatedProduct.hasVariants) {
+      await Promise.all(
+        variantsData.map(async (variant) => {
+          const variantPriceVat = GeneralUtils.calculatePriceWithTax(
+            variant.priceEtx
+          );
+  
+          if (variant._id) {
+            return this.productVariantService!.updateVariantById(
+              variant._id,
+              {
+                ...variant,
+                priceVat: variantPriceVat,
+                productId,
+              },
+              userId
+            );
+          } else {
+            return this.productVariantService!.createProductVariant(
+              {
+                ...variant,
+                priceVat: variantPriceVat,
+                productId,
+              },
+              userId
+            );
+          }
+        })
+      );
+    } else {
+      throw new BadRequestError({
+        message:
+          "Cannot update variants for a product without variant configuration",
+        context: { productId },
+        code: 400,
+      });
+    }
+    
+    const completeUpdatedProduct = await this.getProductById(productId);
+    return completeUpdatedProduct;
+  }
+
+  
   async getProductById(id: string): Promise<IProduct> {
     const product = await this.repository.getProductWithVariantsAndInventory({
       productId: id,
@@ -70,8 +209,12 @@ export class ProductService extends BaseService {
     userId: string
   ): Promise<IProduct> {
     await this.validateDependencies(updates);
+
+    const priceVat = updates.priceEtx ? GeneralUtils.calculatePriceWithTax(updates.priceEtx) : undefined;
+
     const updatedProduct = await this.repository.updateById(id, {
       ...updates,
+      priceVat,
       updatedBy: userId,
     });
     return this.validateDataExists(updatedProduct, id);

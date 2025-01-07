@@ -1,7 +1,7 @@
 import BadRequestError from "../../../../config/error/bad.request.config";
 import { BaseService } from "../../../../librairies/services";
 import { IOrder, OrderRepository, OrderStatus } from "../data-access";
-import { OrderCreateFromCartDTO, OrderUpdateDTO } from "./order.dto";
+import { AdminCreateOrderDTO, OrderCreateFromCartDTO, OrderUpdateDTO } from "./order.dto";
 import { SecurityUtils, UserDataToJWT, GeneralUtils } from "../../../../utils";
 import {
   CartService,
@@ -287,6 +287,7 @@ export class OrderService extends BaseService {
     currentUser: UserDataToJWT
   ): Promise<IOrder & { items: IOrderItem[] }> {
     const order = await this.repository.getOrderByNumber(orderNumber);
+
     if (!order) {
       throw new BadRequestError({
         message: `Order with the given number not found`,
@@ -431,4 +432,131 @@ export class OrderService extends BaseService {
   
     return { newCustomers };
   }
+
+  async getAllOrders(): Promise<IOrder[]> {
+    return await this.repository.getAllOrdersWithPopulation();
+  }
+
+  async updateOrderStatus(orderId: string, status: OrderStatus): Promise<IOrder> {
+    const validStatuses = Object.values(OrderStatus);
+    if (!validStatuses.includes(status)) {
+      throw new BadRequestError({
+        message: `Invalid order status: ${status}`,
+        logging: true,
+      });
+    }
+
+    const updatedOrder = await this.repository.updateById(orderId, { status });
+    if (!updatedOrder) {
+      throw new BadRequestError({
+        message: `Failed to update order status`,
+        logging: true,
+        code: 500,
+      });
+    }
+    return updatedOrder;
+  }
+
+  private async getUserAddresses(userId: string) {
+    const addresses = await this.addressService.getAllAddressesByUserId(userId);
+    if (!addresses || addresses.length === 0) {
+      throw new BadRequestError({
+        message: "This user has no registered addresses.",
+        code: 400,
+        logging: true,
+      });
+    }
+    const shippingAddress = addresses.find(a => a.isShipping);
+    const billingAddress = addresses.find(a => a.isBilling);
+    if (!shippingAddress || !billingAddress) {
+      throw new BadRequestError({
+        message: "User must have at least one shipping and one billing address.",
+        code: 400,
+        logging: true,
+      });
+    }
+    return { shippingAddress, billingAddress };
+  }
+
+  async createOrderForUser(
+    data: AdminCreateOrderDTO,
+    userId: string,
+    adminUser: UserDataToJWT
+  ): Promise<IOrder & { items: IOrderItem[] }> {
+    const userExists = await this.userRepository.getById(userId);
+    if (!userExists) {
+      throw new BadRequestError({
+        message: "User does not exist.",
+        logging: true,
+      });
+    }
+
+    const { shippingAddress, billingAddress } = await this.getUserAddresses(userId);
+
+    const orderNumber = this.generateOrderNumber();
+
+    let totalEtx = 0;
+    let totalVat = 0;
+
+    const orderItemsPayload = [];
+
+    for (const item of data.items) {
+      const product = await this.productRepository.getById(item.productId);
+      if (!product) {
+        throw new BadRequestError({
+          message: `Product with id ${item.productId} does not exist`,
+          logging: true,
+        });
+      }
+
+      const subTotalEtx = (product.priceEtx || 0) * item.quantity;
+      const subTotalVat = (product.priceVat || 0) * item.quantity;
+
+      totalEtx += subTotalEtx;
+      totalVat += subTotalVat;
+
+      orderItemsPayload.push({
+        product: product._id,
+        productVariant: null,
+        quantity: item.quantity,
+        priceEtx: product.priceEtx || 0,
+        priceVat: product.priceVat || 0,
+        subTotalEtx,
+        subTotalVat,
+      });
+    }
+
+    const newOrder: Partial<IOrder> = {
+      number: orderNumber,
+      user: userId,
+      shippingAddress: shippingAddress._id,
+      billingAddress: billingAddress._id,
+      status: OrderStatus.Pending,
+      amountEtx: totalEtx,
+      amountVat: totalVat,
+    };
+
+    const createdOrder = await this.repository.create(newOrder);
+    if (!createdOrder) {
+      throw new BadRequestError({
+        message: "Failed to create order by admin",
+        logging: true,
+        code: 500,
+      });
+    }
+
+    const orderItems = orderItemsPayload.map((item) => ({
+      ...item,
+      order: createdOrder._id,
+    }));
+
+    const savedItems = await this.orderItemService.createManyOrderItems(orderItems);
+
+    return {
+      ...createdOrder.toObject(),
+      items: savedItems,
+    };
+  }
+
+
 }

@@ -78,11 +78,6 @@ export class CategoryService extends BaseService {
     return this.validateDataExists(deletedCategory, id);
   }
 
-  /**
-   * Recherche plusieurs catégories en fonction de leurs IDs.
-   * @param categoryIds - Tableau des IDs de catégories.
-   * @returns Liste des catégories correspondantes.
-   */
   async findCategoriesByIds(categoryIds: string[]): Promise<ICategory[]> {
     return this.repository.findByIds(categoryIds);
   }
@@ -112,5 +107,12 @@ export class CategoryService extends BaseService {
     );
 
     return Object.values(groupedFilters);
+  }
+
+  async deleteMultipleCategories(ids: string[]): Promise<void> {
+    const result = await this.repository.deleteMany({ _id: { $in: ids } });
+    if (result.deletedCount !== ids.length) {
+      throw new Error(`Some categories could not be deleted.`);
+    }
   }
 }

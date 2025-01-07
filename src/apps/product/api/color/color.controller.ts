@@ -53,4 +53,14 @@ export class ColorController {
       next(error);
     }
   }
+
+  async deleteMultipleColors(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { colorIds } = req.body;
+      await this.service.deleteMultipleColors(colorIds);
+      ApiResponse.success(res, "Colors deleted successfully", null, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

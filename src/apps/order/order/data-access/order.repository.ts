@@ -56,4 +56,16 @@ export class OrderRepository extends MongooseRepository<IOrder> {
     .populate("billingAddress")
     .exec();
   }
+
+  async getAllOrdersWithPopulation(): Promise<IOrder[]> {
+    return await this.model
+      .find({})
+      .populate({
+        path: "user",
+        select: "-password -roles", 
+      })
+      .populate("shippingAddress")
+      .populate("billingAddress")
+      .exec();
+  }
 }

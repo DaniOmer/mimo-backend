@@ -8,7 +8,7 @@ export interface IProduct extends Document, Timestamps {
   description?: string;
   priceEtx?: number;
   priceVat?: number;
-  isActive: boolean;
+  isActive?: boolean;
   images?: string[];
   categoryIds: string[];
   featureIds?: string[];
