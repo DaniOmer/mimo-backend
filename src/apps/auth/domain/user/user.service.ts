@@ -78,7 +78,7 @@ export class UserService extends BaseService {
     if (roles && roles.length > 0) {
       const allRoles = await this.roleService.getAllRoles();
       const validRoles: IRole[] = roles.map((role) => {
-        const matchedRole = allRoles.find((r) => r.name === role.name);
+        const matchedRole = allRoles.find((r) => r._id.toString() === role._id);
         if (!matchedRole) {
           throw new BadRequestError({
             message: `Invalid role: ${role.name}`,
@@ -88,7 +88,6 @@ export class UserService extends BaseService {
         }
         return matchedRole;
       });
-      console.log("validRoles", validRoles);
 
       updatedData.roles = validRoles;
     }
