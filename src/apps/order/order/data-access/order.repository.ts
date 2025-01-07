@@ -40,12 +40,13 @@ export class OrderRepository extends MongooseRepository<IOrder> {
       .populate("billingAddress");
   }
 
-  async getOrdersBetweenDates(startDate: Date, endDate: Date): Promise<IOrder[]> {
+  async getPaidOrdersWithinDateRange(startDate: Date, endDate: Date): Promise<IOrder[]> {
     return await OrderModel.find({
       createdAt: {
         $gte: startDate,
         $lte: endDate
-      }
+      },
+      status: { $in: ["completed", "shipped", "delivered"] }
     })
     .populate({
       path: "user",
