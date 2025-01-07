@@ -80,4 +80,32 @@ export default class TokenService extends BaseService {
 
     return updatedToken;
   }
+
+  async validateAndReturnRefreshToken(refreshHash: string): Promise<IToken> {
+    const existingToken = await this.tokenRepository.getByHash(refreshHash);
+    if (!existingToken) {
+      throw new BadRequestError({
+        message: "Refresh token not found",
+        logging: true,
+      });
+    }
+  
+    if (existingToken.type !== TokenType.Refresh) {
+      throw new BadRequestError({
+        message: "Invalid token type",
+        logging: true,
+      });
+    }
+  
+    if (existingToken.expiresAt.getTime() < Date.now() || existingToken.isDisabled) {
+      throw new BadRequestError({
+        code: 401,
+        message: "Refresh token expired or disabled",
+        logging: true,
+      });
+    }
+  
+    // await this.tokenRepository.updateById(existingToken._id, { isDisabled: true });
+    return existingToken;
+  }
 }

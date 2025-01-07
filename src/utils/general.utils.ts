@@ -1,4 +1,7 @@
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
+import Handlebars from "handlebars";
 
 export class GeneralUtils {
   static generateUniqueIdentifier(prefix: string): string {
@@ -15,6 +18,20 @@ export class GeneralUtils {
 
     const tvaMultiplier = 1 + tvaRate / 100;
     return parseFloat((priceHT * tvaMultiplier).toFixed(2));
+  }
+
+  static htmlTemplateReader(
+    templateName: string,
+    data: Record<string, any> | null = null
+  ) {
+    const templatePath = path.join(__dirname, "../templates", templateName);
+    const templateContent = fs.readFileSync(templatePath, "utf-8");
+
+    if (!data) {
+      return templateContent;
+    }
+    const template = Handlebars.compile(templateContent);
+    return template(data);
   }
 }
 
