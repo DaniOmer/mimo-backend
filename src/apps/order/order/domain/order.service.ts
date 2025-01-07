@@ -468,7 +468,6 @@ export class OrderService extends BaseService {
     userId: string,
     adminUser: UserDataToJWT
   ): Promise<IOrder & { items: IOrderItem[] }> {
-    // Vérifie si l'utilisateur existe
     const userExists = await this.userRepository.getById(userId);
     if (!userExists) {
       throw new BadRequestError({
@@ -477,16 +476,13 @@ export class OrderService extends BaseService {
       });
     }
 
-    // Récupère les adresses du user
     const { shippingAddress, billingAddress } = await this.getUserAddresses(userId);
 
-    // Génère un numéro de commande
     const orderNumber = this.generateOrderNumber();
 
     let totalEtx = 0;
     let totalVat = 0;
 
-    // Pour stocker les items
     const orderItemsPayload = [];
 
     for (const item of data.items) {
@@ -525,7 +521,6 @@ export class OrderService extends BaseService {
       amountVat: totalVat,
     };
 
-    // Création de la commande
     const createdOrder = await this.repository.create(newOrder);
     if (!createdOrder) {
       throw new BadRequestError({
@@ -535,7 +530,6 @@ export class OrderService extends BaseService {
       });
     }
 
-    // Création des OrderItems
     const orderItems = orderItemsPayload.map((item) => ({
       ...item,
       order: createdOrder._id,
