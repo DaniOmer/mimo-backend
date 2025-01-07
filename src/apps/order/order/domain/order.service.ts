@@ -310,7 +310,7 @@ export class OrderService extends BaseService {
   }
 
   async getRevenueAnalytics(startDate: Date, endDate: Date): Promise<any> {
-    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const orders = await this.repository.getPaidOrdersWithinDateRange(startDate, endDate);
   
     const monthlyRevenue = orders.reduce((acc, order) => {
       const month = `${order.createdAt.getFullYear()}-${(order.createdAt.getMonth() + 1).toString().padStart(2, '0')}`;
@@ -332,7 +332,7 @@ export class OrderService extends BaseService {
   }  
 
   async getSalesByCategoryAnalytics(startDate: Date, endDate: Date): Promise<any> {
-    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const orders = await this.repository.getPaidOrdersWithinDateRange(startDate, endDate);
     const products = await this.productRepository.getAll();
     const categories = await this.categoryRepository.getAll();
 
@@ -361,7 +361,7 @@ export class OrderService extends BaseService {
   }
 
   async getSalesByProductAnalytics(startDate: Date, endDate: Date): Promise<any> {
-    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const orders = await this.repository.getPaidOrdersWithinDateRange(startDate, endDate);
     const products = await this.productRepository.getAll();
   
     const salesByProduct = await Promise.all(products.map(async product => {
@@ -386,7 +386,7 @@ export class OrderService extends BaseService {
   }
 
   async getAverageCartValue(startDate: Date, endDate: Date): Promise<any> {
-    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const orders = await this.repository.getPaidOrdersWithinDateRange(startDate, endDate);
     
     if (orders.length === 0) {
       return { averageEtx: 0, averageVat: 0 };
@@ -402,7 +402,7 @@ export class OrderService extends BaseService {
   }
 
   async getNewCustomersAnalytics(startDate: Date, endDate: Date): Promise<any> {
-    const orders = await this.repository.getOrdersBetweenDates(startDate, endDate);
+    const orders = await this.repository.getPaidOrdersWithinDateRange(startDate, endDate);
 
     const userIds = orders.map(order => {
       if (typeof order.user !== 'string') {
