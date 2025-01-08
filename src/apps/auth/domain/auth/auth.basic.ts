@@ -106,7 +106,7 @@ export class BasicAuthStrategy implements AuthStrategy {
     const user = await this.userRepository.getByEmail(userData.email);
     if (!user || user.isDisabled) {
       throw new BadRequestError({
-        code: 404,
+        code: 401,
         message: "Invalid credentials",
         context: { authentication: "Invalid credentials" },
         logging: true,
@@ -127,6 +127,7 @@ export class BasicAuthStrategy implements AuthStrategy {
 
     if (!isPasswordValid) {
       throw new BadRequestError({
+        code: 401,
         message: "Invalid credentials",
         context: { authentication: "Invalid credentials" },
         logging: true,
