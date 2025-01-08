@@ -1,9 +1,9 @@
-import { ProductService } from "../domain/product.service";
-import { CategoryModel, CategoryRepository, ProductRepository } from "../data-access";
-import { ProductDTO, ProductUpdateDTO, ProductFilterDto } from "../domain";
-import { ProductVariantService } from "../domain/productVariant/productVariant.service";
-import { GeneralUtils } from "../../../utils";
-import BadRequestError from "../../../config/error/bad.request.config";
+import { ProductService } from "../../domain/product.service";
+import { CategoryModel, CategoryRepository, ProductRepository } from "../../data-access";
+import { ProductDTO, ProductUpdateDTO, ProductFilterDto } from "../../domain";
+import { ProductVariantService } from "../../domain/productVariant/productVariant.service";
+import { GeneralUtils } from "../../../../utils";
+import BadRequestError from "../../../../config/error/bad.request.config";
 
 jest.mock("../data-access");
 jest.mock("../domain/productVariant/productVariant.service");
