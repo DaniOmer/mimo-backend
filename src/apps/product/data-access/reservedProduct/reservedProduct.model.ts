@@ -10,7 +10,6 @@ export const ReservedProductSchema = new Schema<IReservedProduct>(
     },
     quantity: { type: Number, required: true },
     reservedById: { type: Schema.Types.ObjectId, required: true, ref: "User" },
-    reservedUntil: { type: Date, required: true },
   },
   { timestamps: true, collection: "reserved_products", versionKey: false }
 );

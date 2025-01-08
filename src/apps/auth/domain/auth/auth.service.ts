@@ -12,38 +12,35 @@ import {
   ConfirmPasswordResetDTO,
 } from "../user/user.dto";
 
+import { PreferenceService } from "../../../preference/domain/preference.service";
+
 export type UserCreateResponse = Omit<IUser, "id" | "password" | "updatedAt">;
 export type UserLoginResponse = UserCreateResponse & {
   token: string;
 };
 
 export class AuthService extends BaseService {
-  private authStrategy: AuthStrategy;
-  private userRepository: UserRepository;
-  private tokenService: TokenService;
+  readonly authStrategy: AuthStrategy;
+  readonly userRepository: UserRepository;
+  readonly tokenService: TokenService;
+  readonly preferenceService: PreferenceService;
 
   constructor(strategy: Strategy) {
     super("Auth");
     this.authStrategy = AuthStrategyFactory.create(strategy);
     this.userRepository = new UserRepository();
     this.tokenService = new TokenService();
+    this.preferenceService = new PreferenceService();
   }
 
   async register(userData: UserRegisterDTO) {
     const createUserResponse = await this.authStrategy.register(userData);
-    if (this.authStrategy.requestEmailValidation) {
+    if (this.authStrategy.getEmailValidationLink) {
       const emailConfirmationLink =
-        await this.authStrategy.requestEmailValidation(createUserResponse);
-
-      await this.emailNotifier.send({
-        recipient: createUserResponse.email,
-        subject: "Welcome to Mimo!",
-        templateName: "confirmation-email.html",
-        params: {
-          confirmation_link: emailConfirmationLink,
-        },
-      });
+        await this.authStrategy.getEmailValidationLink(createUserResponse);
+      await this.sendWelcomeEmail(userData.email, emailConfirmationLink);
     }
+    await this.preferenceService.createDefaultPreference(createUserResponse);
     return createUserResponse;
   }
 
@@ -53,15 +50,15 @@ export class AuthService extends BaseService {
   }
 
   async confirmEmailRequest(hash: string): Promise<IUser> {
-    const tokenUser = await this.tokenService.validateTokenAndReturnUser(
+    const token = await this.tokenService.validateAndReturnToken(
       hash,
       TokenType.Confirmation
     );
 
     const user =
-      typeof tokenUser === "string"
-        ? await this.userRepository.getById(tokenUser)
-        : tokenUser;
+      typeof token.user === "string"
+        ? await this.userRepository.getById(token.user)
+        : token.user;
 
     if (!user) {
       throw new BadRequestError({
@@ -80,6 +77,7 @@ export class AuthService extends BaseService {
         message: "Failed to confirm user email",
         context: { auth_email_confirmation: "Failed to confirm email" },
         logging: true,
+        code: 500,
       });
     }
     return updatedUser;
@@ -108,19 +106,20 @@ export class AuthService extends BaseService {
       TokenType.PasswordReset
     );
     const resetPasswordLink = `${AppConfig.client.url}/auth/reset-password?token=${forgotPasswordToken.hash}`;
+    await this.sendPasswordResetEmail(email, resetPasswordLink);
     return resetPasswordLink;
   }
 
   async confirmPasswordReset(data: ConfirmPasswordResetDTO): Promise<IUser> {
-    const tokenUser = await this.tokenService.validateTokenAndReturnUser(
+    const tokenUser = await this.tokenService.validateAndReturnToken(
       data.token,
       TokenType.PasswordReset
     );
 
     const user =
-      typeof tokenUser === "string"
-        ? await this.userRepository.getById(tokenUser)
-        : tokenUser;
+      typeof tokenUser.user === "string"
+        ? await this.userRepository.getById(tokenUser.user)
+        : tokenUser.user;
 
     if (!user) {
       throw new BadRequestError({
@@ -142,4 +141,27 @@ export class AuthService extends BaseService {
     }
     return updatedUser;
   }
+
+  async sendWelcomeEmail(email: string, confirmationLink: string) {
+    await this.emailNotifier.send({
+      recipient: email,
+      subject: "Welcome to Mimo!",
+      templateName: "confirmation-email.html",
+      params: {
+        confirmation_link: confirmationLink,
+      },
+    });
+  }
+
+  async sendPasswordResetEmail(email: string, resetLink: string) {
+    await this.emailNotifier.send({
+      recipient: email,
+      subject: "Réinitialisation de votre mot de passe",
+      templateName: "password-reset-email.html",
+      params: {
+        reset_link: resetLink,
+      },
+    });
+  }
+  
 }

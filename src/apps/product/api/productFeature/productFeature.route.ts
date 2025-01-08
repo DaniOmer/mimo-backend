@@ -27,12 +27,10 @@ router.post(
 );
 
 router.get("/",
-    authenticateMiddleware,
    productFeatureController.getAll.bind(productFeatureController));
 
 router.get(
   "/:id",
-  authenticateMiddleware,
   validateIdMiddleware("ProductFeature"),
   productFeatureController.getById.bind(productFeatureController)
 );
@@ -44,6 +42,13 @@ router.put(
   validateIdMiddleware("ProductFeature"),
   validateDtoMiddleware(ProductFeatureUpdateDTO),
   productFeatureController.updateById.bind(productFeatureController)
+);
+
+router.delete(
+  "/multiple",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  productFeatureController.deleteMultiple.bind(productFeatureController)
 );
 
 router.delete(

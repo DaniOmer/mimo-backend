@@ -53,4 +53,14 @@ export class SizeController {
       next(error);
     }
   }
+
+  async deleteMultipleSizes(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { sizeIds } = req.body;
+      await this.service.deleteMultipleSizes(sizeIds);
+      ApiResponse.success(res, "Sizes deleted successfully", null, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -32,4 +32,11 @@ export class SizeService extends BaseService {
     const deletedSize = await this.repository.deleteById(id);
     return this.validateDataExists(deletedSize, id);
   }
+
+  async deleteMultipleSizes(ids: string[]): Promise<void> {
+    const result = await this.repository.deleteMany({ _id: { $in: ids } });
+    if (result.deletedCount !== ids.length) {
+      throw new Error(`Some sizes could not be deleted.`);
+    }
+  }
 }

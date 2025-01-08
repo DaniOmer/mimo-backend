@@ -144,6 +144,13 @@ router.put(
   sizeController.updateSizeById.bind(sizeController)
 );
 
+router.delete(
+  "/multiple",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  sizeController.deleteMultipleSizes.bind(sizeController)
+);
+
 /**
  * @swagger
  * /api/sizes/{id}:

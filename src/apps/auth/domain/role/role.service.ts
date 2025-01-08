@@ -82,4 +82,9 @@ export default class RoleService extends BaseService {
     }
     return await this.roleRepository.create(roleData);
   }
+
+  async getAllRoles(): Promise<IRole[]> {
+    return this.roleRepository.getAll();
+  }
+  
 }

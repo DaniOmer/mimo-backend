@@ -180,6 +180,14 @@ router.put(
  *       404:
  *         description: Category not found
  */
+
+router.delete(
+  "/multiple",
+  authenticateMiddleware,
+  checkRoleMiddleware(["admin"]),
+  categoryController.deleteMultipleCategories.bind(categoryController)
+);
+
 router.delete(
   "/:id",
   authenticateMiddleware,

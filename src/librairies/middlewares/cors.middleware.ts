@@ -29,6 +29,7 @@ export const corsMiddleware = cors({
       );
     }
   },
-  allowedHeaders: AppConfig.cors.allowedHeaders,
+  // allowedHeaders: AppConfig.cors.allowedHeaders,
+  // methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: corsCredentials,
 });
