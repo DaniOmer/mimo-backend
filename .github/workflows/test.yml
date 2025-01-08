@@ -3,29 +3,40 @@ name: Run Tests
 on:
   push:
     branches:
-      - main   
-      - dev    
+      - main
+      - dev
   pull_request:
     branches:
-      - main   
-      - dev    
+      - main
+      - dev
 
 jobs:
   test:
-    runs-on: macos-latest  
+    runs-on: macos-latest
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '20'  
-    
-    - name: Install dependencies
-      run: |
-        npm install
-    
-    - name: Run unit and integration tests
-      run: |
-        npm run test:all  # Assurez-vous que cette commande exécute vos tests unitaires et d'intégration
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Verify Jest and Node.js versions
+        run: |
+          jest --version
+          node --version
+
+      - name: List test files
+        run: |
+          ls -R # Affiche tous les fichiers dans le répertoire courant
+          ls -R src # Vérifie si les fichiers de test sont dans le bon répertoire
+
+      - name: Run unit and integration tests
+        run: |
+          npm run test:all  # Exécute tous les tests
