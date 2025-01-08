@@ -9,23 +9,26 @@ jest.mock("../data-access");
 jest.mock("../domain/productVariant/productVariant.service");
 jest.mock("../../../utils");
 // jest.mock("../category.model");
+jest.mock("../../../utils/general.utils"); // Mock GeneralUtils
+jest.mock("../data-access/product.repository");
 
 
 describe("ProductService", () => {
   let productService: ProductService;
   let mockProductRepository: jest.Mocked<ProductRepository>;
   let mockProductVariantService: jest.Mocked<ProductVariantService>;
-  let mockCategoryRepository: jest.Mocked<CategoryRepository>;
-  let mockCategoryModel: jest.Mocked<typeof CategoryModel>;
+  let mockGeneralUtils: jest.Mocked<typeof GeneralUtils>;
   
   beforeEach(() => {
     mockProductRepository = new ProductRepository() as jest.Mocked<ProductRepository>;
     mockProductVariantService = new ProductVariantService() as jest.Mocked<ProductVariantService>;
-    // mockCategoryRepository = new CategoryRepository() as jest.Mocked<CategoryRepository>;
-    mockCategoryModel = CategoryModel as jest.Mocked<typeof CategoryModel>;
+    mockGeneralUtils = GeneralUtils as jest.Mocked<typeof GeneralUtils>;
 
     productService = new ProductService();
     productService.setProductVariantService(mockProductVariantService);
+
+    (productService as any).repository = mockProductRepository;
+    (productService as any).generalUtils = mockGeneralUtils;
 
     jest.clearAllMocks();
   });
@@ -54,10 +57,12 @@ describe("ProductService", () => {
         images: ["img1"],
         isActive: true
       };
+
+      mockGeneralUtils.calculatePriceWithTax.mockReturnValue(120);
   
       const mockResponse = {
         ...productData,
-        priceVat: GeneralUtils.calculatePriceWithTax(100),
+        priceVat: 120,
         createdBy: userId,
       };
   
@@ -78,7 +83,7 @@ describe("ProductService", () => {
       expect(result).toEqual(mockResponse);
       expect(mockRepository.create).toHaveBeenCalledWith({
         ...productData,
-        priceVat: GeneralUtils.calculatePriceWithTax(100),
+        priceVat: 120,
         createdBy: userId,
       });
       expect(mockFind).toHaveBeenCalledWith(["cat1", "cat2"]);
@@ -142,7 +147,7 @@ describe("ProductService", () => {
       expect(result).toEqual(mockProductResponse);
       expect(mockProductRepository.create).toHaveBeenCalledWith({
         ...productData,
-        priceVat: GeneralUtils.calculatePriceWithTax(100),
+        priceVat: 120,
         createdBy: userId,
       });
       expect(mockProductVariantService.createProductVariant).toHaveBeenCalledTimes(2);
