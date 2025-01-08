@@ -92,7 +92,7 @@ export class DatabaseTestUtils {
 
   static async seedPreferences(): Promise<void> {
     // Supprimer les préférences existantes pour les utilisateurs spécifiés
-    await UserPreferenceModel.deleteMany({
+    await PreferenceModel.deleteMany({
       user: {
         $in: await UserModel.find({
           email: /admin@example.com|user@example.com/,
