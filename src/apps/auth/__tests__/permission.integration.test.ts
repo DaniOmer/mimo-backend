@@ -1,7 +1,7 @@
 // src/apps/auth/api/permission/__tests__/permission.integration.test.ts
 import request from "supertest";
-import { createTestServer } from "../../../../../server.test";
-import { DatabaseTestUtils } from "../../../../../utils/database";
+import { createTestServer } from "../../../server.test";
+import { DatabaseTestUtils } from "../../../utils/database";
 
 let app: ReturnType<typeof createTestServer>;
 

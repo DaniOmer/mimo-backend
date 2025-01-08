@@ -7,3 +7,23 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+
+  mongo_test:
+    image: mongo
+    restart: always
+    ports:
+      - 27018:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mimo
+      MONGO_INITDB_ROOT_PASSWORD: mimo
+      command: mongod --auth --bind_ip_all
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+    networks:
+      test_network:
+        aliases:
+          - mongo_test
+networks:
+  test_network:
+    driver: bridge

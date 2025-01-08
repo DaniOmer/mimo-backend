@@ -6,6 +6,13 @@ import { PreferenceModel } from "../apps/preference/data-access/preference.model
 import { AppConfig } from "../config/app.config";
 import { SecurityUtils } from "../utils/security.utils";
 
+
+// export type UserDataToJWT = {
+//   _id: string;
+//   id: ObjectId;
+//   roles: { name: string }[];
+//   permissions: { name: string }[];
+// };
 export class DatabaseTestUtils {
   static async initDatabase(): Promise<void> {
     const testDbUri =
@@ -172,7 +179,7 @@ export class DatabaseTestUtils {
       : [];
 
     return await SecurityUtils.generateJWTToken({
-      _id: user._id.toString(),
+      id: user._id.toString(),
       roles: rolesForJWT,
       permissions: permissionsForJWT,
     });
