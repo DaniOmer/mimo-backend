@@ -377,7 +377,7 @@ export class ProductService extends BaseService {
     return filters;
   }
 
-  private async validateDependencies(data: Partial<IProduct>): Promise<void> {
+  async validateDependencies(data: Partial<IProduct>): Promise<void> {
     if (data.categoryIds && data.categoryIds.length > 0) {
       const categoryIdsFormated = data.categoryIds.map((id) =>
         this.toObjectIdString(id)

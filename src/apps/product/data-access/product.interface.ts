@@ -1,6 +1,7 @@
 import { Document, Types } from "mongoose";
 import { Timestamps } from "../../../librairies/types/timestamps.interface";
 import { IUser } from "../../auth/data-access";
+import { IProductVariant } from "./productVariant/productVariant.interface";
 
 export interface IProduct extends Document, Timestamps {
   _id: string;
@@ -16,4 +17,5 @@ export interface IProduct extends Document, Timestamps {
   updatedBy?: string | IUser;
   stripeId?: string;
   hasVariants: boolean;
+  variants?: IProductVariant[];
 }

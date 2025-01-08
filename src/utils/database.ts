@@ -2,8 +2,9 @@ import mongoose, { ConnectOptions } from "mongoose";
 import bcrypt from "bcrypt";
 import { UserModel } from "../apps/auth/data-access/";
 import { RoleModel } from "../apps/auth/data-access/role/role.model";
+import { PreferenceModel } from "../apps/preference/data-access/preference.model";
 import { AppConfig } from "../config/app.config";
-import { SecurityUtils } from "../utils/security.utils"; 
+import { SecurityUtils } from "../utils/security.utils";
 
 
 // export type UserDataToJWT = {
@@ -29,7 +30,9 @@ export class DatabaseTestUtils {
         username: process.env.MONGODB_USERNAME || "mimo",
         password: process.env.MONGODB_PASSWORD || "mimo",
       },
-      authSource: "admin", 
+      authSource: "admin",
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     } as ConnectOptions);
 
     const collections = mongoose.connection.collections;
@@ -54,7 +57,6 @@ export class DatabaseTestUtils {
   }
 
   static async seedUsers(): Promise<void> {
-
     await UserModel.deleteMany({ email: /admin@example.com|user@example.com/ });
 
     const adminRole = await RoleModel.findOneAndUpdate(
@@ -95,6 +97,55 @@ export class DatabaseTestUtils {
     });
   }
 
+  static async seedPreferences(): Promise<void> {
+    // Supprimer les préférences existantes pour les utilisateurs spécifiés
+    await PreferenceModel.deleteMany({
+      user: {
+        $in: await UserModel.find({
+          email: /admin@example.com|user@example.com/,
+        }).distinct("_id"),
+      },
+    });
+
+    // Récupérer les utilisateurs admin et user
+    const adminUser = await UserModel.findOne({ email: "admin@example.com" });
+    const regularUser = await UserModel.findOne({ email: "user@example.com" });
+
+    if (!adminUser || !regularUser) {
+      throw new Error(
+        "Admin or Regular user not found. Ensure users are seeded first."
+      );
+    }
+
+    await PreferenceModel.create({
+      user: adminUser._id,
+      notifications: {
+        email: true,
+        sms: true,
+        push: true,
+      },
+      marketingConsent: true,
+      cookiesConsent: true,
+      personalizedAds: false,
+      language: "en",
+      currency: "USD",
+    });
+
+    await PreferenceModel.create({
+      user: regularUser._id,
+      notifications: {
+        email: true,
+        sms: false,
+        push: true,
+      },
+      marketingConsent: false,
+      cookiesConsent: true,
+      personalizedAds: true,
+      language: "fr",
+      currency: "EUR",
+    });
+  }
+
   /**
    * getAuthToken : on réutilise SecurityUtils.generateJWTToken
    * pour rester cohérent avec le code applicatif.
@@ -128,8 +179,7 @@ export class DatabaseTestUtils {
       : [];
 
     return await SecurityUtils.generateJWTToken({
-      _id: user._id.toString(),
-      id: user._id as any,
+      id: user._id.toString(),
       roles: rolesForJWT,
       permissions: permissionsForJWT,
     });
