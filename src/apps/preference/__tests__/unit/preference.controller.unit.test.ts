@@ -1,6 +1,6 @@
-import { PreferenceController } from "../api/preference.controller";
+import { PreferenceController } from "../../api/preference.controller";
 import { Request, Response, NextFunction } from "express";
-import { ApiResponse } from "../../../librairies/controllers";
+import { ApiResponse } from "../../../../librairies/controllers";
 
 jest.mock("../domain/preference.service.ts");
 jest.mock("../../../librairies/controllers");

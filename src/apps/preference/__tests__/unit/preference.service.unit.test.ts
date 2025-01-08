@@ -1,10 +1,9 @@
-import { ObjectId } from "mongodb";
-import { PreferenceService } from "../domain/preference.service";
-import BadRequestError from "../../../config/error/bad.request.config";
-import { SecurityUtils } from "../../../utils";
-import { IUserPreference } from "../data-access/preference.interface";
-import { IUser } from "../../auth/data-access";
-import { UserDataToJWT } from "../../../utils";
+import { PreferenceService } from "../../domain/preference.service";
+import BadRequestError from "../../../../config/error/bad.request.config";
+import { SecurityUtils } from "../../../../utils";
+import { IUserPreference } from "../../data-access/preference.interface";
+import { IUser } from "../../../auth/data-access";
+import { UserDataToJWT } from "../../../../utils";
 
 jest.mock("../data-access/preference.repository");
 jest.mock("../../../utils/security.utils.ts");
