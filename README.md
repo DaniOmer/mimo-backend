@@ -7,7 +7,7 @@ Mimo is a backend application for an e-commerce platform, built using **Node.js*
 Before starting, ensure you have the following installed:
 
 - [Node.js](https://nodejs.org/) - Version 20+ recommended
-- [Typescript.js](https://www.typescriptlang.org/) - Version 5+ recommended
+- [TypeScript](https://www.typescriptlang.org/) - Version 5+ recommended
 - [MongoDB](https://www.mongodb.com/) - NoSQL database
 - [npm](https://www.npmjs.com/) - Node.js package manager
 
@@ -26,24 +26,25 @@ cd mimo-backend
 npm install
 ```
 
-3. Create a `.env` file in the root directory to configure environment variables. See examples in `.env.example` file.
+3. Create a `.env` file in the root directory to configure environment variables. See examples in the `.env.example` file.
 
-4. Build the development environment database
+4. Build the development environment database:
 
 ```bash
-docker compose -f compose.dev.yaml build
+docker compose -f compose.yaml build
 ```
 
-6. Start the development environment database
+5. Start the development environment database:
 
-````bash
-docker compose -f compose.dev.yaml up -d
+```bash
+docker compose -f compose.yaml up -d
+```
 
-7. Start the application:
+6. Start the application:
 
 ```bash
 npm run start
-````
+```
 
 ## Project Structure
 
@@ -104,27 +105,79 @@ mimo-backend/
 
 ```
 
-### Folder Explanations
+## Testing
 
-- **apps/**: Contains the core components of the application. Each component (e.g., orders, users, products) has:
-  - **api/**: Handles routes and controllers.
-  - **domain/**: Business logic (e.g., rules, calculations, and validations).
-  - **data-access/**: Manages database interactions (e.g., models and repositories).
-- **libraries/**: Contains shared modules (e.g., logger, authentication) used across multiple components.
+Testing is an essential part of the development process to ensure code quality, functionality, and stability. This project uses **Jest** as the testing framework and **ts-jest** for TypeScript support.
 
-- **config/**: Configuration files for database connections and other global settings.
+### Types of Tests
 
-- **tests/**: Contains unit and integration tests for the application.
+1. **Unit Tests**:  
+   Test individual functions or methods in isolation to ensure they work as expected. Unit tests are located in files with the `.unit.test.ts` suffix.
 
-- **docs/**: Contains details documentation for the application.
+2. **Integration Tests**:  
+   Test the interaction between multiple modules or components, such as API endpoints or database queries. Integration tests are located in files with the `.integration.test.ts` suffix.
 
-## Useful Commands
+### Running Tests
 
-## Documentation
+- To run **all tests** (unit and integration):
 
-##### `1. API Routes`
+  ```bash
+  npm run test:all
+  ```
 
-For a detailed explanation of available routes, please refer to the [API Documentation](docs/api_routes.md).
+- To run **unit tests** only:
+
+  ```bash
+  npm run test:unit
+  ```
+
+- To run **integration tests** only:
+  ```bash
+  npm run test:integration
+  ```
+
+### Test Coverage
+
+This project tracks test coverage to ensure critical parts of the codebase are adequately tested. After running tests, coverage reports are generated in the `./coverage` directory. To view coverage reports:
+
+1. Run tests with coverage enabled:
+
+   ```bash
+   npm run test
+   ```
+
+2. Open the generated `lcov-report/index.html` file in a browser for a detailed view.
+
+### Writing Tests
+
+Tests are written in the `__tests__` directories within each module. For example:
+
+- Unit tests for the `users` module are in `src/apps/users/__tests__/userService.unit.test.ts`.
+- Integration tests for the `products` module are in `src/apps/products/__tests__/productController.integration.test.ts`.
+
+Each test file follows a structured approach:
+
+- Setup: Mock dependencies or initialize required data.
+- Execution: Call the function or API endpoint under test.
+- Assertions: Verify the result matches expectations.
+
+### Mocking and Test Utilities
+
+- **Mockingoose**: Used for mocking Mongoose models in unit tests.
+- **MongoDB Memory Server**: Provides an in-memory MongoDB instance for integration tests.
+
+### Example Test Commands
+
+- Run a specific unit test file:
+
+  ```bash
+  npx jest src/apps/users/__tests__/userService.unit.test.ts
+  ```
+
+- Run tests with verbose output:
+  ```bash
+  npm run test -- --verbose
+  ```
 
 ## Contribution
 
