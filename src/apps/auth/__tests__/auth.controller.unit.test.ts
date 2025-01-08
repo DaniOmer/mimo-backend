@@ -1,7 +1,7 @@
 import BadRequestError from "../../../config/error/bad.request.config";
-import { AuthController } from "../api";
+import { AuthController } from "../api/auth/auth.controller";
 import { Request, Response, NextFunction } from "express";
-import { AuthService } from "../domain";
+import { AuthService } from "../domain/auth/auth.service";
 
 jest.mock("../domain/auth/auth.service.ts");
 
