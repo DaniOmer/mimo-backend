@@ -23,4 +23,18 @@ export default class RoleController extends BaseController {
       next(error);
     }
   }
+
+  async getAllRoles(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const roles = await this.roleService.getAllRoles();
+      ApiResponse.success(res, "Roles retrieved successfully", roles, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
 }

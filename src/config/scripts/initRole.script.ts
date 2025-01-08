@@ -35,6 +35,10 @@ async function initRolesAndPermissions() {
       permissions: permissions.map((permission: IPermission) => permission),
     });
 
+    const userRole = await roleRepository.create({
+      name: "user",
+    });
+
     console.log("Admin role created:", adminRole);
     process.exit(0);
   } catch (error) {

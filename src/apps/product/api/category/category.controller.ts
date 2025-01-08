@@ -21,34 +21,81 @@ export class CategoryController {
   async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const categories = await this.service.getAllCategories();
-      ApiResponse.success(res, "Categories retrieved successfully", categories, 200);
+      ApiResponse.success(
+        res,
+        "Categories retrieved successfully",
+        categories,
+        200
+      );
     } catch (error) {
       next(error);
     }
   }
 
-  async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const category = await this.service.getCategoryById(req.params.id);
-      ApiResponse.success(res, "Category retrieved successfully", category, 200);
+      ApiResponse.success(
+        res,
+        "Category retrieved successfully",
+        category,
+        200
+      );
     } catch (error) {
       next(error);
     }
   }
 
-  async updateById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async updateById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const updatedCategory = await this.service.updateCategoryById(req.params.id, req.body);
-      ApiResponse.success(res, "Category updated successfully", updatedCategory, 200);
+      const updatedCategory = await this.service.updateCategoryById(
+        req.params.id,
+        req.body
+      );
+      ApiResponse.success(
+        res,
+        "Category updated successfully",
+        updatedCategory,
+        200
+      );
     } catch (error) {
       next(error);
     }
   }
 
-  async deleteById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async deleteById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const deletedCategory = await this.service.deleteCategoryById(req.params.id);
-      ApiResponse.success(res, "Category deleted successfully", deletedCategory, 204);
+      const deletedCategory = await this.service.deleteCategoryById(
+        req.params.id
+      );
+      ApiResponse.success(
+        res,
+        "Category deleted successfully",
+        deletedCategory,
+        204
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteMultipleCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { categoryIds } = req.body;
+      await this.service.deleteMultipleCategories(categoryIds);
+      ApiResponse.success(res, "Categories deleted successfully", null, 200);
     } catch (error) {
       next(error);
     }

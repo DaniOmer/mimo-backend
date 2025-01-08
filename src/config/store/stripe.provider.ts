@@ -55,7 +55,6 @@ export class StripeProvider {
     return await this.stripe.paymentIntents.create({
       amount: params.amount,
       currency: params.currency,
-      customer: params.customer,
       payment_method: params.paymentMethod,
       receipt_email: params.receiptEmail,
     });
