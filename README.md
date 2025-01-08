@@ -146,7 +146,7 @@ This project tracks test coverage to ensure critical parts of the codebase are a
    npm run test
    ```
 
-2. Open the generated `lcov-report/index.html` file in a browser for a detailed view.
+2. Open the generated `covearge/lcov-report/index.html` file in a browser for a detailed view.
 
 ### Writing Tests
 
