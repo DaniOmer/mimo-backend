@@ -24,3 +24,7 @@ logs
 
 # Environment variables
 .env
+
+# Build files
+dist/
+dist/index.js
