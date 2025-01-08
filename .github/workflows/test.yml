@@ -27,11 +27,6 @@ jobs:
         run: |
           npm install
 
-      - name: Verify Jest and Node.js versions
-        run: |
-          jest --version
-          node --version
-
       - name: List test files
         run: |
           ls -R # Affiche tous les fichiers dans le répertoire courant
