@@ -5,6 +5,13 @@ import { RoleModel } from "../apps/auth/data-access/role/role.model";
 import { AppConfig } from "../config/app.config";
 import { SecurityUtils } from "../utils/security.utils"; 
 
+
+// export type UserDataToJWT = {
+//   _id: string;
+//   id: ObjectId;
+//   roles: { name: string }[];
+//   permissions: { name: string }[];
+// };
 export class DatabaseTestUtils {
   static async initDatabase(): Promise<void> {
     const testDbUri =
@@ -23,8 +30,6 @@ export class DatabaseTestUtils {
         password: process.env.MONGODB_PASSWORD || "mimo",
       },
       authSource: "admin", 
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
     } as ConnectOptions);
 
     const collections = mongoose.connection.collections;
@@ -123,7 +128,8 @@ export class DatabaseTestUtils {
       : [];
 
     return await SecurityUtils.generateJWTToken({
-      id: user._id.toString(),
+      _id: user._id.toString(),
+      id: user._id as any,
       roles: rolesForJWT,
       permissions: permissionsForJWT,
     });

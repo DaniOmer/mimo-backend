@@ -1,17 +1,13 @@
-// src/apps/auth/domain/role/__tests__/role.service.test.ts
-
 import { Types, Schema } from "mongoose";
-import RoleService from "../role.service";
-import RoleRepository from "../../../data-access/role/role.repository";
-import PermissionService from "../../permission/permission.service";
-import { IRole } from "../../../data-access/role/role.interface";
-import { IPermission } from "../../../data-access/permission/permission.interface";
-import { RoleCreateDTO } from "../role.dto";
-import BadRequestError from "../../../../../config/error/bad.request.config";
+import RoleService from "../domain/role/role.service";
+import RoleRepository from "../data-access/role/role.repository";
+import PermissionService from "../domain/permission/permission.service";
+import { IRole } from "../data-access/role/role.interface";
+import { IPermission } from "../data-access/permission/permission.interface";
+import { RoleCreateDTO } from "../domain/";
 
-// Mocks
-jest.mock("../../../data-access/role/role.repository");
-jest.mock("../../permission/permission.service");
+jest.mock("../data-access/role/role.repository");
+jest.mock("../domain/permission/permission.service");
 
 describe("RoleService", () => {
   let roleService: RoleService;

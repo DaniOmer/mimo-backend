@@ -1,9 +1,9 @@
-import PermissionService from "../permission.service";
-import PermissionRepository from "../../../data-access/permission/permission.repository";
-import { IPermission } from "../../../data-access/permission/permission.interface";
-import BadRequestError from "../../../../../config/error/bad.request.config";
+import PermissionService from "../domain/permission/permission.service";
+import PermissionRepository from "../data-access/permission/permission.repository";
+import { IPermission } from "../data-access/permission/permission.interface";
+import BadRequestError from "../../../config/error/bad.request.config";
 
-jest.mock("../../../data-access/permission/permission.repository");
+jest.mock("../data-access/permission/permission.repository");
 
 describe("PermissionService", () => {
   let permissionService: PermissionService;
