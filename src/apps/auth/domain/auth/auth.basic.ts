@@ -79,7 +79,6 @@ export class BasicAuthStrategy implements AuthStrategy {
 
     const token = await SecurityUtils.generateJWTToken({
       _id: user._id,
-      id: user.id,
       roles: rolesWDate,
       permissions: permissionsWDate,
     });

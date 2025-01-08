@@ -3,11 +3,9 @@ import * as bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { AppConfig } from "../config/app.config";
 import BadRequestError from "../config/error/bad.request.config";
-import { ObjectId } from "mongoose";
 
 export type UserDataToJWT = {
   _id: string;
-  id: ObjectId;
   roles: { name: string }[];
   permissions: { name: string }[];
 };

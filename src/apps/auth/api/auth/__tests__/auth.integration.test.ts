@@ -36,9 +36,11 @@ describe("Auth Routes", () => {
           authType: "basic",
         });
 
-
       expect(response.status).toBe(201);
-      expect(response.body.data).toHaveProperty("email", "john.doe@example.com");
+      expect(response.body.data).toHaveProperty(
+        "email",
+        "john.doe@example.com"
+      );
     });
 
     it("should return 400 for invalid strategy", async () => {
@@ -61,25 +63,20 @@ describe("Auth Routes", () => {
 
   describe("POST /api/auth/login/:strategy", () => {
     it("should login a user successfully", async () => {
-      const response = await request(app)
-        .post("/api/auth/login/basic")
-        .send({
-          email: "admin@example.com",
-          password: "Azerty1234567!",
-        });
-
+      const response = await request(app).post("/api/auth/login/basic").send({
+        email: "admin@example.com",
+        password: "Azerty1234567!",
+      });
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("token");
     });
 
     it("should return 401 for invalid credentials", async () => {
-      const response = await request(app)
-        .post("/api/auth/login/basic")
-        .send({
-          email: "admin@example.com",
-          password: "WrongPassword123!",
-        });
+      const response = await request(app).post("/api/auth/login/basic").send({
+        email: "admin@example.com",
+        password: "WrongPassword123!",
+      });
 
       console.log("Response POST /api/auth/login/basic", response.body);
 

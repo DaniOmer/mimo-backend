@@ -13,7 +13,7 @@
     "dev": "tsc && copyfiles -u 1 src/templates/**/* dist/index.js && node dist/index.js",
     "init:role": "tsc && node dist/index.js/config/scripts/initRole.script.js",
     "live": "nodemon dist/index.js",
-    "test": "jest --config jest.config.init.ts --coverage",
+    "test": "jest --config jest.config.unit.ts --coverage",
     "test:unit": "jest --config jest.config.unit.ts",
     "test:integration": "jest --config jest.config.integration.ts --runInBand",
     "test:all": "npm run test:unit && npm run test:integration"
